@@ -27,10 +27,18 @@ cd ConnectInnova/
 
 1. Acesse a pasta e instale dependências:
 
+linux e Mac:
 ```bash
 cd backend 
 pip install uv
 uv sync && source .venv/bin/activate
+```
+
+ou no Windows:
+```bash
+cd backend 
+pip install uv
+uv sync && .venv\Scripts\activate
 ```
 
 2. Rode a aplicação:
