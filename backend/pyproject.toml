@@ -30,11 +30,22 @@ dependencies = [
     "fastapi-sso>=0.18.0",
     "pydantic-settings>=2.9.1",
     "taskipy>=1.14.1",
+    "pytest>=8.4.2",
+    "black>=25.1.0",
+    "asgi-lifespan>=2.1.0",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/alanabclins/ConnectInnova.git#readme"
 "Repository" = "https://github.com/alanabclins/ConnectInnova.git"
+
+[dependency-groups]
+dev = [
+    "asgi-lifespan>=2.1.0",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "taskipy>=1.14.1",
+]
 
 
 [tool.black]
@@ -51,7 +62,7 @@ exclude = [
     "venv",
 ]
 src = ["app", "tests"]
-line-length = 90
+line-length = 94
 
 [tool.ruff.lint]
 ignore = []
@@ -88,7 +99,7 @@ filterwarnings = [
 run = "uv run fastapi dev app/main.py"
 
 pre_test = 'task lint'
-test = "pytest tests --cov=app -vv"
+test = 'uv run pytest --cov=app --cov-report=term-missing -vv'
 post_test = 'coverage html'
 
 lint = 'ruff check . & ruff check . --diff'

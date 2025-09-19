@@ -1,4 +1,5 @@
 import pytest
+from fastapi import status
 from httpx import AsyncClient
 
 from app.config.config import settings
@@ -46,7 +47,7 @@ async def test_create_user(client: AsyncClient) -> None:
         f"{settings.API_V1_STR}/users",
         json=data,
     )
-    assert r.status_code == 200
+    assert r.status_code == status.HTTP_200_OK
     created_user = r.json()
     user = await User.find_one({"email": username})
     assert user
@@ -59,7 +60,7 @@ async def test_create_user_existing_username(client: AsyncClient) -> None:
     data = {"email": user.email, "password": "password"}
     r = await client.post(f"{settings.API_V1_STR}/users", json=data)
     response = r.json()
-    assert r.status_code == 400
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert response["detail"] == "User with that email already exists."
 
 
@@ -72,7 +73,7 @@ async def test_get_existing_user(
         f"{settings.API_V1_STR}/users/{user.uuid}",
         headers=superuser_token_headers,
     )
-    assert r.status_code == 200
+    assert r.status_code == status.HTTP_200_OK
     api_user = r.json()
     assert user.email == api_user["email"]
 
@@ -89,7 +90,7 @@ async def test_update_profile(client: AsyncClient) -> None:
     r = await client.patch(
         f"{settings.API_V1_STR}/users/me", json=data, headers=token_headers
     )
-    assert r.status_code == 200
+    assert r.status_code == status.HTTP_200_OK
 
     updated_user = await User.get(user.id)
     assert updated_user is not None
@@ -109,7 +110,7 @@ async def test_update_profile_existing_email(client: AsyncClient) -> None:
         f"{settings.API_V1_STR}/users/me", json=data, headers=token_headers
     )
     response = r.json()
-    assert r.status_code == 400
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert response["detail"] == "User with that email already exists."
 
 
@@ -124,7 +125,7 @@ async def test_update_profile_cannot_set_superuser(client: AsyncClient) -> None:
     r = await client.patch(
         f"{settings.API_V1_STR}/users/me", json=data, headers=token_headers
     )
-    assert r.status_code == 200
+    assert r.status_code == status.HTTP_200_OK
 
     updated_user = await User.get(user.id)
     assert updated_user is not None
@@ -152,7 +153,7 @@ async def test_update_user(
         json=data,
         headers=superuser_token_headers,
     )
-    assert r.status_code == 200
+    assert r.status_code == status.HTTP_200_OK
 
     updated_user = await User.get(user.id)
     assert updated_user is not None
@@ -177,5 +178,5 @@ async def test_update_user_existing_email(
         headers=superuser_token_headers,
     )
     response = r.json()
-    assert r.status_code == 400
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert response["detail"] == "User with that email already exists."

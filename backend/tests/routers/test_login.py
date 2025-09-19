@@ -1,4 +1,5 @@
 import pytest
+from fastapi import status
 from httpx import AsyncClient
 
 from app.config.config import settings
@@ -12,7 +13,7 @@ async def test_get_access_token(client: AsyncClient) -> None:
     }
     r = await client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
     tokens = r.json()
-    assert r.status_code == 200
+    assert r.status_code == status.HTTP_200_OK
     assert "access_token" in tokens
     assert tokens["access_token"]
 
@@ -26,15 +27,15 @@ async def test_use_access_token(
         headers=superuser_token_headers,
     )
     result = r.json()
-    assert r.status_code == 200
+    assert r.status_code == status.HTTP_200_OK
     assert "email" in result
 
 
 @pytest.mark.anyio
 async def test_not_authorized(client: AsyncClient) -> None:
     r = await client.get(f"{settings.API_V1_STR}/login/test-token")
-    assert r.status_code == 401
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
     headers = {"AUTHORIZATION": "Bearer eyJ0eXAiOiJKV1QiLCJhbG"}
     r = await client.get(f"{settings.API_V1_STR}/login/test-token", headers=headers)
-    assert r.status_code == 401
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
