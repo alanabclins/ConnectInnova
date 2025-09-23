@@ -1,255 +1,191 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  FormControlLabel,
-  IconButton,
-  TextField,
-} from '@mui/material'
-import Grid from '@mui/material/Grid'
-import { AxiosError } from 'axios'
-import { useEffect, useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
-import { useAuth } from '../contexts/auth'
-import { useSnackBar } from '../contexts/snackbar'
-import { User } from '../models/user'
-import userService from '../services/user.service'
-import { GoogleIcon } from './LoginForm'
+// 'use client'
 
-interface UserProfileProps {
-  userProfile: User
-  onUserUpdated?: (user: User) => void
-  allowDelete: boolean
-}
+// import { useEffect, useState } from 'react'
+// import { useForm } from 'react-hook-form'
+// import type { SubmitHandler } from 'react-hook-form'
+// import { useNavigate } from 'react-router'
+// import { toast } from 'sonner'
+// import { Avatar } from '@/components/ui/avatar'
+// import { Button } from '@/components/ui/button'
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+// import { Dialog, DialogContent, DialogHeader, DialogFooter } from '@/components/ui/dialog'
+// import { Input } from '@/components/ui/input'
+// import { Label } from '@/components/ui/label'
+// import { Checkbox } from '@/components/ui/checkbox'
+// import type { User } from '../../app/models/user'
+// import { useAuth } from '../../src/context/auth'
+// import userService from '../../app/services/user.service'
+// import { IconBrandGoogle } from '@tabler/icons-react'
 
-export default function UserProfile(props: UserProfileProps) {
-  const { userProfile, onUserUpdated } = props
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<User>({
-    defaultValues: userProfile,
-  })
-  const navigate = useNavigate()
-  const { user: currentUser, setUser, logout } = useAuth()
-  const { showSnackBar } = useSnackBar()
-  const [open, setOpen] = useState(false)
+// interface UserProfileProps {
+//   userProfile: User
+//   onUserUpdated?: (user: User) => void
+//   allowDelete: boolean
+// }
 
-  useEffect(() => {
-    reset(userProfile)
-  }, [userProfile, reset])
+// export default function UserProfile({ userProfile, onUserUpdated, allowDelete }: UserProfileProps) {
+//   const navigate = useNavigate()
+//   const { user: currentUser, setUser, logout } = useAuth()
+//   const [open, setOpen] = useState(false)
 
-  const onSubmit: SubmitHandler<User> = async (data) => {
-    let updatedUser: User
-    try {
-      if (currentUser?.uuid === userProfile.uuid) {
-        // Updating user profile.
-        updatedUser = await userService.updateProfile(data)
-        setUser(updatedUser)
-        showSnackBar('User profile updated successfully.', 'success')
-      } else {
-        // Updating user different from current user.
-        updatedUser = await userService.updateUser(userProfile.uuid, data)
-        showSnackBar('User profile updated successfully.', 'success')
-      }
-      if (onUserUpdated) {
-        onUserUpdated(updatedUser)
-      }
-    } catch (error) {
-      let msg
-      if (
-        error instanceof AxiosError &&
-        error.response &&
-        typeof error.response.data.detail == 'string'
-      )
-        msg = error.response.data.detail
-      else if (error instanceof Error) msg = error.message
-      else msg = String(error)
-      showSnackBar(msg, 'error')
-    }
-  }
+//   const {
+//     register,
+//     handleSubmit,
+//     reset,
+//     formState: { errors },
+//   } = useForm<User>({
+//     defaultValues: userProfile,
+//   })
 
-  const handleDeleteProfile = async () => {
-    setOpen(true)
-  }
+//   useEffect(() => {
+//     reset(userProfile)
+//   }, [userProfile, reset])
 
-  const handleCancel = () => setOpen(false)
+//   const onSubmit: SubmitHandler<User> = async (data) => {
+//     try {
+//       let updatedUser: User
+//       if (currentUser?.uuid === userProfile.uuid) {
+//         updatedUser = await userService.updateProfile(data)
+//         setUser(updatedUser)
+//       } else {
+//         updatedUser = await userService.updateUser(userProfile.uuid, data)
+//       }
+//       toast.success('User profile updated successfully.')
+//       onUserUpdated?.(updatedUser)
+//     } catch (error: any) {
+//       const msg = error?.response?.data?.detail ?? error?.message ?? 'Failed to update user.'
+//       toast.error(msg)
+//     }
+//   }
 
-  const handleConfirm = async () => {
-    setOpen(false)
-    await userService.deleteSelf()
-    showSnackBar('You account has been deleted.', 'success')
-    logout()
-    navigate('/')
-  }
+//   const handleDeleteProfile = () => setOpen(true)
+//   const handleCancel = () => setOpen(false)
 
-  return (
-    <div>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <IconButton aria-label='upload picture' component='label' sx={{ mt: 1 }}>
-          <input hidden accept='image/*' type='file' />
-          <Avatar
-            sx={{ width: 56, height: 56 }}
-            alt={userProfile.first_name + ' ' + userProfile.last_name}
-            src={userProfile.picture && userProfile.picture}
-          />
-        </IconButton>
+//   const handleConfirm = async () => {
+//     setOpen(false)
+//     try {
+//       await userService.deleteSelf()
+//       toast.success('Your account has been deleted.')
+//       logout()
+//       navigate('/')
+//     } catch {
+//       toast.error('Failed to delete account.')
+//     }
+//   }
 
-        <Box
-          component='form'
-          onSubmit={handleSubmit(onSubmit)}
-          sx={{ mt: 3 }}
-          key={userProfile.uuid}
-          noValidate
-          data-testid='user-profile-form'
-        >
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                autoComplete='given-name'
-                fullWidth
-                id='firstName'
-                label='First Name'
-                {...register('first_name')}
-                autoFocus
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                id='last_name'
-                label='Last Name'
-                autoComplete='family-name'
-                {...register('last_name')}
-              />
-            </Grid>
-            <Grid size={12}>
-              <TextField
-                fullWidth
-                id='email'
-                label='Email Address'
-                autoComplete='email'
-                required
-                disabled={
-                  userProfile.provider !== null &&
-                  userProfile.provider !== undefined &&
-                  userProfile.provider !== ''
-                }
-                error={!!errors.email}
-                helperText={errors.email && 'Please provide an email address.'}
-                {...register('email', { required: true })}
-              />
-            </Grid>
+//   return (
+//     <Card className='max-w-lg mx-auto'>
+//       <CardHeader>
+//         <CardTitle>User Profile</CardTitle>
+//       </CardHeader>
+//       <CardContent className='flex flex-col items-center'>
+//         <label className='cursor-pointer'>
+//           <input type='file' className='hidden' accept='image/*' />
+//           <Avatar className='w-14 h-14 mb-4'>
+//             {(!userProfile.picture && userProfile.first_name?.[0]) || ''}
+//           </Avatar>
+//         </label>
 
-            {userProfile.provider && (
-              <Grid size={12}>
-                <TextField
-                  fullWidth
-                  label='Connected with'
-                  id='provider'
-                  disabled={true}
-                  variant='standard'
-                  InputProps={{
-                    startAdornment: <GoogleIcon sx={{ mr: 1 }} />,
-                  }}
-                  {...register('provider')}
-                />
-              </Grid>
-            )}
+//         <form
+//           onSubmit={handleSubmit(onSubmit)}
+//           className='w-full flex flex-col gap-4'
+//           key={userProfile.uuid}
+//           data-testid='user-profile-form'
+//         >
+//           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+//             <div>
+//               <Label htmlFor='first_name'>First Name</Label>
+//               <Input id='first_name' {...register('first_name')} />
+//             </div>
+//             <div>
+//               <Label htmlFor='last_name'>Last Name</Label>
+//               <Input id='last_name' {...register('last_name')} />
+//             </div>
+//           </div>
 
-            {!userProfile.provider && (
-              <Grid size={12}>
-                <TextField
-                  fullWidth
-                  label='Password'
-                  type='password'
-                  id='password'
-                  autoComplete='new-password'
-                  {...register('password')}
-                />
-              </Grid>
-            )}
+//           <div>
+//             <Label htmlFor='email'>Email</Label>
+//             <Input
+//               id='email'
+//               {...register('email', { required: true })}
+//               disabled={!!userProfile.provider}
+//             />
+//             {errors.email && (
+//               <p className='text-red-500 text-sm'>Please provide an email address.</p>
+//             )}
+//           </div>
 
-            {currentUser?.is_superuser && (
-              <>
-                <Grid size={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        defaultChecked={userProfile.is_active}
-                        color='primary'
-                        {...register('is_active')}
-                      />
-                    }
-                    label='Is Active'
-                    disabled={currentUser.uuid === userProfile.uuid}
-                  />
-                </Grid>
-                <Grid size={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        defaultChecked={userProfile.is_superuser}
-                        color='primary'
-                        {...register('is_superuser')}
-                      />
-                    }
-                    label='Is Super User'
-                    disabled={currentUser.uuid === userProfile.uuid}
-                  />
-                </Grid>
-              </>
-            )}
-          </Grid>
-          <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
-            Update
-          </Button>
-          {props.allowDelete && (
-            <Button
-              fullWidth
-              variant='outlined'
-              sx={{ mb: 2 }}
-              color='error'
-              onClick={handleDeleteProfile}
-            >
-              Delete my account
-            </Button>
-          )}
-        </Box>
-      </Box>
-      <Dialog
-        open={open}
-        onClose={handleCancel}
-        aria-describedby='alert-profile-dialog-description'
-      >
-        <DialogContent>
-          <DialogContentText id='alert-profile-dialog-description'>
-            Are you sure you want to delete your account ?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel} autoFocus>
-            Cancel
-          </Button>
-          <Button onClick={handleConfirm} variant='contained' color='primary'>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  )
-}
+//           {userProfile.provider && (
+//             <div className='relative'>
+//               <IconBrandGoogle
+//                 className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'
+//                 size={20}
+//               />
+//               <Input
+//                 id='provider'
+//                 value={userProfile.provider}
+//                 disabled
+//                 className='pl-10' // espaço para o ícone
+//               />
+//             </div>
+//           )}
+
+//           {!userProfile.provider && (
+//             <div>
+//               <Label htmlFor='password'>Password</Label>
+//               <Input id='password' type='password' {...register('password')} />
+//             </div>
+//           )}
+
+//           {currentUser?.is_superuser && (
+//             <>
+//               <div className='flex items-center gap-2'>
+//                 <Checkbox
+//                   {...register('is_active')}
+//                   disabled={currentUser.uuid === userProfile.uuid}
+//                   defaultChecked={userProfile.is_active}
+//                 />
+//                 <span>Is Active</span>
+//               </div>
+//               <div className='flex items-center gap-2'>
+//                 <Checkbox
+//                   {...register('is_superuser')}
+//                   disabled={currentUser.uuid === userProfile.uuid}
+//                   defaultChecked={userProfile.is_superuser}
+//                 />
+//                 <span>Is Super User</span>
+//               </div>
+//             </>
+//           )}
+
+//           <Button type='submit' className='mt-2 w-full'>
+//             Update
+//           </Button>
+
+//           {allowDelete && (
+//             <Button variant='destructive' className='mt-2 w-full' onClick={handleDeleteProfile}>
+//               Delete my account
+//             </Button>
+//           )}
+//         </form>
+//       </CardContent>
+
+//       <Dialog open={open} onOpenChange={setOpen}>
+//         <DialogContent>
+//           <DialogHeader>
+//             <CardTitle>Confirm Deletion</CardTitle>
+//           </DialogHeader>
+//           <p>Are you sure you want to delete your account?</p>
+//           <DialogFooter className='flex justify-end gap-2 mt-2'>
+//             <Button variant='outline' onClick={handleCancel}>
+//               Cancel
+//             </Button>
+//             <Button variant='destructive' onClick={handleConfirm}>
+//               Confirm
+//             </Button>
+//           </DialogFooter>
+//         </DialogContent>
+//       </Dialog>
+//     </Card>
+//   )
+// }

@@ -1,46 +1,37 @@
-import { createBrowserRouter } from 'react-router'
-import ErrorPage from './error-page'
-import { HydrateFallback } from './fallback'
-import Home, { loader as homeLoader } from './routes/home'
-import Login from './routes/login'
-import { Profile } from './routes/profile'
-import Register from './routes/register'
-import Root from './routes/root'
-import SSOLogin, { loader as ssoLoader } from './routes/sso.login'
-import Users, { loader as usersLoader } from './routes/users'
+import { createBrowserRouter } from "react-router-dom";
 
-export const routes = [
+import Layout from "./components/layout";
+
+import HomePage from "./screens/home";
+import LoginPage from "./screens/login-page";
+import RegisterPage from "./screens/register-page";
+import ProfilePage from "./screens/profile-page";
+import NotFound from "./screens/error-page";
+
+const router = createBrowserRouter([
   {
-    path: '/',
-    Component: Root,
-    errorElement: <ErrorPage />,
+    path: "/",
+    element: <Layout />, // O Layout é o elemento pai
+    errorElement: <NotFound />, // Opcional: uma página para erros
     children: [
-      { index: true, Component: Home, HydrateFallback: HydrateFallback, loader: homeLoader },
       {
-        path: 'sso-login-callback',
-        Component: SSOLogin,
-        loader: ssoLoader,
+        index: true,
+        element: <HomePage />,
       },
       {
-        path: 'profile',
-        Component: Profile,
+        path: "login",
+        element: <LoginPage />,
       },
       {
-        path: 'login',
-        Component: Login,
+        path: "register",
+        element: <RegisterPage />,
       },
       {
-        path: 'register',
-        Component: Register,
-      },
-      {
-        path: 'users',
-        Component: Users,
-        HydrateFallback: HydrateFallback,
-        loader: usersLoader,
+        path: "profile",
+        element: <ProfilePage />,
       },
     ],
   },
-]
+]);
 
-export const router = createBrowserRouter(routes)
+export default router;

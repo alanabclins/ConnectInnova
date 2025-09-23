@@ -1,34 +1,22 @@
-import './axios'
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider } from 'react-router'
-import ReactGA from 'react-ga4'
-import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider } from '@mui/material/styles'
-import theme from './theme'
-import { router } from './router'
-import { SnackBarProvider } from './contexts/snackbar'
-import { AuthProvider } from './contexts/auth'
-import '@fontsource/roboto/300.css'
-import '@fontsource/roboto/400.css'
-import '@fontsource/roboto/500.css'
-import '@fontsource/roboto/700.css'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
 
-const GA_TRACKING_ID: string = import.meta.env.VITE_GA_TRACKING_ID
+import router from "./router";
 
-if (GA_TRACKING_ID !== null && GA_TRACKING_ID !== undefined && GA_TRACKING_ID !== '') {
-  ReactGA.initialize(GA_TRACKING_ID)
+import "./index.css";
+import "./App.css";
+import { ThemeProvider } from "./components/theme-provider";
+
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Elemento 'root' não encontrado no DOM.");
 }
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthProvider>
-        <SnackBarProvider>
-          <RouterProvider router={router} />
-        </SnackBarProvider>
-      </AuthProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <RouterProvider router={router} />
     </ThemeProvider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);
