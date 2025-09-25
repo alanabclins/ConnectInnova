@@ -4,9 +4,10 @@ import { Outlet } from "react-router-dom";
 const Layout: React.FC = () => {
   return (
     <div className="">
-        <main >
-          <Outlet />
-        </main>
+      <script src="https://unpkg.com/feather-icons"></script>
+      <main>
+        <Outlet />
+      </main>
     </div>
   );
 };

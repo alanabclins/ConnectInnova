@@ -7,6 +7,7 @@ import LoginPage from "./screens/login-page";
 import RegisterPage from "./screens/register-page";
 import ProfilePage from "./screens/profile-page";
 import NotFound from "./screens/error-page";
+import ProjUserStories from "./screens/proj-user-stories-page";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
         path: "profile",
         element: <ProfilePage />,
       },
+      {
+        path: "project-stories",
+        element: <ProjUserStories />,
+      }
     ],
   },
 ]);
