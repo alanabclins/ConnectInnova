@@ -11,6 +11,8 @@ import {
   IconCheck,
   IconFileText,
 } from "@tabler/icons-react";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 interface ProjectStepperProps {
   onComplete?: () => void;
@@ -20,6 +22,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
   onComplete,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [formControl, setFormControl] = useState();
   const [isCompleted, setIsCompleted] = useState(false);
   const totalSteps = 3;
 
@@ -74,9 +77,35 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
         </div>
 
         {/* Main content area */}
-        <div className="mb-8">
-          <FileUploadArea onFilesSelected={handleFilesSelected} />
-        </div>
+        <form action="submit" className="mb-8 h-80">
+          {currentStep == 1 && (
+            <div className="mb-8 flex-col md:flex-row flex gap-4">
+              <div className="flex-1">
+                <Input placeholder="Título do projeto" className="mb-4" />
+                <Input placeholder="Descrição do " className="mb-4" />
+                <Input placeholder="Descrição do " className="mb-4" />
+                <Input placeholder="Descrição do " className="mb-4" />
+                <Input placeholder="Descrição do " className="mb-4" />
+              </div>
+
+              <div className="flex-1">
+                <Textarea placeholder="Descrição do projeto" />
+              </div>
+            </div>
+          )}
+
+          {currentStep == 2 && (
+            <div className="mb-8 flex-col md:flex-row flex gap-4">
+              <div className="flex-1">
+                <Input placeholder="Título do projeto" className="mb-4" />
+              </div>
+
+              <div className="flex-1">
+                <FileUploadArea onFilesSelected={handleFilesSelected} />
+              </div>
+            </div>
+          )}
+        </form>
 
         {/* Action buttons */}
         <div className="flex gap-4 mb-16 flex-wrap">
