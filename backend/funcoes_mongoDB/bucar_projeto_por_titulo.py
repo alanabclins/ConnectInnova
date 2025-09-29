@@ -1,6 +1,6 @@
-from bson.objectid import ObjectId
-from pymongo import MongoClient
+import sys
 
+from pymongo import MongoClient
 
 # Configurações do Banco de Dados (usando seu ambiente local)
 MONGO_CONNECTION_STRING = "mongodb://localhost:27017/"
@@ -16,7 +16,7 @@ try:
     projeto_collection = db[PROJETO_COLLECTION_NAME]
 except Exception as e:
     print(f"❌ Erro ao conectar com o MongoDB: {e}")
-    exit()
+    sys.exit()
 # bucar_projeto_por_titulo.py
 def buscar_projeto_por_titulo_exato(projeto_collection, titulo):
     """Busca um projeto pelo seu título exato."""

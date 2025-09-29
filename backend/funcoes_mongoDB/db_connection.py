@@ -1,6 +1,7 @@
 # db_connection.py
-from pymongo import MongoClient
 import os
+
+from pymongo import MongoClient
 
 # Usaremos as variáveis do seu .env
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
