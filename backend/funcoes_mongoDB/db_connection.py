@@ -1,11 +1,8 @@
-# db_connection.py
 import os
-
 from pymongo import MongoClient
 
-# Usaremos as variáveis do seu .env
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-MONGO_DB = os.getenv("MONGO_DB", "meu_banco")
+MONGO_DB = os.getenv("MONGO_DB", "ConnectInnova")
 
 try:
     client = MongoClient(MONGO_URI)
@@ -15,5 +12,4 @@ try:
     print("✅ Conexão centralizada com MongoDB bem-sucedida!")
 except Exception as e:
     print(f"❌ Erro na conexão centralizada com o MongoDB: {e}")
-    # Em um app real, você poderia tratar esse erro de forma mais elegante
     projeto_collection = None

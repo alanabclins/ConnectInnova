@@ -1,8 +1,7 @@
 def gerar_prompt_analise(projeto):
     """Gera o prompt estruturado para análise geral do projeto."""
-    print("   [Task 33] Gerando prompt para a IA...")
+    print("   [Passo 2] Gerando prompt para análise...")
     
-    # Extrai todos os campos necessários do projeto
     titulo = projeto.get('titulo', 'N/A')
     descricao_problema = projeto.get('descricao_problema', 'N/A')
     proposta_solucao = projeto.get('proposta_solucao', 'N/A')
@@ -30,5 +29,5 @@ aspectos como clareza, inovação, impacto social, viabilidade e potencial de ap
 
 Retorne apenas o texto da análise, sem formatação especial ou estruturas pré-definidas.
 """
-    print("   [Task 33] ✅ Prompt gerado.")
+    print("   [Passo 2] ✅ Prompt gerado com sucesso")
     return prompt
