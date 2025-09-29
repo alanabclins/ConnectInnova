@@ -30,5 +30,5 @@
       ]
     }
   },
-  "include": ["src", "src/screens/proj-user-stories-page.tsx"]
+  "include": ["src", "src/screens/proj-history-page.tsx"]
 }
