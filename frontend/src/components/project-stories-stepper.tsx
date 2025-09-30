@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CircularStepIndicator } from "./CircularStepIndicator";
-import { FileUploadArea } from "./FileUploadArea";
 import { ActionButton } from "./ActionButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,94 +21,175 @@ interface ProjectStepperProps {
 export const ProjectStepper: React.FC<ProjectStepperProps> = ({
   onComplete,
 }) => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formControl, setFormControl] = useState();
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [titleControlInput, setTitleControlInput] = useState("");
+  const [projectDescriptionInput, setProjectDescriptionInput] = useState("");
+  const [solutionProposalInput, setSolutionProposalInput] = useState("");
+  const [socialImpactInput, setSocialImpactInput] = useState("");
+  const [technicalFeasibilityInput, setTechnicalFeasibilityInput] =
+    useState("");
+  const [projectInnovationInput, setProjectInnovationInput] = useState("");
+  const [whoAreYouInput, setWhoAreYouInput] = useState("");
+  const [academyInfo, setAcademyInfo] = useState("");
+  const [marketInfo, setMarketInfo] = useState("");
   const totalSteps = 3;
 
-  const handleFilesSelected = (files: FileList) => {
-    console.log(
-      "Files selected:",
-      Array.from(files).map((f) => f.name)
-    );
-  };
-
   const handleComplete = () => {
-    setIsCompleted(true);
-    if (onComplete) {
-      onComplete();
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    navigate("/summary", {
+      state: {
+        title: titleControlInput,
+        description: projectDescriptionInput,
+        solutionProposal: solutionProposalInput,
+        socialImpact: socialImpactInput,
+        technicalFeasibility: technicalFeasibilityInput,
+        innovation: projectInnovationInput,
+        whoAreYou: whoAreYouInput,
+        academyInfo: academyInfo,
+        marketInfo: marketInfo,
+      },
+    });
+
+    if (onComplete) onComplete();
   };
 
   const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    }
+    if (currentStep < totalSteps) setCurrentStep(currentStep + 1);
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-8">
+    <div className="min-h-screen bg-background text-foreground px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header with title and step indicator */}
+        {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div className="max-w-2xl">
-            <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-4">
-              Tudo começa com o<br />
-              seu projeto.
-            </h1>
-            <p className="text-muted-foreground text-md md:text-lg  leading-relaxed">
-              Compartilhe tudo o que nos ajude a enxergar o seu projeto como
-              você o vê.
-              <br />
-              Relatórios, documentos, imagens, links de repositório, guias de
-              personas e o que mais fizer sentido.
-            </p>
+            {currentStep <= 2 && (
+              <>
+                <h1 className="text-2xl md:text-3xl font-bold mb-4">
+                  Tudo começa com o seu projeto.
+                </h1>
+                <p className="text-muted-foreground text-md md:text-md leading-relaxed">
+                  Compartilhe tudo o que nos ajude a enxergar o seu projeto como
+                  você o vê. Relatórios, documentos, imagens, links de
+                  repositório, guias de personas e o que mais fizer sentido.
+                </p>
+              </>
+            )}
+            {currentStep === 3 && (
+              <>
+                <h1 className="text-2xl md:text-3xl font-bold mb-4">
+                  Deixe a gente conhecer você melhor.
+                </h1>
+                <p className="text-muted-foreground text-md md:text-md leading-relaxed">
+                  Quem é você por trás do projeto? Conte sobre sua trajetória,
+                  experiências, pontos fortes, desafios sociais ou pessoais.
+                  Queremos entender um pouco da sua história.
+                </p>
+              </>
+            )}
           </div>
+
           <CircularStepIndicator
             currentStep={currentStep}
             totalSteps={totalSteps}
           />
         </div>
 
-        {/* Main content area */}
-        <form action="submit" className="mb-8 h-80">
-          {currentStep == 1 && (
-            <div className="mb-8 flex-col md:flex-row flex gap-4">
-              <div className="flex-1">
-                <Input placeholder="Título do projeto" className="mb-4" />
-                <Input placeholder="Descrição do " className="mb-4" />
-                <Input placeholder="Descrição do " className="mb-4" />
-                <Input placeholder="Descrição do " className="mb-4" />
-                <Input placeholder="Descrição do " className="mb-4" />
+        {/* Step content */}
+        <form className="mb-4 h-full min-h-[300px] flex items-start">
+          {currentStep === 1 && (
+            <div className="flex flex-col md:flex-row gap-4 w-full">
+              <div className="flex-1 flex flex-col">
+                <Input
+                  placeholder="Título do projeto"
+                  className="mb-4"
+                  value={titleControlInput}
+                  onChange={(e) => setTitleControlInput(e.target.value)}
+                />
+                <Textarea
+                  placeholder="Proposta de solução"
+                  className="flex-1 min-h-[260px]"
+                  value={solutionProposalInput}
+                  onChange={(e) => setSolutionProposalInput(e.target.value)}
+                />
               </div>
 
               <div className="flex-1">
-                <Textarea placeholder="Descrição do projeto" />
+                <Textarea
+                  placeholder="Descrição do projeto"
+                  className="w-full min-h-[260px]"
+                  value={projectDescriptionInput}
+                  onChange={(e) => setProjectDescriptionInput(e.target.value)}
+                />
               </div>
             </div>
           )}
 
-          {currentStep == 2 && (
-            <div className="mb-8 flex-col md:flex-row flex gap-4">
-              <div className="flex-1">
-                <Input placeholder="Título do projeto" className="mb-4" />
+          {currentStep === 2 && (
+            <div className="flex flex-col md:flex-row gap-4 w-full">
+              <div className="flex-1 flex flex-col">
+                <Textarea
+                  placeholder="Impacto social"
+                  className="mb-4 min-h-[100px]"
+                  value={socialImpactInput}
+                  onChange={(e) => setSocialImpactInput(e.target.value)}
+                />
+                <Textarea
+                  placeholder="Viabilidade técnica"
+                  className="flex-1 min-h-[200px]"
+                  value={technicalFeasibilityInput}
+                  onChange={(e) => setTechnicalFeasibilityInput(e.target.value)}
+                />
               </div>
 
               <div className="flex-1">
-                <FileUploadArea onFilesSelected={handleFilesSelected} />
+                <Textarea
+                  placeholder="Inovação"
+                  className="w-full min-h-[260px]"
+                  value={projectInnovationInput}
+                  onChange={(e) => setProjectInnovationInput(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="flex flex-col md:flex-row gap-4 w-full">
+              <div className="flex-1">
+                <Textarea
+                  placeholder="Diga-nos quem é você."
+                  className="w-full min-h-[280px]"
+                  value={whoAreYouInput}
+                  onChange={(e) => setWhoAreYouInput(e.target.value)}
+                />
+              </div>
+
+              <div className="flex-1 flex flex-col">
+                <Textarea
+                  placeholder="Informações acadêmicas"
+                  className="mb-4 min-h-[160px]"
+                  value={academyInfo}
+                  onChange={(e) => setAcademyInfo(e.target.value)}
+                />
+                <Textarea
+                  placeholder="Currículo"
+                  className="min-h-[140px]"
+                  value={marketInfo}
+                  onChange={(e) => setMarketInfo(e.target.value)}
+                />
               </div>
             </div>
           )}
         </form>
 
         {/* Action buttons */}
-        <div className="flex gap-4 mb-16 flex-wrap">
+        <div className="flex flex-wrap gap-4 mb-8">
           <ActionButton
             icon={IconFileText}
             label="Links para documentos"
@@ -126,13 +207,11 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
           />
         </div>
 
-        {/* Footer with disclaimer and complete button */}
+        {/* Footer */}
         <div className="flex flex-col md:flex-row justify-between items-start">
           <p className="text-muted-foreground text-sm max-w-md">
             Fique tranquilo: Suas informações são analisadas em total sigilo e
-            nunca
-            <br />
-            serão compartilhadas sem seu consentimento explícito*
+            nunca serão compartilhadas sem seu consentimento explícito*
           </p>
 
           <div className="py-8 md:py-0 flex gap-4 items-center">
@@ -145,17 +224,15 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                 Anterior
               </Button>
             )}
-
             {currentStep < totalSteps && (
               <Button onClick={handleNext} className="px-6">
                 Próximo
               </Button>
             )}
-
             {currentStep === totalSteps && (
               <Button
                 onClick={handleComplete}
-                className="bg-indigo-500 hover:bg-primary/90 text-primary-foreground px-6 gap-2"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 gap-2"
               >
                 <span>Tudo adicionado!</span>
                 <IconCheck className="w-4 h-4" />

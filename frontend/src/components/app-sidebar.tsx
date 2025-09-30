@@ -1,175 +1,101 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
+  IconHome,
+  IconBook,
+  IconCompass,
+  IconTarget,
+  IconFileText,
+  IconChevronLeft,
+} from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 
-import { NavMain } from "@/components/dashboard-page/nav-main"
-import { NavProjects } from "@/components/dashboard-page/nav-projects"
-import { NavUser } from "@/components/dashboard-page/nav-user"
-import { TeamSwitcher } from "@/components/dashboard-page/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+interface NavItem {
+  icon: React.ElementType;
+  label: string;
+  active?: boolean;
 }
+
+const navItems: NavItem[] = [
+  { icon: IconHome, label: "Início", active: true },
+  { icon: IconBook, label: "Minha trilha" },
+  { icon: IconCompass, label: "Explorar projetos" },
+  { icon: IconTarget, label: "Desafios" },
+  { icon: IconFileText, label: "Editais" },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
+      {/* Cabeçalho com brand */}
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <div className="flex items-center gap-3 p-4">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <div className="w-4 h-4 bg-primary-foreground rounded-sm"></div>
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold text-foreground">Connect</h1>
+            <p className="text-sm text-muted-foreground">Innova</p>
+          </div>
+        </div>
       </SidebarHeader>
+
+      {/* Navegação principal */}
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <nav className="flex-1 px-2">
+          <ul className="space-y-2">
+            {navItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <li key={index}>
+                  <button
+                    className={cn(
+                      "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
+                      item.active
+                        ? "bg-primary text-primary-foreground shadow-lg"
+                        : "text-muted-foreground hover:bg-sidebar-item-hover hover:text-foreground"
+                    )}
+                  >
+                    <Icon size={20} stroke={1.5} />
+                    <span className="font-medium">{item.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </SidebarContent>
+
+      {/* Rodapé com usuário */}
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <div className="flex items-center justify-between bg-sidebar-item rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+              <span className="text-sm font-medium text-foreground">L</span>
+            </div>
+            <div>
+              <p className="font-medium text-foreground">Lucas</p>
+              <p className="text-xs text-muted-foreground">AgroPlus</p>
+            </div>
+          </div>
+          <IconChevronLeft
+            size={16}
+            stroke={1.5}
+            className="text-muted-foreground"
+          />
+        </div>
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
