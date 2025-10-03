@@ -59,7 +59,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
     if (validateStep()) {
       window.scrollTo({ top: 0, behavior: "smooth" });
 
-      navigate("/summary", {
+      navigate("/home/summary", {
         // state: {
         //   title: titleControlInput,
         //   description: projectDescriptionInput,
