@@ -1,32 +1,31 @@
-import { GalleryVerticalEnd } from "lucide-react"
-
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/login-form";
+import logoCinnova from "@/assets/logo-nome-cinnova.png";
 
 export default function LoginPage() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            Acme Inc.
-          </a>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <LoginForm />
-          </div>
+    <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="relative hidden lg:flex flex-col p-10 mesh-gradient-bg">
+        <div className="flex items-center gap-3">
+          <img
+            src={logoCinnova}
+            alt="Logo Connect Innova"
+            className="h-12  object-fit"
+          />
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block rounded">
-        <img
-          src="https://images.unsplash.com/photo-1638272181967-7d3772a91265?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+
+      {/* Right side - Login form */}
+      <div className="flex min-h-screen items-center justify-center p-8 bg-background">
+        <div className="w-full max-w-md flex flex-col items-center gap-6">
+          <img
+            src={logoCinnova}
+            alt="Logo Connect Innova"
+            className="h-12 lg:hidden mix-blend-color-dodge"
+          />
+
+          <LoginForm />
+        </div>
       </div>
     </div>
-  )
+  );
 }

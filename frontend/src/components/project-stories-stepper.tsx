@@ -38,7 +38,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
   const handleComplete = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    navigate("/summary", {
+    navigate("summary", {
       state: {
         title: titleControlInput,
         description: projectDescriptionInput,

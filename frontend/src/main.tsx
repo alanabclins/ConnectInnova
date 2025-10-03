@@ -7,6 +7,8 @@ import router from "./router";
 import "./index.css";
 import "./App.css";
 import { ThemeProvider } from "./components/theme-provider";
+import { AuthProvider } from "./auth/authContext";
+import { Toaster } from "./components/ui/sonner";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -16,7 +18,10 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>
 );
