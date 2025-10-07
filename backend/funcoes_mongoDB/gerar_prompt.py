@@ -1,33 +1,66 @@
 def gerar_prompt_analise(projeto):
-    """Gera o prompt estruturado para análise geral do projeto."""
-    print("   [Passo 2] Gerando prompt para análise...")
-    
-    titulo = projeto.get('titulo', 'N/A')
-    descricao_problema = projeto.get('descricao_problema', 'N/A')
-    proposta_solucao = projeto.get('proposta_solucao', 'N/A')
-    impacto_social = projeto.get('impacto_social', 'N/A')
-    viabilidade_tecnica = projeto.get('viabilidade_tecnica', 'N/A')
-    inovacao = projeto.get('inovacao', 'N/A')
+    titulo = projeto.get("project_title", "Sem título")
+    descricao = projeto.get("project_description", "Sem descrição")
+    proposta = projeto.get("solution_proposal", "Sem proposta")
+    impacto = projeto.get("social_impact", "Sem impacto")
+    viabilidade = projeto.get("tec_eco_viability", "Sem viabilidade")
+    inovacao = projeto.get("inovation_grade", "Sem inovação")
+    aplicacao = projeto.get("application_potencial", "Sem potencial")
 
     prompt = f"""
-# CONTEXTO
-Você é a "IA Orientadora", uma especialista em avaliar projetos acadêmicos de inovação. 
-Sua tarefa é fornecer uma análise geral e livre sobre o projeto submetido.
+Você é um avaliador de projetos universitários. Avalie o seguinte projeto com base nas dimensões abaixo:
 
-# DADOS DO PROJETO PARA ANÁLISE
-- Título: "{titulo}"
-- Descrição do Problema: "{descricao_problema}"
-- Proposta de Solução: "{proposta_solucao}"
-- Impacto Social Esperado: "{impacto_social}"
-- Viabilidade Técnica e Econômica: "{viabilidade_tecnica}"
-- Inovação do Projeto: "{inovacao}"
+Título: {titulo}
+Descrição do Problema: {descricao}
+Proposta de Solução: {proposta}
+Impacto Social: {impacto}
+Viabilidade Técnica e Econômica: {viabilidade}
+Grau de Inovação: {inovacao}
+Potencial de Aplicação: {aplicacao}
 
-# TAREFA
-Com base nas informações fornecidas acima, faça uma análise geral e livre da proposta do projeto. 
-Forneça um feedback textual coeso que avalie a proposta de forma abrangente, considerando 
-aspectos como clareza, inovação, impacto social, viabilidade e potencial de aplicação.
+Responda SOMENTE em formato JSON, com as seguintes chaves (sem texto adicional fora do JSON):
 
-Retorne apenas o texto da análise, sem formatação especial ou estruturas pré-definidas.
+{{
+  "clarity_problem": "avaliação da clareza do problema (máx 2 frases)",
+  "inovation_grade": "avaliação do grau de inovação (máx 2 frases)",
+  "social_impact": "avaliação do impacto social (máx 2 frases)",
+  "tec_eco_viability": "avaliação da viabilidade técnica e econômica (máx 2 frases)",
+  "application_potencial": "avaliação do potencial de aplicação (máx 2 frases)"
+  "solution_proposal" : "avaliação da proposta de solução (máx 2 frases)
+}}
 """
-    print("   [Passo 2] ✅ Prompt gerado com sucesso")
-    return prompt
+    return prompt.strip()
+
+
+def gerar_prompt_resumo(projeto):
+    titulo = projeto.get("project_title", "Sem título")
+    descricao = projeto.get("project_description", "Sem descrição")
+    proposta = projeto.get("solution_proposal", "Sem proposta")
+    impacto = projeto.get("social_impact", "Sem impacto")
+    viabilidade = projeto.get("tec_eco_viability", "Sem viabilidade")
+    inovacao = projeto.get("inovation_grade", "Sem inovação")
+    aplicacao = projeto.get("application_potencial", "Sem potencial")
+
+    prompt = f'''
+Elabore um resumo de cada ponto do projeto, baseado no que foi descrito nos quesitos:
+
+Título : {titulo}
+Descrição do Problema: {descricao}
+Proposta de Solução: {proposta}
+Impacto Social: {impacto}
+Viabilidade Técnica e Econômica: {viabilidade}
+Grau de Inovação: {inovacao}
+Potencial de Aplicação: {aplicacao}
+
+Responda SOMENTE em formato JSON, com as seguintes chaves (sem texto adicional fora do JSON):
+
+{{
+  "clarity_problem": "resumo da clareza do problema na qual o projeto foca (1 palavra chave)",
+  "inovation_grade": "resumo de como se dá o grau de inovação do projeto (1 palavra chave)",
+  "social_impact": "resumo de como o projeto impactará socialmente (1 palavra chave)",
+  "tec_eco_viability": "resumo de como se dá a viabilidade técnica e econômica do projeto (1 palavra chave)",
+  "application_potencial": "resumo do potencial de aplicação do projeto (1 palavra chave)"
+  "solution_proposal": "resumo da proposta de solução do projeto (1 palavra chave)"
+}}
+'''
+    return prompt.strip()

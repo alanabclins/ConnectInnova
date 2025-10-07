@@ -6,10 +6,15 @@ MONGO_DB = os.getenv("MONGO_DB", "ConnectInnova")
 
 try:
     client = MongoClient(MONGO_URI)
-    client.admin.command('ping')
+    client.admin.command("ping")
     db = client[MONGO_DB]
-    projeto_collection = db["projetos"]
+    Projetos_collection= db["Projects"]
+    Alunos_collection = db["Students"]
+    Feedback_collection = db["Feedback"]
+    Resumo_collection = db["AI_Resum"]
     print("✅ Conexão centralizada com MongoDB bem-sucedida!")
 except Exception as e:
     print(f"❌ Erro na conexão centralizada com o MongoDB: {e}")
-    projeto_collection = None
+    Projeto_collection = None
+    Alunos_collection = None
+    Feedback_collection = None
