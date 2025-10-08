@@ -185,3 +185,64 @@ db.create_collection('AI_Resum', validator={
     }
 })
 print("✅ Coleção 'AI_Resum' criada com sucesso!")
+
+
+# -------------------------------
+# 5. Coleção USUARIOS
+# -------------------------------
+if 'Usuarios' in db.list_collection_names():
+    db.drop_collection('Usuarios')
+
+db.create_collection('Usuarios', validator={
+    '$jsonSchema': {
+        'bsonType': 'object',
+        'required': [
+            'nome',
+            'email',
+            'senha_hash',
+            'data_criacao'
+        ],
+        'properties': {
+            'nome': {
+                'bsonType': 'string',
+                'description': 'Nome completo do usuário'
+            },
+            'email': {
+                'bsonType': 'string',
+                'pattern': '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+                'description': 'Email único do usuário'
+            },
+            'senha_hash': {
+                'bsonType': 'string',
+                'description': 'Hash da senha (bcrypt/argon2)'
+            },
+            'data_criacao': {
+                'bsonType': 'date',
+                'description': 'Data de criação do registro'
+            },
+            'data_atualizacao': {
+                'bsonType': ['date', 'null'],
+                'description': 'Data da última atualização'
+            },
+            'is_active': {
+                'bsonType': 'bool',
+                'description': 'Status ativo/inativo do usuário'
+            },
+            'provider': {
+                'bsonType': ['string', 'null'],
+                'description': 'Provedor de autenticação (local, google, github)'
+            },
+            'picture': {
+                'bsonType': ['string', 'null'],
+                'description': 'URL da foto de perfil'
+            }
+        }
+    }
+})
+
+# Criar índices
+usuarios_collection = db['Usuarios']
+usuarios_collection.create_index('email', unique=True)
+usuarios_collection.create_index('data_criacao')
+
+print("✅ Coleção 'Usuarios' criada com sucesso!")
