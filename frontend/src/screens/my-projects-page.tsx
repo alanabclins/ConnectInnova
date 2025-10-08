@@ -16,7 +16,7 @@ export default function MyProjects() {
       <div className="grid auto-rows-min gap-5 md:grid-cols-3">
         {/* Botão de adicionar projeto */}
         <div
-          onClick={() => navigate("/project-stories")}
+          onClick={() => navigate("project-stories")}
           className="aspect-video rounded-xl border-2 border-dashed border-muted-foreground/30 flex items-center justify-center cursor-pointer hover:border-primary transition-colors duration-200"
         >
           <Button

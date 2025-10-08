@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, replace } from "react-router-dom";
 
 import LoginPage from "./screens/login-page";
 import RegisterPage from "./screens/register-page";
@@ -8,22 +8,44 @@ import ProjUserStories from "./screens/proj-history-page";
 import SummaryPage from "./screens/sumary-page";
 import Home from "./screens/home";
 import MyProjects from "./screens/my-projects-page";
+import ProtectedRoute from "./components/protectedRouter";
+import RootRedirect from "./components/root-redirect";
+import authService from "@/services/auth.service";
+
+const redirectIfLoggedIn = () => {
+  if (authService.isAuthenticated()) {
+    return replace("/home");
+  }
+  return null;
+};
 
 const router = createBrowserRouter([
-  // Rotas públicas (sem layout)
+  // Rotas públicas
+  {
+    path: "/",
+    element: <RootRedirect />,
+    errorElement: <NotFound />,
+  },
   {
     path: "login",
     element: <LoginPage />,
+    loader: redirectIfLoggedIn,
+    errorElement: <NotFound />,
   },
   {
     path: "register",
     element: <RegisterPage />,
+    errorElement: <NotFound />,
   },
 
-  // Rotas privadas (com HomeLayout)
+  // Rotas privadas
   {
-    path: "/",
-    element: <Home />,
+    path: "home",
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
     errorElement: <NotFound />,
     children: [
       {

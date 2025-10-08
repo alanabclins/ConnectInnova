@@ -18,6 +18,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/auth/authContext";
 
 interface NavItem {
   icon: React.ElementType;
@@ -34,6 +35,8 @@ const navItems: NavItem[] = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       {/* Cabeçalho com brand */}
@@ -82,9 +85,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
               <span className="text-sm font-medium text-foreground">L</span>
             </div>
-            <div>
-              <p className="font-medium text-foreground">Lucas</p>
-              <p className="text-xs text-muted-foreground">AgroPlus</p>
+            <div className="max-w-[130px]">
+              <p className="font-medium text-foreground truncate">
+                {user?.first_name} {user?.last_name}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">AgroPlus</p>
             </div>
           </div>
           <IconChevronLeft
