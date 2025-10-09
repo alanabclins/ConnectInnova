@@ -49,7 +49,12 @@ db.create_collection('Projects', validator={
             'project_title',
             'project_description',
             'solution_proposal',
-            'student_id'
+            'student_id',
+            'clarity_problem',
+            'inovation_grade',
+            'social_impact',
+            'tec_eco_viability',
+            'application_potencial'
         ],
         'properties': {
             'project_title': {'bsonType': 'string'},
