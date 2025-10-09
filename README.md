@@ -47,7 +47,7 @@ uv sync && .venv\Scripts\activate
 task run
 ```
 
-- A API estará em: `http://localhost:8000`
+- A API estará em: `http://localhost:8000/docs`
 - Superuser é criado automaticamente a partir do `.env`.
 
 3. Testes:
