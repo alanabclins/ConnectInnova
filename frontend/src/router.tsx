@@ -1,40 +1,69 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, replace } from "react-router-dom";
 
-import Layout from "./components/layout";
-
-import HomePage from "./screens/home";
 import LoginPage from "./screens/login-page";
 import RegisterPage from "./screens/register-page";
 import ProfilePage from "./screens/profile-page";
 import NotFound from "./screens/error-page";
-import ProjUserStories from "./screens/proj-user-stories-page";
+import ProjUserStories from "./screens/proj-history-page";
+import SummaryPage from "./screens/sumary-page";
+import Home from "./screens/home";
+import MyProjects from "./screens/my-projects-page";
+import ProtectedRoute from "./components/protectedRouter";
+import RootRedirect from "./components/root-redirect";
+import authService from "@/services/auth.service";
+
+const redirectIfLoggedIn = () => {
+  if (authService.isAuthenticated()) {
+    return replace("/home");
+  }
+  return null;
+};
 
 const router = createBrowserRouter([
+  // Rotas públicas
   {
     path: "/",
-    element: <Layout />, // O Layout é o elemento pai
-    errorElement: <NotFound />, // Opcional: uma página para erros
+    element: <RootRedirect />,
+    errorElement: <NotFound />,
+  },
+  {
+    path: "login",
+    element: <LoginPage />,
+    loader: redirectIfLoggedIn,
+    errorElement: <NotFound />,
+  },
+  {
+    path: "register",
+    element: <RegisterPage />,
+    errorElement: <NotFound />,
+  },
+
+  // Rotas privadas
+  {
+    path: "home",
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
+    errorElement: <NotFound />,
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <MyProjects />,
       },
       {
-        path: "login",
-        element: <LoginPage />,
-      },
-      {
-        path: "register",
-        element: <RegisterPage />,
+        path: "project-stories",
+        element: <ProjUserStories />,
       },
       {
         path: "profile",
         element: <ProfilePage />,
       },
       {
-        path: "project-stories",
-        element: <ProjUserStories />,
-      }
+        path: "summary",
+        element: <SummaryPage />,
+      },
     ],
   },
 ]);
