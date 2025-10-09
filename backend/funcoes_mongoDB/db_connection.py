@@ -12,12 +12,9 @@ try:
     Alunos_collection = db["Students"]
     Feedback_collection = db["Feedback"]
     Resumo_collection = db["AI_Resum"]
-    Usuarios_collection = db["Usuarios"]
     print("✅ Conexão centralizada com MongoDB bem-sucedida!")
 except Exception as e:
     print(f"❌ Erro na conexão centralizada com o MongoDB: {e}")
     Projeto_collection = None
     Alunos_collection = None
     Feedback_collection = None
-    Resumo_collection = None
-    Usuarios_collection = None
