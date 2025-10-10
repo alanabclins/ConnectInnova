@@ -102,9 +102,9 @@ async def google_callback(request: Request, google_sso: GoogleSSO = Depends(get_
     if user is None:
         # If user does not exist, create it in DB
         user = models.User(
-            email="",
+            email=google_user.email if google_user.email is not None else "",
             first_name=google_user.first_name,
-            name="aaa",
+            name=google_user.display_name if google_user.display_name is not None else "",
             last_name=google_user.last_name,
             picture=google_user.picture,
             provider=google_user.provider,
