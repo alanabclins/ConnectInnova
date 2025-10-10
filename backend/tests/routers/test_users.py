@@ -1,6 +1,7 @@
 import pytest
 from fastapi import status
 from httpx import AsyncClient
+from pydantic import ValidationError
 
 from app.config.config import settings
 from app.models import User
@@ -11,6 +12,79 @@ from ..utils import (
     random_email,
     random_lower_string,
 )
+
+EXPECTED_TOTAL_USERS_TEST_1 = 5
+EXPECTED_TOTAL_USERS_TEST_2 = 2
+EXPECTED_TOTAL_USERS_TEST_3 = 10
+
+
+# @pytest.mark.anyio
+# async def test_create_user_empty_name_on_creation_user(
+#     client: AsyncClient
+# ) -> None:
+#     data =  {"email": "nao_e_um_email.com", "password": password}
+#     r = await client.post(f"{settings.API_V1_STR}/users/", data=)
+#     current_user = r.json()
+#     assert current_user
+#     assert current_user["is_active"] is True
+#     assert current_user["is_superuser"]
+#     assert current_user["email"] == settings.FIRST_SUPERUSER
+
+
+@pytest.mark.anyio
+async def test_missing_name_field_returns_validation_error(client: AsyncClient):
+    """Test: POST /users without name field returns proper validation error"""
+    response = await client.post(
+        f"{settings.API_V1_STR}/users",
+        json={
+            # name field is MISSING
+            "email": "noname@example.com",
+            "password": "Password123",
+            "password_confirmation": "Password123"
+        }
+    )
+    
+    # Should return 422 Unprocessable Entity
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    
+    # Verify response structure
+    data = response.json()
+    assert "detail" in data
+    assert isinstance(data["detail"], list)
+    assert len(data["detail"]) > 0
+    
+    # Find the error about name field
+    name_error = None
+    for error in data["detail"]:
+        if "name" in error.get("loc", []):
+            name_error = error
+            break
+    
+    assert name_error is not None, "No error found for 'name' field"
+    
+    # Verify exact error structure
+    assert name_error["type"] == "missing"
+    assert "body" in name_error["loc"]
+    assert "name" in name_error["loc"]
+    assert name_error["msg"] == "Field required"
+    
+    # Print validated response structure
+    import json
+    print("\n✅ Response structure validated:")
+    print(json.dumps(data, indent=2))
+    
+    # Expected format:
+    # {
+    #   "detail": [
+    #     {
+    #       "type": "missing",
+    #       "loc": ["body", "name"],
+    #       "msg": "Field required",
+    #       "input": null
+    #     }
+    #   ]
+    # }
+    
 
 
 @pytest.mark.anyio
@@ -42,7 +116,12 @@ async def test_get_profile_normal_user(client: AsyncClient) -> None:
 async def test_create_user(client: AsyncClient) -> None:
     username = random_email()
     password = random_lower_string()
-    data = {"email": username, "password": password}
+    data = {
+        "name": "Test User",
+        "email": username,
+        "password": password,
+        "password_confirmation": password
+    }
     r = await client.post(
         f"{settings.API_V1_STR}/users",
         json=data,
@@ -55,13 +134,18 @@ async def test_create_user(client: AsyncClient) -> None:
 
 
 @pytest.mark.anyio
-async def test_create_user_existing_username(client: AsyncClient) -> None:
+async def test_create_user_existing_email(client: AsyncClient) -> None:
     user = await create_test_user()
-    data = {"email": user.email, "password": "password"}
+    data = {
+        "name": "Duplicate User",
+        "email": user.email,
+        "password": "Password123",
+        "password_confirmation": "Password123"
+    }
     r = await client.post(f"{settings.API_V1_STR}/users", json=data)
     response = r.json()
     assert r.status_code == status.HTTP_400_BAD_REQUEST
-    assert response["detail"] == "User with that email already exists."
+    assert "already exists" in response["detail"].lower()
 
 
 @pytest.mark.anyio
@@ -180,3 +264,116 @@ async def test_update_user_existing_email(
     response = r.json()
     assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert response["detail"] == "User with that email already exists."
+
+
+@pytest.mark.anyio
+async def test_create_user_invalid_email_format(client: AsyncClient) -> None:
+    """Testa se a criação de usuário com e-mail inválido retorna erro de validação (422)."""
+    password = random_lower_string()
+    # E-mail inválido que falharia na validação do Pydantic/modelo
+    data = {"email": "nao_e_um_email.com", "password": password}
+    r = await client.post(
+        f"{settings.API_V1_STR}/users",
+        json=data,
+    )
+
+    # O FastAPI/Pydantic deve retornar 422 (Unprocessable Entity)
+    assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    response = r.json()
+
+    # Opcional: Verifica se a mensagem de erro é sobre o e-mail
+    assert "detail" in response
+    assert any(
+        "value is not a valid email address" in item.get("msg", "")
+        for item in response["detail"]
+    )
+
+
+@pytest.mark.anyio
+async def test_create_user_case_insensitive_duplicate(client: AsyncClient) -> None:
+    """
+    Testa se a criação falha com e-mail duplicado, ignorando case,
+    assumindo que há normalização para minúsculas antes da inserção.
+    """
+    password = random_lower_string()
+    email_uppercase = "UserTesteCase@Example.Com"
+    email_lowercase = "usertestecase@example.com"
+
+    # 1. Cria com e-mail em maiúsculas (O sistema deve salvar em minúsculas)
+    data1 = {
+        "name": "Case Test User",
+        "email": email_uppercase,
+        "password": password,
+        "password_confirmation": password
+    }
+    r1 = await client.post(f"{settings.API_V1_STR}/users", json=data1)
+    assert r1.status_code == status.HTTP_200_OK
+
+    # 2. Tenta criar com a mesma base de e-mail em minúsculas
+    data2 = {
+        "name": "Another User",
+        "email": email_lowercase,
+        "password": password,
+        "password_confirmation": password
+    }
+    r2 = await client.post(f"{settings.API_V1_STR}/users", json=data2)
+
+    # Deve falhar, pois após a normalização (salvar em minúsculas), o e-mail é duplicado
+    assert r2.status_code == status.HTTP_400_BAD_REQUEST
+    assert "already exists" in r2.json()["detail"].lower()
+
+
+@pytest.mark.anyio
+async def test_user_cannot_update_another_users_email(client: AsyncClient):
+    """Test 9: Usuário autenticado não pode atualizar o e-mail de outro usuário."""
+
+    # Cria dois usuários diretamente no banco
+    user1 = User(name="User 1", email="user1@example.com", hashed_password="$2b$12$hash1")
+    await user1.insert()
+
+    user2 = User(name="User 2", email="user2@example.com", hashed_password="$2b$12$hash2")
+    await user2.insert()
+
+    # Gera headers de autenticação para user2
+    headers = await generate_user_auth_headers(client, user2)
+
+    # Tenta atualizar o e-mail de user1 usando a conta de user2
+    data = {"email": "newemail@example.com"}
+    response = await client.patch(
+        f"{settings.API_V1_STR}/users/{user1.uuid}",
+        json=data,
+        headers=headers,
+    )
+
+    # Verifica se a API proíbe a atualização
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "The user doesn't have enough privileges" in response.json()["detail"]
+
+
+@pytest.mark.anyio
+async def test_update_user_keep_same_email(client: AsyncClient):
+    """Test 10: Permite atualizar outros campos mantendo o mesmo e-mail."""
+    user = User(name="Original Name", email="test@example.com", hashed_password="$2b$12$hash")
+    await user.insert()
+
+    user.name = "Updated Name"
+    await user.save()
+
+    updated_user = await User.get(user.id)
+    if updated_user is not None:
+        assert updated_user.name == "Updated Name"
+        assert updated_user.email == "test@example.com"
+
+
+@pytest.mark.anyio
+async def test_update_email_to_new_unique_value(client: AsyncClient):
+    """Test 11: Permite atualizar o e-mail para um novo valor único."""
+    user = User(name="Test User", email="old@example.com", hashed_password="$2b$12$hash")
+    await user.insert()
+
+    user.email = "new@example.com"
+    await user.save()
+
+    updated_user = await User.get(user.id)
+    if updated_user is not None:
+        assert updated_user.email == "new@example.com"

@@ -18,8 +18,9 @@ router = APIRouter()
 
 @router.post("", response_model=schemas.User)
 async def register_user(
-    password: str = Body(...),
     email: EmailStr = Body(...),
+    password: str = Body(...),
+    name: str = Body(...),
     first_name: str = Body(None),
     last_name: str = Body(None),
 ):
@@ -28,7 +29,8 @@ async def register_user(
     """
     hashed_password = get_hashed_password(password)
     user = models.User(
-        email=email,
+        email=email.lower(),
+        name=name,
         hashed_password=hashed_password,
         first_name=first_name,
         last_name=last_name,
