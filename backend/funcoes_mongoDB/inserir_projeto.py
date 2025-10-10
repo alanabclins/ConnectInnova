@@ -1,6 +1,8 @@
-from db_connection import Projetos_collection, Alunos_collection
-from bson.objectid import ObjectId
 from datetime import datetime
+
+from bson.objectid import ObjectId
+from db_connection import Alunos_collection, Projetos_collection
+
 
 def criar_projeto(payload):
     """
@@ -17,13 +19,15 @@ def criar_projeto(payload):
         # Verifica se o aluno já existe
         estudante = Alunos_collection.find_one({"name": payload["student_name"]})
         if not estudante:
-            estudante_id = Alunos_collection.insert_one({
-                "name": payload["student_name"],
-                "student_description": payload.get("student_description", ""),
-                "skills_experiencies": payload.get("student_skills", ""),
-                "curriculum": None,
-                "academic_informations": "",
-            }).inserted_id
+            estudante_id = Alunos_collection.insert_one(
+                {
+                    "name": payload["student_name"],
+                    "student_description": payload.get("student_description", ""),
+                    "skills_experiencies": payload.get("student_skills", ""),
+                    "curriculum": None,
+                    "academic_informations": "",
+                }
+            ).inserted_id
         else:
             estudante_id = estudante["_id"]
 
@@ -38,7 +42,7 @@ def criar_projeto(payload):
             "inovation_grade": payload["inovation_grade"],
             "social_impact": payload["social_impact"],
             "tec_eco_viability": payload["tec_eco_viability"],
-            "application_potencial": payload["application_potencial"]
+            "application_potencial": payload["application_potencial"],
         }
         resultado = Projetos_collection.insert_one(projeto)
         print(f"✅ Projeto '{payload['project_title']}' criado com sucesso.")

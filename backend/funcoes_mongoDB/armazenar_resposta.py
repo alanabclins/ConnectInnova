@@ -1,7 +1,8 @@
 import json
-from bson import ObjectId
 from datetime import datetime
-from db_connection import Projetos_collection, Feedback_collection, Resumo_collection
+
+from db_connection import Feedback_collection, Projetos_collection, Resumo_collection
+
 
 def salvar_feedback_llm(project_id, resposta_llm, status_final, erro_msg=None):
     """
@@ -34,17 +35,18 @@ def salvar_feedback_llm(project_id, resposta_llm, status_final, erro_msg=None):
                 "application_potencial": resposta_llm.get("application_potencial", ""),
                 "solution_proposal": resposta_llm.get("solution_proposal", ""),
                 "status": status_final,
-                "timestamp": datetime.utcnow()
+                "timestamp": datetime.utcnow(),
             },
             "status": status_final,
             "erro_msg": erro_msg,
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.utcnow(),
         }
-
 
         resultado = Feedback_collection.insert_one(feedback)
         if resultado.inserted_id:
-            print(f"✅ Feedback salvo com sucesso na coleção Feedback! (ID: {resultado.inserted_id})")
+            print(
+                f"✅ Feedback salvo com coleção Feedback! (ID: {resultado.inserted_id})"
+            )
             return True
         else:
             print("⚠️ Falha ao inserir o feedback na coleção Feedback.")
@@ -81,7 +83,7 @@ def salvar_resumo_llm(project_id, resposta_llm, status_final, erro_msg=None):
             "summary": {  # para diferenciar do feedback
                 "content": json.dumps(resposta_llm, ensure_ascii=False),
                 "status": status_final,
-                "timestamp": datetime.utcnow()
+                "timestamp": datetime.utcnow(),
             },
             "clarity_resum": resposta_llm.get("clarity_problem", ""),
             "inovation_grade_resum": resposta_llm.get("inovation_grade", ""),
@@ -91,12 +93,14 @@ def salvar_resumo_llm(project_id, resposta_llm, status_final, erro_msg=None):
             "solution_proposal_resum": resposta_llm.get("solution_proposal", ""),
             "status": status_final,
             "erro_msg": erro_msg,
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.utcnow(),
         }
 
         resultado = Resumo_collection.insert_one(resumo)
         if resultado.inserted_id:
-            print(f"✅ Resumo salvo com sucesso na coleção Resumo! (ID: {resultado.inserted_id})")
+            print(
+                f"✅ Resumo salvo na coleção Resumo! (ID: {resultado.inserted_id})"
+            )
             return True
         else:
             print("⚠️ Falha ao inserir o resumo na coleção Resumo.")

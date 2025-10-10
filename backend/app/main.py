@@ -7,27 +7,22 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from .auth.auth import get_hashed_password
 from .config.config import settings
+from .models.projects import Project
 from .models.users import User
 from .routers.api import api_router
+from .routers.projects_router import router as project_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Lifespan manager para o FastAPI. Inicializa conexão com MongoDB Atlas
-    e cria o superuser caso não exista.
-    """
-    # Setup MongoDB Atlas usando URI completa
     app.state.client = AsyncIOMotorClient(settings.MONGO_URI)
 
-    # Seleciona o banco correto (padrão ou de teste)
     mongo_db_name = getattr(settings, "MONGO_DB", "default_db")
     await init_beanie(
         database=app.state.client[mongo_db_name],
-        document_models=[User],
+        document_models=[User, Project],
     )
 
-    # Criação do superuser se não existir
     user = await User.find_one({"email": settings.FIRST_SUPERUSER})
     if not user:
         user = User(
@@ -46,7 +41,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configura CORS
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
@@ -58,3 +52,4 @@ if settings.BACKEND_CORS_ORIGINS:
 
 # Inclui routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(project_router)

@@ -55,8 +55,12 @@ def processar_analise_llm(projeto_id_str):
         erro_msg = str(e)
 
     # 4️⃣ Salvar resultados
-    sucesso_feedback = salvar_feedback_llm(Projetos_id, resposta_llm_analise, status_final, erro_msg)
-    sucesso_resumo = salvar_resumo_llm(Projetos_id, resposta_llm_resumo, status_final, erro_msg)
+    sucesso_feedback = salvar_feedback_llm(
+        Projetos_id, resposta_llm_analise, status_final, erro_msg
+    )
+    sucesso_resumo = salvar_resumo_llm(
+        Projetos_id, resposta_llm_resumo, status_final, erro_msg
+    )
 
     # 5️⃣ Finalização
     if sucesso_feedback and sucesso_resumo and status_final == "sucesso":
