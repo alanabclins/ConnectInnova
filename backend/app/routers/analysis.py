@@ -36,7 +36,7 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
         raise HTTPException(status_code=404, detail="Projeto não encontrado.")
 
     # Buscar o aluno vinculado
-    student = await models.Student.get(project.student_id.id)
+    student = await models.Student.get(project.student_id)
     if student is None:
         raise HTTPException(status_code=404, detail="Aluno vinculado não encontrado.")
 
@@ -69,8 +69,8 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
 
     # Criar Feedback
     feedback_doc = models.Feedback(
-        project=project,
-        student=student,
+        project=project, # type: ignore
+        student=student, # type: ignore
         feedback={
             "content": feedback_text,
             "status": "generated",
@@ -86,8 +86,8 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
 
     # Criar AI_Resum (resumo)
     resum_doc = models.AIResum(
-        project_id=project,
-        student_id=student,
+        project_id=project, # type: ignore
+        student_id=student, # type: ignore
         clarity_resum="Resumo gerado automaticamente",
         inovation_grade_resum="Resumo gerado automaticamente",
         social_impact_resum="Resumo gerado automaticamente",
