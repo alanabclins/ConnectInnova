@@ -1,6 +1,6 @@
+from datetime import datetime
 from typing import Annotated
 from uuid import UUID, uuid4
-from datetime import datetime
 
 from beanie import Document, Indexed
 from pydantic import EmailStr, Field
@@ -9,34 +9,32 @@ from pydantic import EmailStr, Field
 class User(Document):
     """
     User Model - SCRUM-47
-    Collection managed by Beanie ODM
-    
-    Required fields:
-    - user_id: Automatic MongoDB ObjectId (_id)
-    - name: Full user name
-    - email: Unique email
-    - password_hash: Password hash
-    - created_at: Creation timestamp
+
+    Collection managed by Beanie ODM.
+
+    Fields:
+
+    - uuid: Unique user identifier (UUID)
+    - email: Unique email address (required)
+    - name: Full name (optional)
+    - first_name: First name (optional)
+    - last_name: Last name (optional)
+    - hashed_password: Password hash (optional)
+    - provider: Authentication provider (optional)
+    - picture: URL to profile picture (optional)
+    - is_active: User active status (default True)
+    - is_superuser: Superuser status (default False)
+    - updated_at: Last update timestamp (optional)
     """
-    # Required field: user_id (additional uuid for compatibility)
-    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)]
-    
-    # Required field: name
-    name: str
-    
-    # Required field: email (unique)
+
+    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
+        default_factory=uuid4
+    )
     email: Annotated[EmailStr, Indexed(unique=True)]
-    
-    # Required field: password_hash
-    password_hash: str
-    
-    # Required field: created_at
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    
-    # Optional fields (compatibility with existing system)
+    name: str | None = None
     first_name: str | None = None
     last_name: str | None = None
-    hashed_password: str | None = None  # Kept for backward compatibility
+    hashed_password: str | None = None
     provider: str | None = None
     picture: str | None = None
     is_active: bool = True
