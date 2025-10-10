@@ -8,8 +8,7 @@ def gerar_prompt_analise(projeto):
     aplicacao = projeto.get("application_potencial", "Sem potencial")
 
     prompt = f"""
-Você é um avaliador de projetos universitários. Avalie o seguinte projeto com base nas
-dimensões abaixo:
+Você é um avaliador de projetos universitários. Avalie o seguinte projeto com base nas dimensões abaixo:
 
 Título: {titulo}
 Descrição do Problema: {descricao}
@@ -42,7 +41,7 @@ def gerar_prompt_resumo(projeto):
     inovacao = projeto.get("inovation_grade", "Sem inovação")
     aplicacao = projeto.get("application_potencial", "Sem potencial")
 
-    prompt = f"""
+    prompt = f'''
 Elabore um resumo de cada ponto do projeto, baseado no que foi descrito nos quesitos:
 
 Título : {titulo}
@@ -59,10 +58,9 @@ Responda SOMENTE em formato JSON, com as seguintes chaves (sem texto adicional f
   "clarity_problem": "resumo da clareza do problema na qual o projeto foca (1 palavra chave)",
   "inovation_grade": "resumo de como se dá o grau de inovação do projeto (1 palavra chave)",
   "social_impact": "resumo de como o projeto impactará socialmente (1 palavra chave)",
-  "tec_eco_viability": "resumo de como se dá a viabilidade técnica e
-  econômica do projeto (1 palavra chave)",
+  "tec_eco_viability": "resumo de como se dá a viabilidade técnica e econômica do projeto (1 palavra chave)",
   "application_potencial": "resumo do potencial de aplicação do projeto (1 palavra chave)"
   "solution_proposal": "resumo da proposta de solução do projeto (1 palavra chave)"
 }}
-"""
+'''
     return prompt.strip()

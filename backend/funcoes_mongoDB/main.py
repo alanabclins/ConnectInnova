@@ -1,7 +1,7 @@
 from armazenar_resposta import salvar_feedback_llm, salvar_resumo_llm
 from bson.objectid import ObjectId
 from buscar_projeto import buscar_projeto_por_id
-from db_connection import Alunos_collection, Projetos_collection
+from db_connection import Projetos_collection, Alunos_collection
 from enviar_para_GEMINI import enviar_para_llm
 from gerar_prompt import gerar_prompt_analise, gerar_prompt_resumo
 
@@ -32,13 +32,15 @@ def processar_analise_llm(projeto_id_str):
         # Passo 2: Gerar prompt de resumo
         prompt_resumo = gerar_prompt_resumo(Projeto)
         if not prompt_resumo:
+            
             raise ValueError("Falha ao gerar prompt para resumo")
-
+        
         # Passo 3: Gerar prompt de análise
         prompt_analise = gerar_prompt_analise(Projeto)
         if not prompt_analise:
-            raise ValueError("Falha ao gerar prompt para análise")
 
+            raise ValueError("Falha ao gerar prompt para análise")
+        
         # Passo 4: Enviar para LLM prompt de resumo
         resposta_llm_resumo = enviar_para_llm(prompt_resumo)
         if not resposta_llm_resumo:
@@ -62,6 +64,7 @@ def processar_analise_llm(projeto_id_str):
     sucesso_salvar = salvar_resumo_llm(
         Projetos_id, resposta_llm_resumo, status_final, erro_msg
     )
+
 
     if sucesso_salvar and status_final == "sucesso":
         print(f"--- PROCESSAMENTO CONCLUÍDO COM SUCESSO PARA PROJETO {Projetos_id} ---")
@@ -88,7 +91,7 @@ if __name__ == "__main__":
                     "inovation_grade": "Uso de machine learning para previsão.",
                     "application_potencial": "Agricultura familiar e jardins urbanos",
                     "clarity_problem": "Texto explicando o problema",
-                    "student_id": ObjectId("68e28a462bd5ef0cac7c8013"),
+                    'student_id': ObjectId("68e28a462bd5ef0cac7c8013"),
                 }
             },
             upsert=True,
@@ -99,17 +102,17 @@ if __name__ == "__main__":
         nome = "Vinicius"
 
         Alunos_collection.update_one(
-            {"name": nome},
+            {"name" : nome},
             {
                 "$set": {
                     "name": nome,
-                    "student_description": "estudante de BSI",
-                    "curriculum": None,
-                    "academic_informations": "estudante de BSI",
-                    "skills_experiencies": "python, SQL, robótica",
+                    "student_description": "estudante de BSI", 
+                    "curriculum": None, 
+                    "academic_informations": "estudante de BSI", 
+                    "skills_experiencies": "python, SQL, robótica"
                 }
             },
-            upsert=True,
+            upsert=True
         )
 
         Projetos_teste = Projetos_collection.find_one({"project_title": titulo_para_analisar})

@@ -1,7 +1,7 @@
+import google.generativeai as genai
 import os
 import sys
 
-import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,8 +29,9 @@ def enviar_para_llm(prompt: str):
     try:
         generation_config = genai.types.GenerationConfig(temperature=0.3)
         response = model.generate_content(prompt, generation_config=generation_config)
-        print("   [Passo 3] ✅ Resposta da LLM recebida com sucesso")
+        print(f"   [Passo 3] ✅ Resposta da LLM recebida com sucesso")
         return response.text
     except Exception as e:
         print(f"   [Passo 3] ❌ Erro ao comunicar com a IA: {e}")
         return None
+
