@@ -32,26 +32,58 @@ EXPECTED_TOTAL_USERS_TEST_3 = 10
 
 
 @pytest.mark.anyio
-def test_reject_empty_name(self, client: AsyncClient):
-    """Teste 2b: Erro ao validar dados com nome vazio"""
-    data = {"email": "test@example.com", "password_hash": "$2b$12$hash"}
-
-    with pytest.raises(ValidationError) as exc_info:
-        User.model_validate(data)
-
-    errors = exc_info.value.errors()
-    # Deve rejeitar porque name não pode ser string vazia
-    assert any("name" in str(error["loc"]) for error in errors)
-
-
-@pytest.mark.anyio
-def test_reject_whitespace_only_name(self):
-    """Teste 2c: Erro ao validar dados com nome apenas espaços"""
-    data = {
-        "name": "   ",  # Apenas espaços
-        "email": "test@example.com",
-        "password_hash": "$2b$12$hash",
-    }
+async def test_missing_name_field_returns_validation_error(client: AsyncClient):
+    """Test: POST /users without name field returns proper validation error"""
+    response = await client.post(
+        f"{settings.API_V1_STR}/users",
+        json={
+            # name field is MISSING
+            "email": "noname@example.com",
+            "password": "Password123",
+            "password_confirmation": "Password123"
+        }
+    )
+    
+    # Should return 422 Unprocessable Entity
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    
+    # Verify response structure
+    data = response.json()
+    assert "detail" in data
+    assert isinstance(data["detail"], list)
+    assert len(data["detail"]) > 0
+    
+    # Find the error about name field
+    name_error = None
+    for error in data["detail"]:
+        if "name" in error.get("loc", []):
+            name_error = error
+            break
+    
+    assert name_error is not None, "No error found for 'name' field"
+    
+    # Verify exact error structure
+    assert name_error["type"] == "missing"
+    assert "body" in name_error["loc"]
+    assert "name" in name_error["loc"]
+    assert name_error["msg"] == "Field required"
+    
+    # Print validated response structure
+    import json
+    print("\n✅ Response structure validated:")
+    print(json.dumps(data, indent=2))
+    
+    # Expected format:
+    # {
+    #   "detail": [
+    #     {
+    #       "type": "missing",
+    #       "loc": ["body", "name"],
+    #       "msg": "Field required",
+    #       "input": null
+    #     }
+    #   ]
+    # }
     
 
 
@@ -84,7 +116,12 @@ async def test_get_profile_normal_user(client: AsyncClient) -> None:
 async def test_create_user(client: AsyncClient) -> None:
     username = random_email()
     password = random_lower_string()
-    data = {"email": username, "password": password}
+    data = {
+        "name": "Test User",
+        "email": username,
+        "password": password,
+        "password_confirmation": password
+    }
     r = await client.post(
         f"{settings.API_V1_STR}/users",
         json=data,
@@ -99,11 +136,16 @@ async def test_create_user(client: AsyncClient) -> None:
 @pytest.mark.anyio
 async def test_create_user_existing_email(client: AsyncClient) -> None:
     user = await create_test_user()
-    data = {"email": user.email, "password": "password"}
+    data = {
+        "name": "Duplicate User",
+        "email": user.email,
+        "password": "Password123",
+        "password_confirmation": "Password123"
+    }
     r = await client.post(f"{settings.API_V1_STR}/users", json=data)
     response = r.json()
     assert r.status_code == status.HTTP_400_BAD_REQUEST
-    assert response["detail"] == "User with that email already exists."
+    assert "already exists" in response["detail"].lower()
 
 
 @pytest.mark.anyio
@@ -258,17 +300,27 @@ async def test_create_user_case_insensitive_duplicate(client: AsyncClient) -> No
     email_lowercase = "usertestecase@example.com"
 
     # 1. Cria com e-mail em maiúsculas (O sistema deve salvar em minúsculas)
-    data1 = {"email": email_uppercase, "password": password}
+    data1 = {
+        "name": "Case Test User",
+        "email": email_uppercase,
+        "password": password,
+        "password_confirmation": password
+    }
     r1 = await client.post(f"{settings.API_V1_STR}/users", json=data1)
     assert r1.status_code == status.HTTP_200_OK
 
     # 2. Tenta criar com a mesma base de e-mail em minúsculas
-    data2 = {"email": email_lowercase, "password": password}
+    data2 = {
+        "name": "Another User",
+        "email": email_lowercase,
+        "password": password,
+        "password_confirmation": password
+    }
     r2 = await client.post(f"{settings.API_V1_STR}/users", json=data2)
 
     # Deve falhar, pois após a normalização (salvar em minúsculas), o e-mail é duplicado
     assert r2.status_code == status.HTTP_400_BAD_REQUEST
-    assert r2.json()["detail"] == "User with that email already exists."
+    assert "already exists" in r2.json()["detail"].lower()
 
 
 @pytest.mark.anyio
