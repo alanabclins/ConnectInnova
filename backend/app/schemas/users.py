@@ -10,7 +10,7 @@ class UserBase(BaseModel):
     Shared User properties. Visible by anyone.
     """
 
-    name: str | None = None
+    name: str = ""
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     picture: Optional[str] = None

@@ -31,7 +31,7 @@ class User(Document):
         default_factory=uuid4
     )
     email: Annotated[EmailStr, Indexed(unique=True)]
-    name: str | None = None
+    name: Annotated[str, Field(min_length=1)]
     first_name: str | None = None
     last_name: str | None = None
     hashed_password: str | None = None
