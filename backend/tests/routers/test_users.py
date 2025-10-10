@@ -1,7 +1,6 @@
 import pytest
 from fastapi import status
 from httpx import AsyncClient
-from pydantic import ValidationError
 
 from app.config.config import settings
 from app.models import User
@@ -18,19 +17,6 @@ EXPECTED_TOTAL_USERS_TEST_2 = 2
 EXPECTED_TOTAL_USERS_TEST_3 = 10
 
 
-# @pytest.mark.anyio
-# async def test_create_user_empty_name_on_creation_user(
-#     client: AsyncClient
-# ) -> None:
-#     data =  {"email": "nao_e_um_email.com", "password": password}
-#     r = await client.post(f"{settings.API_V1_STR}/users/", data=)
-#     current_user = r.json()
-#     assert current_user
-#     assert current_user["is_active"] is True
-#     assert current_user["is_superuser"]
-#     assert current_user["email"] == settings.FIRST_SUPERUSER
-
-
 @pytest.mark.anyio
 async def test_missing_name_field_returns_validation_error(client: AsyncClient):
     """Test: POST /users without name field returns proper validation error"""
@@ -40,51 +26,33 @@ async def test_missing_name_field_returns_validation_error(client: AsyncClient):
             # name field is MISSING
             "email": "noname@example.com",
             "password": "Password123",
-            "password_confirmation": "Password123"
-        }
+            "password_confirmation": "Password123",
+        },
     )
-    
+
     # Should return 422 Unprocessable Entity
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    
+
     # Verify response structure
     data = response.json()
     assert "detail" in data
     assert isinstance(data["detail"], list)
     assert len(data["detail"]) > 0
-    
+
     # Find the error about name field
     name_error = None
     for error in data["detail"]:
         if "name" in error.get("loc", []):
             name_error = error
             break
-    
+
     assert name_error is not None, "No error found for 'name' field"
-    
+
     # Verify exact error structure
     assert name_error["type"] == "missing"
     assert "body" in name_error["loc"]
     assert "name" in name_error["loc"]
     assert name_error["msg"] == "Field required"
-    
-    # Print validated response structure
-    import json
-    print("\n✅ Response structure validated:")
-    print(json.dumps(data, indent=2))
-    
-    # Expected format:
-    # {
-    #   "detail": [
-    #     {
-    #       "type": "missing",
-    #       "loc": ["body", "name"],
-    #       "msg": "Field required",
-    #       "input": null
-    #     }
-    #   ]
-    # }
-    
 
 
 @pytest.mark.anyio
@@ -120,7 +88,7 @@ async def test_create_user(client: AsyncClient) -> None:
         "name": "Test User",
         "email": username,
         "password": password,
-        "password_confirmation": password
+        "password_confirmation": password,
     }
     r = await client.post(
         f"{settings.API_V1_STR}/users",
@@ -140,7 +108,7 @@ async def test_create_user_existing_email(client: AsyncClient) -> None:
         "name": "Duplicate User",
         "email": user.email,
         "password": "Password123",
-        "password_confirmation": "Password123"
+        "password_confirmation": "Password123",
     }
     r = await client.post(f"{settings.API_V1_STR}/users", json=data)
     response = r.json()
@@ -304,7 +272,7 @@ async def test_create_user_case_insensitive_duplicate(client: AsyncClient) -> No
         "name": "Case Test User",
         "email": email_uppercase,
         "password": password,
-        "password_confirmation": password
+        "password_confirmation": password,
     }
     r1 = await client.post(f"{settings.API_V1_STR}/users", json=data1)
     assert r1.status_code == status.HTTP_200_OK
@@ -314,7 +282,7 @@ async def test_create_user_case_insensitive_duplicate(client: AsyncClient) -> No
         "name": "Another User",
         "email": email_lowercase,
         "password": password,
-        "password_confirmation": password
+        "password_confirmation": password,
     }
     r2 = await client.post(f"{settings.API_V1_STR}/users", json=data2)
 
