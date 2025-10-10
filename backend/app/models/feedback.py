@@ -8,9 +8,11 @@ from .project import Project
 
 
 class Feedback(Document):
-    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)]
-    project_id: Link[Project]
-    student_id: Optional[Link[Student]] = None
+    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
+        default_factory=uuid4
+    )
+    project: Link[Project]
+    student: Optional[Link[Student]] = None
 
     feedback: dict = Field(
         default_factory=lambda: {

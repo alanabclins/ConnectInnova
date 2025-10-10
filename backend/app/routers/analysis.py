@@ -69,8 +69,8 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
 
     # Criar Feedback
     feedback_doc = models.Feedback(
-        project_id=project,
-        student_id=student,
+        project=project,
+        student=student,
         feedback={
             "content": feedback_text,
             "status": "generated",

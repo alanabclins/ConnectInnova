@@ -10,7 +10,9 @@ from datetime import datetime, UTC
 
 
 class AIResum(Document):
-    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)]
+    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
+        default_factory=uuid4
+    )
     project_id: Link[Project]
     student_id: Link[Student]
 
