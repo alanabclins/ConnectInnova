@@ -4,11 +4,11 @@ from beanie import init_beanie
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-
 from .auth.auth import get_hashed_password
 from .config.config import settings
 from .models.projects import Project
 from .models.users import User
+from .models.feedback import Feedback, AIResum 
 from .routers.api import api_router
 from .routers.projects import router as project_router
 
@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
     mongo_db_name = getattr(settings, "MONGO_DB", "default_db")
     await init_beanie(
         database=app.state.client[mongo_db_name],
-        document_models=[User, Project],
+        document_models=[User, Project, Feedback, AIResum],
     )
 
     user = await User.find_one({"email": settings.FIRST_SUPERUSER})
@@ -51,6 +51,5 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-# Inclui routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
 app.include_router(project_router)

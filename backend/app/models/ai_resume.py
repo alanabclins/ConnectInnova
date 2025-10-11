@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Optional
 from uuid import UUID, uuid4
 
 from beanie import Document, Indexed, Link
@@ -13,8 +13,8 @@ class AIResum(Document):
     uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
         default_factory=uuid4
     )
-    project_id: Link[Project]
-    student_id: Link[Student]
+    project_id: Optional[UUID]
+    student_id: Optional[UUID]
 
     clarity_resum: str
     inovation_grade_resum: str

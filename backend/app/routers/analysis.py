@@ -6,9 +6,8 @@ from fastapi import APIRouter, Body, HTTPException
 from google import genai
 from pydantic import BaseModel, Field
 
-from app.config.config import settings
-
 from .. import models
+from app.config.config import settings
 
 router = APIRouter()
 
@@ -55,31 +54,15 @@ class GeminiStructuredResponse(BaseModel):
 
 @router.post("/{project_uuid}")
 async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
-    """
-    Analisa o potencial de um projeto universitário usando a API Gemini.
-
-    Parâmetros:
-    - project_uuid: UUID do projeto a ser analisado.
-    - custom_prompt (opcional): texto adicional enviado junto ao conteúdo do projeto.
-
-    Fluxo:
-    1. Busca o projeto no banco.
-    2. Envia os dados para a API do Gemini.
-    3. Armazena o feedback e o resumo nas coleções 'Feedback' e 'AI_Resum'.
-    """
-
-    # Buscar o projeto
+    
     project = await models.Project.find_one({"uuid": project_uuid})
     if project is None:
         raise HTTPException(status_code=404, detail="Projeto não encontrado.")
 
-    # Buscar o aluno vinculado
-    # Ajuste para usar find_one() e o campo UUID, corrigindo o erro de validação
     student = await models.User.find_one(models.User.uuid == project.student_id)
     if student is None:
         raise HTTPException(status_code=404, detail="Aluno vinculado não encontrado.")
 
-    # Montar prompt básico
     prompt = f"""
     Analise o seguinte projeto universitário e descreva os seguintes aspectos:
     - Clareza do problema
@@ -98,10 +81,9 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
     if custom_prompt:
         prompt += f"\nInformações adicionais:\n{custom_prompt}"
 
-    # Enviar para Gemini (Configurado para JSON)
     try:
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-2.0-flash",
             contents=prompt,
             config=genai.types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -131,10 +113,9 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
     if ai_data is None:
         raise HTTPException(status_code=500, detail="Resposta da IA inválida ou vazia.")
 
-    # Criar Feedback (Usando dados estruturados do Gemini e objetos Link)
     feedback_doc = models.Feedback(
-        project=project,  # type: ignore[arg-type]
-        student=student,  # type: ignore[arg-type]
+        project_id=project.uuid,
+        student_id=student.uuid,
         feedback={
             "content": ai_data.full_feedback,
             "status": "generated",
@@ -148,10 +129,9 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
     )
     await feedback_doc.create()
 
-    # Criar AI_Resum (resumo, usando dados estruturados do Gemini e objetos Link)
     resum_doc = models.AIResum(
-        project=project,  # type: ignore[arg-type]
-        student=student,  # type: ignore[arg-type]
+        project_id=project.uuid,
+        student_id=student.uuid,
         clarity_resum=ai_data.resums.clarity_resum,
         inovation_grade_resum=ai_data.resums.inovation_grade_resum,
         social_impact_resum=ai_data.resums.social_impact_resum,
