@@ -6,7 +6,6 @@ from httpx import AsyncClient
 from app.auth.auth import create_access_token, get_hashed_password
 from app.config.config import settings
 from app.models.users import User
-from app.models.projects import Project
 
 
 async def get_user_auth_headers(
@@ -51,28 +50,38 @@ async def create_test_user() -> User:
     await user.create()
     return user
 
+
 def random_sentence() -> str:
     """Gera uma frase aleatória curta para campos de teste"""
-    words = [random.choice(["melhorar", "sistema", "conectar", "estudante", "empresa", "plataforma", "solução"]) 
-             for _ in range(random.randint(3, 8))]
+    words = [
+        random.choice(
+            [
+                "melhorar",
+                "sistema",
+                "conectar",
+                "estudante",
+                "empresa",
+                "plataforma",
+                "solução",
+            ]
+        )
+        for _ in range(random.randint(3, 8))
+    ]
     sentence = " ".join(words).capitalize() + "."
     return sentence
 
 
-async def create_test_project(student: User) -> Project:
-    """
-    Cria um projeto de teste no banco de dados ligado a um usuário existente.
-    """
-    project = Project(
-        project_title=random_sentence(),
-        project_description=random_sentence(),
-        solution_proposal=random_sentence(),
-        clarity_problem=random_sentence(),
-        inovation_grade=random_sentence(),
-        social_impact=random_sentence(),
-        tec_eco_viability=random_sentence(),
-        application_potencial=random_sentence(),
-        student_id=student.id,
-    )
-    await project.create()
-    return project
+def create_test_project() -> dict:
+    """Gera um payload dinâmico para a criação de um projeto."""
+    # Simula a criação de dados dinâmicos como a função create_test_project faria
+    suffix = "".join(random.choices(string.ascii_lowercase, k=8))
+    return {
+        "project_title": f"Título Dinâmico {suffix}",
+        "project_description": f"Descrição Dinâmica {suffix}",
+        "solution_proposal": f"Proposta de Solução {suffix}",
+        "clarity_problem": f"Clareza do Problema {suffix}",
+        "inovation_grade": f"Inovação {suffix}",
+        "social_impact": f"Impacto {suffix}",
+        "tec_eco_viability": f"Viabilidade {suffix}",
+        "application_potencial": f"Potencial {suffix}",
+    }
