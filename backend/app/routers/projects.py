@@ -1,27 +1,24 @@
+from typing import Any
+
+from beanie import PydanticObjectId
 from bson import ObjectId
-from fastapi import APIRouter, HTTPException
-from ..models.projects import Project
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException
 
-router = APIRouter(prefix="/projects", tags=["Projects"])
+from .. import models, schemas
+from ..auth.auth import (
+    get_current_active_user,
+)
 
-
-class ProjectCreate(BaseModel):
-    project_title: str
-    project_description: str
-    solution_proposal: str
-    student_id: str
-    clarity_problem: str
-    inovation_grade: str
-    social_impact: str
-    tec_eco_viability: str
-    application_potencial: str
+router = APIRouter()
 
 
 @router.post("/")
-async def create_project(project: ProjectCreate):
+async def create_project(
+    project: schemas.ProjectCreate,
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
     try:
-        project_doc = Project(
+        project_doc = models.Project(
             project_title=project.project_title,
             project_description=project.project_description,
             solution_proposal=project.solution_proposal,
@@ -30,7 +27,7 @@ async def create_project(project: ProjectCreate):
             social_impact=project.social_impact,
             tec_eco_viability=project.tec_eco_viability,
             application_potencial=project.application_potencial,
-            student_id=ObjectId(project.student_id),
+            student_id=PydanticObjectId(project.student_id),
         )
 
         await project_doc.insert()

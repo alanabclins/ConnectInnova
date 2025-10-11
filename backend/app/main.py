@@ -10,7 +10,7 @@ from .config.config import settings
 from .models.projects import Project
 from .models.users import User
 from .routers.api import api_router
-from .routers.projects_router import router as project_router
+from .routers.projects import router as project_router
 
 
 @asynccontextmanager

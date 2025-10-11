@@ -2,13 +2,15 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID, uuid4
 
-from beanie import Document, Indexed
+from beanie import Document, Indexed, PydanticObjectId
 from bson import ObjectId
 from pydantic import Field
 
 
 class Project(Document):
-    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)]
+    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
+        default_factory=uuid4
+    )
     project_title: str
     project_description: str
     solution_proposal: str
@@ -17,11 +19,8 @@ class Project(Document):
     social_impact: str
     tec_eco_viability: str
     application_potencial: str
-    student_id: ObjectId
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    student_id: PydanticObjectId
+    timestamp: datetime = Field(default_factory=datetime.now)
 
     class Settings:
         name = "Projetos"  # nome da coleção no MongoDB
-        
-    class Config:
-        arbitrary_types_allowed = True

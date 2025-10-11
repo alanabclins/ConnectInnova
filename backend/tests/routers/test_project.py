@@ -3,9 +3,9 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-
 from app.config.config import settings
-from ..utils import create_test_user, create_test_project
+
+from ..utils import create_test_project, create_test_user
 
 
 @pytest.mark.anyio
