@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
     user = await User.find_one({"email": settings.FIRST_SUPERUSER})
     if not user:
         user = User(
+            name="admin",
             email=settings.FIRST_SUPERUSER,
             hashed_password=get_hashed_password(settings.FIRST_SUPERUSER_PASSWORD),
             is_superuser=True,

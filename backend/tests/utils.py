@@ -46,7 +46,7 @@ async def create_test_user() -> User:
     """
     email = random_email()
     hashed_password = get_hashed_password(random_lower_string())
-    user = User(email=email, hashed_password=hashed_password)
+    user = User(name="teste", email=email, hashed_password=hashed_password)
     await user.create()
     return user
 
