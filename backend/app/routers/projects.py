@@ -1,7 +1,5 @@
 from typing import Any
 
-from beanie import PydanticObjectId
-from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
 
 from .. import models, schemas
@@ -27,13 +25,14 @@ async def create_project(
             social_impact=project.social_impact,
             tec_eco_viability=project.tec_eco_viability,
             application_potencial=project.application_potencial,
-            student_id=PydanticObjectId(project.student_id),
+            student_id=current_user.uuid,
         )
 
         await project_doc.insert()
         return {
-            "message": "✅ Projeto cadastrado com sucesso!",
-            "id": str(project_doc.id),
+            "message": "Projeto cadastrado com sucesso!",
+            "project_id_mongo": str(project_doc.id),
+            "project_uuid": str(project_doc.uuid),
             "timestamp": project_doc.timestamp,
         }
 

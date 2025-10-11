@@ -2,8 +2,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID, uuid4
 
-from beanie import Document, Indexed, PydanticObjectId
-from bson import ObjectId
+from beanie import Document, Indexed
 from pydantic import Field
 
 
@@ -19,7 +18,7 @@ class Project(Document):
     social_impact: str
     tec_eco_viability: str
     application_potencial: str
-    student_id: PydanticObjectId
+    student_id: UUID
     timestamp: datetime = Field(default_factory=datetime.now)
 
     class Settings:
