@@ -73,7 +73,6 @@ def processar_analise_llm(projeto_id_str):
 
 # --- BLOCO DE EXECUÇÃO PARA TESTE ---
 if __name__ == "__main__":
-
     # 🧩 Cria um novo projeto no banco
     payload = {
         "project_title": "Monitor de Energia Inteligente",

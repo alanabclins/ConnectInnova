@@ -1,10 +1,12 @@
+from datetime import datetime
 from typing import Annotated, Optional
 from uuid import UUID, uuid4
-from datetime import datetime
+
 from beanie import Document, Indexed, Link
 from pydantic import Field
+
+from .projects import Project
 from .student import Student
-from .project import Project
 
 
 class Feedback(Document):
@@ -15,11 +17,7 @@ class Feedback(Document):
     student: Optional[Link[Student]] = None
 
     feedback: dict = Field(
-        default_factory=lambda: {
-            "content": "",
-            "status": "",
-            "timestamp": datetime.utcnow()
-        }
+        default_factory=lambda: {"content": "", "status": "", "timestamp": datetime.utcnow()}
     )
 
     ai_feedback_clarity_problem: Optional[str] = None

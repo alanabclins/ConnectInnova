@@ -202,4 +202,3 @@ db.create_collection(
     },
 )
 print("✅ Coleção 'AI_Resum' criada com sucesso!")
-

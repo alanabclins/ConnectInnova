@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException, Body
+from datetime import UTC, datetime
 from uuid import UUID
-from datetime import datetime
+
+from fastapi import APIRouter, Body, HTTPException
 from google import genai
-from datetime import datetime, UTC
+
+from app.config.config import settings
 
 from .. import models
-from app.config.config import settings
 
 router = APIRouter()
 
@@ -60,17 +61,15 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
 
     # Enviar para Gemini
     try:
-        response = client.models.generate_content(
-            model="gemini-1.5-flash", contents=prompt
-        )
+        response = client.models.generate_content(model="gemini-1.5-flash", contents=prompt)
         feedback_text = response.text
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro na API Gemini: {e}")
 
     # Criar Feedback
     feedback_doc = models.Feedback(
-        project=project, # type: ignore
-        student=student, # type: ignore
+        project=project,  # type: ignore
+        student=student,  # type: ignore
         feedback={
             "content": feedback_text,
             "status": "generated",
@@ -86,8 +85,8 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
 
     # Criar AI_Resum (resumo)
     resum_doc = models.AIResum(
-        project_id=project, # type: ignore
-        student_id=student, # type: ignore
+        project_id=project,  # type: ignore
+        student_id=student,  # type: ignore
         clarity_resum="Resumo gerado automaticamente",
         inovation_grade_resum="Resumo gerado automaticamente",
         social_impact_resum="Resumo gerado automaticamente",

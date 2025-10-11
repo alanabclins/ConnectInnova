@@ -1,12 +1,12 @@
+from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID, uuid4
-from datetime import datetime
+
 from beanie import Document, Indexed, Link
 from pydantic import Field
-from .student import Student
-from .project import Project
-from datetime import datetime, UTC
 
+from .projects import Project
+from .student import Student
 
 
 class AIResum(Document):
@@ -23,11 +23,7 @@ class AIResum(Document):
     application_potencial_resum: str
 
     summary: dict = Field(
-        default_factory=lambda: {
-            "content": "",
-            "status": "",
-            "timestamp": datetime.now(UTC)
-        }
+        default_factory=lambda: {"content": "", "status": "", "timestamp": datetime.now(UTC)}
     )
 
     class Settings:
