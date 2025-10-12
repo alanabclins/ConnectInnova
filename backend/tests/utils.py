@@ -49,3 +49,39 @@ async def create_test_user() -> User:
     user = User(name="teste", email=email, hashed_password=hashed_password)
     await user.create()
     return user
+
+
+def random_sentence() -> str:
+    """Gera uma frase aleatória curta para campos de teste"""
+    words = [
+        random.choice(
+            [
+                "melhorar",
+                "sistema",
+                "conectar",
+                "estudante",
+                "empresa",
+                "plataforma",
+                "solução",
+            ]
+        )
+        for _ in range(random.randint(3, 8))
+    ]
+    sentence = " ".join(words).capitalize() + "."
+    return sentence
+
+
+def create_test_project() -> dict:
+    """Gera um payload dinâmico para a criação de um projeto."""
+    # Simula a criação de dados dinâmicos como a função create_test_project faria
+    suffix = "".join(random.choices(string.ascii_lowercase, k=8))
+    return {
+        "project_title": f"Título Dinâmico {suffix}",
+        "project_description": f"Descrição Dinâmica {suffix}",
+        "solution_proposal": f"Proposta de Solução {suffix}",
+        "clarity_problem": f"Clareza do Problema {suffix}",
+        "inovation_grade": f"Inovação {suffix}",
+        "social_impact": f"Impacto {suffix}",
+        "tec_eco_viability": f"Viabilidade {suffix}",
+        "application_potencial": f"Potencial {suffix}",
+    }

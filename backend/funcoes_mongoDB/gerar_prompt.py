@@ -25,7 +25,8 @@ Responda SOMENTE em formato JSON, com as seguintes chaves (sem texto adicional f
   "clarity_problem": "avaliação da clareza do problema (máx 2 frases)",
   "inovation_grade": "avaliação do grau de inovação (máx 2 frases)",
   "social_impact": "avaliação do impacto social (máx 2 frases)",
-  "tec_eco_viability": "avaliação da viabilidade técnica e econômica (máx 2 frases)",
+  "tec_eco_viability": "avaliação da viabilidade técnica e econômica
+  (máx 2 frases)",
   "application_potencial": "avaliação do potencial de aplicação (máx 2 frases)"
   "solution_proposal" : "avaliação da proposta de solução (máx 2 frases)
 }}

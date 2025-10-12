@@ -6,18 +6,20 @@ from beanie import Document, Indexed
 from pydantic import Field
 
 
-class AIResum(Document):
+class Project(Document):
     uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
         default_factory=uuid4
     )
-    project_id: UUID
+    project_title: str
+    project_description: str
+    solution_proposal: str
+    clarity_problem: str
+    inovation_grade: str
+    social_impact: str
+    tec_eco_viability: str
+    application_potencial: str
     student_id: UUID
-    clarity_resum: str
-    inovation_grade_resum: str
-    social_impact_resum: str
-    tec_eco_viability_resum: str
-    application_potencial_resum: str
     timestamp: datetime = Field(default_factory=datetime.now)
 
     class Settings:
-        name = "AIResum"
+        name = "Projetos"  # nome da coleção no MongoDB

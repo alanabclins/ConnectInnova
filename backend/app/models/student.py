@@ -1,5 +1,6 @@
 from typing import Annotated, Optional
 from uuid import UUID, uuid4
+
 from beanie import Document, Indexed
 from pydantic import Field
 
