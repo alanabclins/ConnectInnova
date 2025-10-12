@@ -1,12 +1,15 @@
 from datetime import datetime
 from typing import Annotated
 from uuid import UUID, uuid4
+
 from beanie import Document, Indexed
 from pydantic import Field
 
 
 class AIResum(Document):
-    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(default_factory=uuid4)
+    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
+        default_factory=uuid4
+    )
     project_id: UUID
     student_id: UUID
     clarity_resum: str

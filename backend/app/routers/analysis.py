@@ -1,18 +1,16 @@
 import json
-from datetime import datetime, UTC
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, Body, HTTPException
 from google import genai
 
+from app.config.config import settings
+from app.models.ai_resume import AIResum
+from app.models.feedback import Feedback
 from app.models.projects import Project
 from app.models.users import User
-from app.models.feedback import Feedback
-from app.models.ai_resume import AIResum
-
-from app.schemas.feedback_schema import FeedbackSchema
 from app.schemas.ai_resume_schema import AIResumSchema
-from app.config.config import settings
+from app.schemas.feedback_schema import FeedbackSchema
 
 router = APIRouter()
 
@@ -24,7 +22,14 @@ client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 # ======== Estrutura esperada da resposta do Gemini =========
 class GeminiAIAnalysis:
-    def __init__(self, clarity_problem, inovation_grade, social_impact, tec_eco_viability, application_potencial):
+    def __init__(
+        self,
+        clarity_problem,
+        inovation_grade,
+        social_impact,
+        tec_eco_viability,
+        application_potencial,
+    ):
         self.clarity_problem = clarity_problem
         self.inovation_grade = inovation_grade
         self.social_impact = social_impact
@@ -33,7 +38,14 @@ class GeminiAIAnalysis:
 
 
 class GeminiAIResum:
-    def __init__(self, clarity_resum, inovation_grade_resum, social_impact_resum, tec_eco_viability_resum, application_potencial_resum):
+    def __init__(
+        self,
+        clarity_resum,
+        inovation_grade_resum,
+        social_impact_resum,
+        tec_eco_viability_resum,
+        application_potencial_resum,
+    ):
         self.clarity_resum = clarity_resum
         self.inovation_grade_resum = inovation_grade_resum
         self.social_impact_resum = social_impact_resum
@@ -107,10 +119,10 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
         if not ai_raw or ai_raw.strip() == "":
             raise HTTPException(
                 status_code=500,
-                detail="❌ O Gemini não retornou nenhum texto. Verifique se o modelo ou a chave estão corretos."
+                detail="O Gemini não retornou nenhum texto.",
             )
 
-        print("🔍 Retorno bruto do Gemini:\n", ai_raw)
+        # print("🔍 Retorno bruto do Gemini:\n", ai_raw)
 
         # 🔧 NOVO: limpeza de blocos de código e espaços extras
         cleaned_response = (
@@ -128,7 +140,7 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
         except json.JSONDecodeError as e:
             raise HTTPException(
                 status_code=500,
-                detail=f"❌ A resposta do Gemini não estava em formato JSON válido. Erro: {str(e)} | Retorno bruto: {cleaned_response[:500]}"
+                detail=f"Resposta JSON inválido. Erro: {str(e)} | {cleaned_response[:500]}",
             )
 
     except Exception as e:
@@ -136,7 +148,9 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
 
     # 5️⃣ Valida o formato
     if not ai_data or "analysis" not in ai_data or "resums" not in ai_data:
-        raise HTTPException(status_code=500, detail="❌ Resposta da IA em formato inválido ou incompleto.")
+        raise HTTPException(
+            status_code=500, detail="❌ Resposta da IA em formato inválido ou incompleto."
+        )
 
     # 6️⃣ Cria Feedback
     feedback_schema = FeedbackSchema(
@@ -147,7 +161,9 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
         ai_feedback_inovation_grade=ai_data["analysis"].get("inovation_grade", ""),
         ai_feedback_social_impact=ai_data["analysis"].get("social_impact", ""),
         ai_feedback_tec_eco_viability=ai_data["analysis"].get("tec_eco_viability", ""),
-        ai_feedback_application_potencial=ai_data["analysis"].get("application_potencial", ""),
+        ai_feedback_application_potencial=ai_data["analysis"].get(
+            "application_potencial", ""
+        ),
     )
 
     feedback_doc = Feedback(**feedback_schema.model_dump())
