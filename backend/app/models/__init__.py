@@ -3,3 +3,5 @@ from .feedback import Feedback
 from .projects import Project
 from .student import Student
 from .users import User
+
+__all__ = ["AIResum", "Feedback", "Project", "Student", "User"]

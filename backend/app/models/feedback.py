@@ -14,7 +14,7 @@ class Feedback(Document):
     student_id: Optional[UUID] = None
 
     feedback: dict = Field(
-        default_factory=lambda: {"content": "", "status": "", "timestamp": datetime.utcnow()}
+        default_factory=lambda: {"content": "", "status": "", "timestamp": datetime.now(UTC)}
     )
 
     ai_feedback_clarity_problem: Optional[str] = None
@@ -27,22 +27,22 @@ class Feedback(Document):
         name = "Feedback"
 
 
-class AIResum(Document):
-    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
-        default_factory=uuid4
-    )
-    project_id: Optional[UUID] = None
-    student_id: Optional[UUID] = None
+# class AIResum(Document):
+#     uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
+#         default_factory=uuid4
+#     )
+#     project_id: Optional[UUID] = None
+#     student_id: Optional[UUID] = None
 
-    clarity_resum: str
-    inovation_grade_resum: str
-    social_impact_resum: str
-    tec_eco_viability_resum: str
-    application_potencial_resum: str
+#     clarity_resum: str
+#     inovation_grade_resum: str
+#     social_impact_resum: str
+#     tec_eco_viability_resum: str
+#     application_potencial_resum: str
 
-    summary: dict = Field(
-        default_factory=lambda: {"content": "", "status": "", "timestamp": datetime.now(UTC)}
-    )
+#     summary: dict = Field(
+#         default_factory=lambda: {"content": "", "status": "", "timestamp": datetime.now(UTC)}
+#     )
 
-    class Settings:
-        name = "AI_Resum"
+#     class Settings:
+#         name = "AI_Resum"
