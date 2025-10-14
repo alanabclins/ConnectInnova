@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+import ProjectService from "@/services/project.service";
 import { CircularStepIndicator } from "./CircularStepIndicator";
 import { ActionButton } from "./ActionButton";
 import { Button } from "@/components/ui/button";
@@ -55,32 +57,49 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
     });
   };
 
-  const handleComplete = () => {
-    if (validateStep()) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleComplete = async () => {
+    if (!validateStep()) return;
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Usuário não autenticado");
+
+      const decoded: any = jwt_decode(token);
+      const studentId = decoded.uuid;
+
+      const projectData = {
+        project_title: titleControlInput,
+        project_description: projectDescriptionInput,
+        solution_proposal: solutionProposalInput,
+        clarity_problem: whoAreYouInput,
+        inovation_grade: projectInnovationInput,
+        social_impact: socialImpactInput,
+        tec_eco_viability: technicalFeasibilityInput,
+        application_potencial: marketInfo,
+        student_id: studentId,
+      };
+
+      const response = await ProjectService.createProject(projectData);
+      console.log("Projeto criado com sucesso:", response);
 
       navigate("/home/summary", {
-        // state: {
-        //   title: titleControlInput,
-        //   description: projectDescriptionInput,
-        //   solutionProposal: solutionProposalInput,
-        //   socialImpact: socialImpactInput,
-        //   technicalFeasibility: technicalFeasibilityInput,
-        //   innovation: projectInnovationInput,
-        //   whoAreYou: whoAreYouInput,
-        //   academyInfo: academyInfo,
-        //   marketInfo: marketInfo,
-        // },
+        state: {
+          projectId: response.uuid, // passando UUID para a próxima tela
+        },
       });
-    }
 
-    if (onComplete) onComplete();
+      if (onComplete) onComplete();
+    } catch (error: any) {
+      console.error("Erro ao criar projeto:", error);
+      alert("Não foi possível criar o projeto. Tente novamente.");
+    }
   };
 
   const handleNext = () => {
-    if (validateStep()) {
-      if (currentStep < totalSteps) setCurrentStep(currentStep + 1);
-    }
+    if (validateStep() && currentStep < totalSteps)
+      setCurrentStep(currentStep + 1);
   };
 
   const handlePrevious = () => {
@@ -149,11 +168,10 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
 
   const validateStep = () => {
     const currentRules = validationRulesByStep[currentStep] || [];
-
     const newErrors = currentRules.reduce(
-      (errors, { errorKey, inputValue, errorMessage }) => {
-        if (!inputValue?.trim()) errors[errorKey] = errorMessage;
-        return errors;
+      (acc, { errorKey, inputValue, errorMessage }) => {
+        if (!inputValue?.trim()) acc[errorKey] = errorMessage;
+        return acc;
       },
       {} as Record<string, string>
     );
@@ -168,7 +186,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div className="max-w-2xl">
-            {currentStep <= 2 && (
+            {currentStep <= 2 ? (
               <>
                 <h1 className="text-2xl md:text-3xl font-bold mb-4">
                   Tudo começa com o seu projeto.
@@ -179,8 +197,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   repositório, guias de personas e o que mais fizer sentido.
                 </p>
               </>
-            )}
-            {currentStep === 3 && (
+            ) : (
               <>
                 <h1 className="text-2xl md:text-3xl font-bold mb-4">
                   Deixe a gente conhecer você melhor.
@@ -193,7 +210,6 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
               </>
             )}
           </div>
-
           <CircularStepIndicator
             currentStep={currentStep}
             totalSteps={totalSteps}
