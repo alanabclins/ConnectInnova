@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
 import ProjectService from "@/services/project.service";
 import { CircularStepIndicator } from "./CircularStepIndicator";
 import { ActionButton } from "./ActionButton";
@@ -18,6 +17,7 @@ import { Textarea } from "./ui/textarea";
 
 interface ProjectStepperProps {
   onComplete?: () => void;
+  studentId: string; // Passa o studentId via props
 }
 
 type ValidationRule = {
@@ -28,6 +28,7 @@ type ValidationRule = {
 
 export const ProjectStepper: React.FC<ProjectStepperProps> = ({
   onComplete,
+  studentId,
 }) => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -63,12 +64,6 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("Usuário não autenticado");
-
-      const decoded: any = jwt_decode(token);
-      const studentId = decoded.uuid;
-
       const projectData = {
         project_title: titleControlInput,
         project_description: projectDescriptionInput,
@@ -78,7 +73,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
         social_impact: socialImpactInput,
         tec_eco_viability: technicalFeasibilityInput,
         application_potencial: marketInfo,
-        student_id: studentId,
+        student_id: studentId, // recebido via props
       };
 
       const response = await ProjectService.createProject(projectData);
