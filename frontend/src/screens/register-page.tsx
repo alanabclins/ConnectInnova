@@ -1,32 +1,52 @@
-import { GalleryVerticalEnd } from "lucide-react"
-
-import { RegisterForm } from "@/components/register-form"
+import { RegisterForm } from "@/components/register-form";
+import logoCinnova from "@/assets/logo-nome-cinnova.png";
 
 export default function RegisterPage() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            Acme Inc.
-          </a>
+    <div className="grid min-h-screen lg:grid-cols-2">
+      {/* Lado Esquerdo - Branding */}
+      <div className="relative hidden lg:flex flex-col p-10 mesh-gradient-bg">
+        <div className="flex items-center gap-3">
+          <img
+            src={logoCinnova}
+            alt="Logo Connect Innova"
+            className="h-12 object-fit"
+          />
         </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <RegisterForm />
+      </div>
+
+      {/* Lado Direito - Conteúdo de Registro */}
+      <div className="flex min-h-screen items-center justify-center p-8 bg-background">
+        <div className="w-full max-w-md flex flex-col items-center gap-6">
+          {/* Logo para mobile */}
+          <img
+            src={logoCinnova}
+            alt="Logo Connect Innova"
+            className="h-12 lg:hidden mix-blend-color-dodge"
+          />
+
+          {/* Cabeçalho movido para cá */}
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h1 className="text-3xl font-extrabold text-foreground">
+              Crie sua conta
+            </h1>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Preencha os campos abaixo para iniciar sua jornada conosco.
+            </p>
+          </div>
+
+          {/* O formulário agora é "puro" */}
+          <RegisterForm />
+
+          {/* Rodapé movido para cá */}
+          <div className="text-center text-sm">
+            Já tem uma conta?{" "}
+            <a href="/" className="underline underline-offset-4">
+              Faça login
+            </a>
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
-        <img
-          src="/placeholder.svg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
-      </div>
     </div>
-  )
+  );
 }

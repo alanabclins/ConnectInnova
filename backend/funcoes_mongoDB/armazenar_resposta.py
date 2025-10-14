@@ -44,9 +44,7 @@ def salvar_feedback_llm(project_id, resposta_llm, status_final, erro_msg=None):
 
         resultado = Feedback_collection.insert_one(feedback)
         if resultado.inserted_id:
-            print(
-                f"✅ Feedback salvo com coleção Feedback! (ID: {resultado.inserted_id})"
-            )
+            print(f"✅ Feedback salvo com coleção Feedback! (ID: {resultado.inserted_id})")
             return True
         else:
             print("⚠️ Falha ao inserir o feedback na coleção Feedback.")
@@ -98,9 +96,7 @@ def salvar_resumo_llm(project_id, resposta_llm, status_final, erro_msg=None):
 
         resultado = Resumo_collection.insert_one(resumo)
         if resultado.inserted_id:
-            print(
-                f"✅ Resumo salvo na coleção Resumo! (ID: {resultado.inserted_id})"
-            )
+            print(f"✅ Resumo salvo na coleção Resumo! (ID: {resultado.inserted_id})")
             return True
         else:
             print("⚠️ Falha ao inserir o resumo na coleção Resumo.")
