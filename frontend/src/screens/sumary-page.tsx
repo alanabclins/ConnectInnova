@@ -1,18 +1,12 @@
 import { useEffect } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { AIGeneratedSummary } from "@/components/AiGeneratedSumary";
 
 const SummaryPage = () => {
   const location = useLocation();
-  const [searchParams] = useSearchParams();
 
-  // 1. Tenta pegar o ID pela URL (/summary?projectId=uuid)
-  const projectIdFromQuery = searchParams.get("projectId");
-
-  const state = location.state as { projectId?: string } | undefined;
-  const projectIdFromState = state?.projectId;
-
-  const projectId = projectIdFromQuery || projectIdFromState;
+  // Recupera o projectId recebido pelo navigate(...)
+  const { projectId } = (location.state || {}) as { projectId?: string };
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -20,9 +14,8 @@ const SummaryPage = () => {
 
   if (!projectId) {
     return (
-      <div className="text-center text-red-500 mt-10">
-        Nenhum projeto foi encontrado. Passe um projectId válido para continuar.
-
+      <div className="flex items-center justify-center h-screen text-red-500 text-lg">
+        Nenhum projeto foi encontrado. Certifique-se de passar um projectId ao navegar para esta página.
       </div>
     );
   }

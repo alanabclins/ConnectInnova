@@ -60,8 +60,8 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
       window.scrollTo({ top: 0, behavior: "smooth" });
 
       navigate("/home/summary", {
-        // state: {
-        //   title: titleControlInput,
+            state: {projectId: 'bbd30939-2ce1-4c0f-8e1e-85679dfae9da'}
+                  //   title: titleControlInput,
         //   description: projectDescriptionInput,
         //   solutionProposal: solutionProposalInput,
         //   socialImpact: socialImpactInput,
