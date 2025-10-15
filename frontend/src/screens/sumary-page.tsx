@@ -6,7 +6,7 @@ const SummaryPage = () => {
   const location = useLocation();
 
   // Recupera o projectId recebido pelo navigate(...)
-  const { projectId } = (location.state || {}) as { projectId?: string };
+  const { projectId, projectData } = (location.state || {}) as { projectId?: string, projectData?: any };
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -20,7 +20,7 @@ const SummaryPage = () => {
     );
   }
 
-  return <AIGeneratedSummary projectId={projectId} />;
+  return <AIGeneratedSummary projectId={projectId} formsProjectData={projectData}/>;
 };
 
 export default SummaryPage;

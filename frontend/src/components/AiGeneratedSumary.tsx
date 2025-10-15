@@ -8,6 +8,17 @@ import AnalysisService from "@/services/analysis.service";
 
 interface AIGeneratedSummaryProps {
   projectId: string;
+  formsProjectData: {
+        project_title: string,
+        project_description: string,
+        solution_proposal: string,
+        clarity_problem: string,
+        inovation_grade: string,
+        social_impact: string,
+        tec_eco_viability: string,
+        application_potencial: string,
+        student_id: string, 
+      };
   onRegenerate?: () => void;
 }
 
@@ -19,7 +30,8 @@ const loadingStages = [
 ];
 
 export const AIGeneratedSummary: React.FC<AIGeneratedSummaryProps> = ({
-  projectId,
+  projectId, 
+  formsProjectData,
   onRegenerate,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -27,40 +39,39 @@ export const AIGeneratedSummary: React.FC<AIGeneratedSummaryProps> = ({
   const [projectData, setProjectData] = useState<any>(null);
 
   useEffect(() => {
-    if (!projectId) {
+  if (!projectId) {
+    setProjectData(formsProjectData);
+    setIsLoading(false);
+    return;
+  }
+
+  const interval = setInterval(() => {
+    setLoadingStage((prev) => (prev < loadingStages.length - 1 ? prev + 1 : prev));
+  }, 1200);
+
+  const fetchProjectAnalysis = async () => {
+    try {
+      // Primeiro busca a análise do projeto via UUID
+      const analysisResponse = await AnalysisService.analyzeProject(projectId);
+
+      // Depois pega o resumo gerado pela IA usando o resum_id retornado
+      const resumResponse = await AnalysisService.resumAnalysis(analysisResponse.resum_id);
+
+      setProjectData(resumResponse[0]); // Define os dados de resumo gerados pela IA
+    } catch (error) {
+      console.error("Erro ao carregar análise:", error);
+      setProjectData(null);
+    } finally {
+      clearInterval(interval);
       setIsLoading(false);
-      return;
     }
+  };
 
-    const interval = setInterval(() => {
-      setLoadingStage((prev) => {
-        if (prev < loadingStages.length - 1) {
-          return prev + 1;
-        }
-        return prev;
-      });
-    }, 1200);
+  fetchProjectAnalysis();
 
-    const fetchProjectAnalysis = async () => {
-      try {
-        const response = await AnalysisService.analyzeProject(
-          projectId // CORRIGIDO: Usando a prop projectId
-        );
+  return () => clearInterval(interval);
+}, [projectId]);
 
-        setProjectData(response); // Assumindo que response é o objeto de dados
-      } catch (error) {
-        console.error("Erro ao carregar análise:", error);
-        setProjectData(null);
-      } finally {
-        clearInterval(interval);
-        setIsLoading(false);
-      }
-    };
-
-    fetchProjectAnalysis();
-
-    return () => clearInterval(interval);
-  }, [projectId]);
 
   if (isLoading) return <LoadingSkeleton stage={loadingStage} />;
 
@@ -72,7 +83,7 @@ export const AIGeneratedSummary: React.FC<AIGeneratedSummaryProps> = ({
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-4">
-        <HeaderCard data={projectData} />
+        <HeaderCard data={formsProjectData} />
 
         <Card className="p-4 md:p-6">
           <h2 className="text-lg font-semibold mb-4 text-foreground">
@@ -111,7 +122,7 @@ const HeaderCard: React.FC<{ data: any }> = ({ data }) => (
         </div>
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-foreground">
-            {data?.title || "Projeto Validado"}
+            {data?.project_title || "Projeto Validado"}
           </h1>
           <Badge
             variant="outline"
@@ -126,7 +137,7 @@ const HeaderCard: React.FC<{ data: any }> = ({ data }) => (
     </div>
 
     <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-      {data?.description || "Descrição não disponível no momento."}
+      {data?.project_description || "Descrição não disponível no momento."}
     </p>
   </Card>
 );

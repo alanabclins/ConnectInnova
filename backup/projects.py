@@ -1,9 +1,11 @@
-from typing import Any, List  # ✅ adicionei List
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
 from .. import models, schemas
-from ..auth.auth import get_current_active_user
+from ..auth.auth import (
+    get_current_active_user,
+)
 
 router = APIRouter()
 
@@ -36,14 +38,3 @@ async def create_project(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao cadastrar projeto: {e}")
-
-
-
-# Esse GET retorna os projetos do usuário logado
-@router.get("/", response_model=List[models.Project])
-async def get_projects(current_user: models.User = Depends(get_current_active_user)) -> Any:
-    try:
-        projects = await models.Project.find(models.Project.student_id == current_user.uuid).to_list()
-        return projects
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar projetos: {e}")

@@ -1,39 +1,121 @@
+import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useRegisterForm } from "@/hooks/useRegisterForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "./ui/shadcn-io/spinner";
 import { PasswordStrength } from "@/components/ui/passwordStrength";
+import authService from "@/services/auth.service";
+import axios from "axios";
+
+interface FormErrors {
+  [key: string]: string;
+}
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const { models, handlers } = useRegisterForm();
-  const {
-    fullName,
-    email,
-    password,
-    confirmPassword,
-    showPassword,
-    isLoading,
-    submitErrors,
-    inlineEmailError,
-    showPasswordRequirements,
-    passwordChecks,
-  } = models;
-  const {
-    setFullName,
-    setEmail,
-    setPassword,
-    setConfirmPassword,
-    setShowPassword,
-    setShowPasswordRequirements,
-    handleEmailBlur,
-    handleSubmit,
-  } = handlers;
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitErrors, setSubmitErrors] = useState<FormErrors>({});
+  const [inlineEmailError, setInlineEmailError] = useState("");
+  const [showPasswordRequirements, setShowPasswordRequirements] =
+    useState(false);
+
+  const passwordChecks = useMemo(() => {
+    return {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      specialChar: /[^A-Za-z0-9]/.test(password),
+    };
+  }, [password]);
+
+  const isFormValid = useMemo(() => {
+    const allReqsMet = Object.values(passwordChecks).every(Boolean);
+    return allReqsMet && password === confirmPassword && password !== "";
+  }, [password, confirmPassword, passwordChecks]);
+
+  const handleEmailBlur = () => {
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+      setInlineEmailError("Por favor, insira um email válido.");
+    } else {
+      setInlineEmailError("");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitErrors({});
+    setInlineEmailError("");
+
+    if (!isFormValid) {
+      toast.error("Formulário inválido", {
+        description: "Por favor, verifique os requisitos da senha.",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    const names = fullName.trim().split(" ");
+    const firstName = names[0];
+    const lastName = names.length > 1 ? names.slice(1).join(" ") : "";
+
+    const user = {
+      name: fullName,
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      password,
+    };
+
+    try {
+      await authService.register(user);
+      toast.success("Conta criada com sucesso!", {
+        description: "Você será redirecionado para a tela de login.",
+      });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data?.detail) {
+        const newErrors: FormErrors = {};
+        let toastDescription = "Por favor, corrija os erros indicados.";
+
+        if (typeof error.response.data.detail === "string") {
+          toastDescription = error.response.data.detail;
+        } else if (Array.isArray(error.response.data.detail)) {
+          error.response.data.detail.forEach((err: any) => {
+            if (err.loc && err.loc.length > 1) {
+              const field = err.loc[1];
+              newErrors[field] = err.msg;
+            }
+          });
+          setSubmitErrors(newErrors);
+        }
+
+        toast.error("Falha no cadastro", {
+          description: toastDescription,
+        });
+      } else {
+        toast.error("Erro ao criar a conta", {
+          description:
+            "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <form
@@ -42,7 +124,6 @@ export function RegisterForm({
       {...props}
     >
       <div className="grid gap-6">
-        {/* Campo Nome Completo */}
         <div className="grid gap-3">
           <Label htmlFor="fullName">Nome completo</Label>
           <Input
@@ -63,7 +144,6 @@ export function RegisterForm({
           )}
         </div>
 
-        {/* Campo Email */}
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -87,13 +167,11 @@ export function RegisterForm({
           ) : null}
         </div>
 
-        {/* Agrupamento dos campos de senha para controlar o foco */}
         <div
-          className="grid gap-6" // Aumentado o gap interno para manter a consistência visual
+          className="grid gap-6"
           onFocus={() => setShowPasswordRequirements(true)}
           onBlur={() => setShowPasswordRequirements(false)}
         >
-          {/* Campo Senha */}
           <div className="grid gap-3">
             <Label htmlFor="password">Senha</Label>
             <div className="relative">
@@ -132,7 +210,6 @@ export function RegisterForm({
             )}
           </div>
 
-          {/* Campo Confirmar Senha */}
           <div className="grid gap-3">
             <Label htmlFor="confirmPassword">Confirmar senha</Label>
             <div className="relative">
@@ -172,16 +249,14 @@ export function RegisterForm({
           </div>
         </div>
 
-        {/* Requisitos da senha */}
         {(showPasswordRequirements || submitErrors.password) && (
           <PasswordStrength passwordChecks={passwordChecks} />
         )}
 
-        {/* Botão de Cadastro */}
         <Button
           type="submit"
           className="w-full"
-          disabled={isLoading}
+          disabled={isLoading || !isFormValid}
           onMouseDown={(e) => e.preventDefault()}
         >
           {isLoading ? (

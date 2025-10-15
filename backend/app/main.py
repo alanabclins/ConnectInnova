@@ -4,12 +4,13 @@ from beanie import init_beanie
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+
 from .auth.auth import get_hashed_password
 from .config.config import settings
+from .models.ai_resume import AIResum
+from .models.feedback import Feedback
 from .models.projects import Project
 from .models.users import User
-from .models.feedback import Feedback
-from .models.ai_resume import AIResum
 from .routers.api import api_router
 from .routers.projects import router as project_router
 
