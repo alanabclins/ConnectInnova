@@ -14,9 +14,9 @@ from app.schemas.feedback_schema import FeedbackSchema
 
 router = APIRouter()
 
-# 🔑 Inicializa cliente Gemini
+#  Inicializa cliente Gemini
 if not settings.GEMINI_API_KEY:
-    raise ValueError("❌ A variável de ambiente GEMINI_API_KEY não foi configurada.")
+    raise ValueError(" A variável de ambiente GEMINI_API_KEY não foi configurada.")
 client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 
@@ -53,24 +53,24 @@ class GeminiAIResum:
         self.application_potencial_resum = application_potencial_resum
 
 
-@router.post("/analysis/{project_uuid}")
+@router.post("/{project_uuid}")
 async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
     """
     Analisa um projeto universitário com a API Gemini.
     Gera: feedback detalhado + resumo de 2-3 frases por aspecto.
     """
 
-    # 1️⃣ Busca projeto no banco
+    # 1️ Busca projeto no banco
     project = await Project.find_one(Project.uuid == project_uuid)
     if not project:
         raise HTTPException(status_code=404, detail="Projeto não encontrado.")
 
-    # 2️⃣ Busca aluno vinculado
+    # 2️ Busca aluno vinculado
     student = await User.find_one(User.uuid == project.student_id)
     if not student:
         raise HTTPException(status_code=404, detail="Aluno vinculado não encontrado.")
 
-    # 3️⃣ Cria o prompt dinâmico
+    # 3️ Cria o prompt dinâmico
     prompt = f"""
     Analise o seguinte projeto universitário e descreva os seguintes aspectos:
     - Clareza do problema
