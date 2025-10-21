@@ -23,8 +23,13 @@ def build_evaluation_prompt(project_data: Dict[str, Any]) -> str:
     Constrói o prompt completo de avaliação baseado nos dados do projeto (otimizado para ~3000 tokens).
     """
     
-    prompt = f"""Avaliador acadêmico especializado em inovação e empreendedorismo. Avalie usando escala 1-3:
-1=Ruim (incompleto, sem evidências), 2=Médio (coerente, evidências parciais), 3=Bom (estruturado, validado).
+    prompt = f"""Você é um avaliador acadêmico especializado em inovação e empreendedorismo.
+Analise o projeto abaixo com base nos 15 critérios, usando escala 1-3:
+- 1 (Ruim): Incompleto, sem evidências
+- 2 (Médio): Coerente, evidências parciais  
+- 3 (Bom): Estruturado, validado
+
+IMPORTANTE: Para cada critério, cite EVIDÊNCIAS ESPECÍFICAS do texto do projeto. Use trechos reais, dados mencionados e informações concretas fornecidas.
 
 PROJETO:
 Título: {project_data.get('project_title', 'N/A')}
@@ -36,34 +41,38 @@ Impacto: {project_data.get('social_impact', 'N/A')}
 Viabilidade: {project_data.get('tec_eco_viability', 'N/A')}
 Aplicação: {project_data.get('application_potencial', 'N/A')}
 
-CRITÉRIOS (15 critérios):
+CRITÉRIOS (avalie cada um):
 """
 
-    # Adiciona cada critério de forma compacta (apenas nome e definição)
+    # Adiciona cada critério de forma compacta
     for idx, (key, criterion) in enumerate(EVALUATION_CRITERIA.items(), 1):
         prompt += f"{idx}. {criterion['name']}: {criterion['definition']}\n"
 
-    # Adiciona instruções de saída com os 15 critérios individualizados
+    # Adiciona instruções de saída com feedbacks contextualizados
     prompt += """
 Responda em JSON (sem markdown):
 {
-    "full_feedback": "Avaliação geral em 3-4 parágrafos, pontos fortes e melhorias.",
+    "full_feedback": "Avaliação geral do projeto em 3-4 parágrafos. Mencione o nome do projeto, cite dados específicos fornecidos (números, evidências, testes), destaque pontos fortes concretos e sugira melhorias específicas.",
     "criteria_evaluation": {
-        "proposta_de_valor": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "pertinencia_ao_problema": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "alinhamento_com_objetivos": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "adequacao_ao_contexto": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "originalidade": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "capacidade_de_diferenciacao": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "uso_inteligente_tecnologias": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "impacto_social_ambiental": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "escalabilidade": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "sustentabilidade": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "indicadores_de_sucesso": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "capacidade_de_melhoria": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "segmento_de_clientes": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "modelo_geracao_valor": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
-        "vantagem_competitiva": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."}
+        "proposta_de_valor": {
+            "level": 2,
+            "label": "Médio",
+            "feedback": "Análise contextualizada: cite trechos específicos do projeto (ex: 'O projeto menciona [dado X] mas não apresenta [evidência Y]'), identifique o que está presente e o que falta."
+        },
+        "pertinencia_ao_problema": {"level": 2, "label": "Médio", "feedback": "Cite dados/evidências do projeto e avalie adequação da solução."},
+        "alinhamento_com_objetivos": {"level": 2, "label": "Médio", "feedback": "Cite objetivos mencionados e avalie coerência."},
+        "adequacao_ao_contexto": {"level": 2, "label": "Médio", "feedback": "Cite público-alvo/contexto mencionado e avalie adaptação."},
+        "originalidade": {"level": 2, "label": "Médio", "feedback": "Cite elementos inovadores mencionados e avalie grau de novidade."},
+        "capacidade_de_diferenciacao": {"level": 2, "label": "Médio", "feedback": "Cite diferenciais mencionados e compare com mercado."},
+        "uso_inteligente_tecnologias": {"level": 2, "label": "Médio", "feedback": "Cite tecnologias mencionadas e avalie escolhas técnicas."},
+        "impacto_social_ambiental": {"level": 2, "label": "Médio", "feedback": "Cite dados de impacto (números, alcance) e avalie escala."},
+        "escalabilidade": {"level": 2, "label": "Médio", "feedback": "Avalie potencial de expansão com base no descrito."},
+        "sustentabilidade": {"level": 2, "label": "Médio", "feedback": "Cite modelo financeiro/parcerias e avalie viabilidade longo prazo."},
+        "indicadores_de_sucesso": {"level": 2, "label": "Médio", "feedback": "Identifique métricas mencionadas e avalie completude."},
+        "capacidade_de_melhoria": {"level": 2, "label": "Médio", "feedback": "Avalie se há menção a feedback, iterações ou processos de melhoria."},
+        "segmento_de_clientes": {"level": 2, "label": "Médio", "feedback": "Cite público-alvo descrito e avalie nível de detalhamento."},
+        "modelo_geracao_valor": {"level": 2, "label": "Médio", "feedback": "Cite fontes receita/custos mencionados e avalie viabilidade."},
+        "vantagem_competitiva": {"level": 2, "label": "Médio", "feedback": "Cite vantagens mencionadas e avalie sustentabilidade do diferencial."}
     },
     "analysis": {
         "clarity_problem": "Análise agrupada: critérios 1-3.",
@@ -81,7 +90,14 @@ Responda em JSON (sem markdown):
     }
 }
 
-Para cada critério em criteria_evaluation: level (1-3) e label (Ruim/Médio/Bom) com base nas evidências.
+INSTRUÇÕES DE FEEDBACK:
+1. Para CADA critério, cite evidências específicas do projeto (trechos, dados, números)
+2. Se algo estiver ausente, mencione explicitamente: "O projeto não menciona..."
+3. Se algo estiver presente, cite: "O projeto apresenta X, Y, Z..."
+4. No full_feedback, use o nome do projeto e cite exemplos concretos
+5. Seja específico e evite feedback genérico
+
+Exemplo de feedback contextualizado: "O projeto EcoConnect menciona '500 usuários ativos' e '65% engajamento', demonstrando validação prática. Entretanto, não apresenta dados sobre custo de aquisição de usuários nem análise de concorrentes diretos."
 """
 
     return prompt
