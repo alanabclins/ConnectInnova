@@ -24,12 +24,12 @@ def build_evaluation_prompt(project_data: Dict[str, Any]) -> str:
     """
     
     prompt = f"""Você é um avaliador acadêmico especializado em inovação e empreendedorismo.
-Analise o projeto abaixo com base nos 15 critérios, usando escala 1-3:
+Analise o projeto abaixo com base nos 15 critérios, usando escala 1-3, lembre-se de que o projeto está resumido:
 - 1 (Ruim): Incompleto, sem evidências
 - 2 (Médio): Coerente, evidências parciais  
 - 3 (Bom): Estruturado, validado
 
-IMPORTANTE: Para cada critério, cite EVIDÊNCIAS ESPECÍFICAS do texto do projeto. Use trechos reais, dados mencionados e informações concretas fornecidas.
+IMPORTANTE: Para cada critério, cite EVIDÊNCIAS ESPECÍFICAS do texto do projeto. Use trechos reais, dados mencionados e informações concretas fornecidas, e classifique com as notas de 1 a 3, escreva pelo menos de 4 a 5 linhas para o feedback de cada um dos campos abaixo.
 
 PROJETO:
 Título: {project_data.get('project_title', 'N/A')}
@@ -52,41 +52,41 @@ CRITÉRIOS (avalie cada um):
     prompt += """
 Responda em JSON (sem markdown):
 {
-    "full_feedback": "Avaliação geral do projeto em 3-4 parágrafos. Mencione o nome do projeto, cite dados específicos fornecidos (números, evidências, testes), destaque pontos fortes concretos e sugira melhorias específicas.",
+    "full_feedback": "Avaliação geral do projeto em parágrafos. Mencione o nome do projeto, cite dados específicos fornecidos (números, evidências, testes), destaque pontos fortes concretos e sugira melhorias específicas.",
     "criteria_evaluation": {
         "proposta_de_valor": {
             "level": 2,
             "label": "Médio",
             "feedback": "Análise contextualizada: cite trechos específicos do projeto (ex: 'O projeto menciona [dado X] mas não apresenta [evidência Y]'), identifique o que está presente e o que falta."
         },
-        "pertinencia_ao_problema": {"level": 2, "label": "Médio", "feedback": "Cite dados/evidências do projeto e avalie adequação da solução."},
-        "alinhamento_com_objetivos": {"level": 2, "label": "Médio", "feedback": "Cite objetivos mencionados e avalie coerência."},
-        "adequacao_ao_contexto": {"level": 2, "label": "Médio", "feedback": "Cite público-alvo/contexto mencionado e avalie adaptação."},
-        "originalidade": {"level": 2, "label": "Médio", "feedback": "Cite elementos inovadores mencionados e avalie grau de novidade."},
-        "capacidade_de_diferenciacao": {"level": 2, "label": "Médio", "feedback": "Cite diferenciais mencionados e compare com mercado."},
-        "uso_inteligente_tecnologias": {"level": 2, "label": "Médio", "feedback": "Cite tecnologias mencionadas e avalie escolhas técnicas."},
-        "impacto_social_ambiental": {"level": 2, "label": "Médio", "feedback": "Cite dados de impacto (números, alcance) e avalie escala."},
-        "escalabilidade": {"level": 2, "label": "Médio", "feedback": "Avalie potencial de expansão com base no descrito."},
-        "sustentabilidade": {"level": 2, "label": "Médio", "feedback": "Cite modelo financeiro/parcerias e avalie viabilidade longo prazo."},
-        "indicadores_de_sucesso": {"level": 2, "label": "Médio", "feedback": "Identifique métricas mencionadas e avalie completude."},
-        "capacidade_de_melhoria": {"level": 2, "label": "Médio", "feedback": "Avalie se há menção a feedback, iterações ou processos de melhoria."},
-        "segmento_de_clientes": {"level": 2, "label": "Médio", "feedback": "Cite público-alvo descrito e avalie nível de detalhamento."},
-        "modelo_geracao_valor": {"level": 2, "label": "Médio", "feedback": "Cite fontes receita/custos mencionados e avalie viabilidade."},
-        "vantagem_competitiva": {"level": 2, "label": "Médio", "feedback": "Cite vantagens mencionadas e avalie sustentabilidade do diferencial."}
+        "pertinencia_ao_problema": {"level": 2, "label": "Médio", "feedback": "Cite dados/evidências do projeto e avalie adequação da solução.","nota de 1 a 3"},
+        "alinhamento_com_objetivos": {"level": 2, "label": "Médio", "feedback": "Cite objetivos mencionados e avalie coerência.","nota de 1 a 3"},
+        "adequacao_ao_contexto": {"level": 2, "label": "Médio", "feedback": "Cite público-alvo/contexto mencionado e avalie adaptação.","nota de 1 a 3"},
+        "originalidade": {"level": 2, "label": "Médio", "feedback": "Cite elementos inovadores mencionados e avalie grau de novidade.","nota de 1 a 3"},
+        "capacidade_de_diferenciacao": {"level": 2, "label": "Médio", "feedback": "Cite diferenciais mencionados e compare com mercado.","nota de 1 a 3"},
+        "uso_inteligente_tecnologias": {"level": 2, "label": "Médio", "feedback": "Cite tecnologias mencionadas e avalie escolhas técnicas.","nota de 1 a 3"},
+        "impacto_social_ambiental": {"level": 2, "label": "Médio", "feedback": "Cite dados de impacto (números, alcance) e avalie escala.","nota de 1 a 3"},
+        "escalabilidade": {"level": 2, "label": "Médio", "feedback": "Avalie potencial de expansão com base no descrito.","nota de 1 a 3"},
+        "sustentabilidade": {"level": 2, "label": "Médio", "feedback": "Cite modelo financeiro/parcerias e avalie viabilidade longo prazo.","nota de 1 a 3"},
+        "indicadores_de_sucesso": {"level": 2, "label": "Médio", "feedback": "Identifique métricas mencionadas e avalie completude.","nota de 1 a 3"},
+        "capacidade_de_melhoria": {"level": 2, "label": "Médio", "feedback": "Avalie se há menção a feedback, iterações ou processos de melhoria.","nota de 1 a 3"},
+        "segmento_de_clientes": {"level": 2, "label": "Médio", "feedback": "Cite público-alvo descrito e avalie nível de detalhamento.","nota de 1 a 3"},
+        "modelo_geracao_valor": {"level": 2, "label": "Médio", "feedback": "Cite fontes receita/custos mencionados e avalie viabilidade.","nota de 1 a 3"},
+        "vantagem_competitiva": {"level": 2, "label": "Médio", "feedback": "Cite vantagens mencionadas e avalie sustentabilidade do diferencial.","nota de 1 a 3"}
     },
     "analysis": {
-        "clarity_problem": "Análise agrupada: critérios 1-3.",
-        "inovation_grade": "Análise agrupada: critérios 5-7,15.",
-        "social_impact": "Análise agrupada: critérios 8-12.",
-        "tec_eco_viability": "Análise agrupada: critério 14.",
-        "application_potencial": "Análise agrupada: critérios 4,13."
+        "clarity_problem": "Análise agrupada: critérios 1-3, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3",
+        "inovation_grade": "Análise agrupada: critérios 5-7, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3",
+        "social_impact": "Análise agrupada: critérios 8-12, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3",
+        "tec_eco_viability": "Análise agrupada: critério 14, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3",
+        "application_potencial": "Análise agrupada: critérios 4, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3"
     },
     "resums": {
-        "clarity_resum": "Resumo 2-3 frases: proposta, pertinência, alinhamento.",
-        "inovation_grade_resum": "Resumo 2-3 frases: inovação, diferenciação, tecnologias.",
-        "social_impact_resum": "Resumo 2-3 frases: impacto, sustentabilidade, melhoria.",
-        "tec_eco_viability_resum": "Resumo 2-3 frases: viabilidade, modelo, escalabilidade.",
-        "application_potencial_resum": "Resumo 2-3 frases: aplicação, contexto, clientes."
+        "clarity_resum": "Resumo 4-5 frases: proposta, pertinência, análise de pelo menos 3 a 4 linhas com nota de 1 a 3"",
+        "inovation_grade_resum": "Resumo 4-5 frases: inovação, diferenciação, tecnologias e nota de 1 a 3"",
+        "social_impact_resum": "Resumo 4-5 frases: impacto, sustentabilidade, melhoria e nota de 1 a 3"",
+        "tec_eco_viability_resum": "Resumo 4-5 frases: viabilidade, modelo, escalabilidade e nota de 1 a 3"",
+        "application_potencial_resum": "Resumo 4-5 frases: aplicação, contexto, clientes e nota de 1 a 3""
     }
 }
 
@@ -96,8 +96,9 @@ INSTRUÇÕES DE FEEDBACK:
 3. Se algo estiver presente, cite: "O projeto apresenta X, Y, Z..."
 4. No full_feedback, use o nome do projeto e cite exemplos concretos
 5. Seja específico e evite feedback genérico
+6. Dê notas de 1 = 'ruim', 2 = 'médio' = 3 = 'bom' para cada critério na sua avaliação, junto aos pontos fortes e fracos que você colocar.
+7. Coloque ao menos 4 a 5 linhas para cada avaliação de cada critério
 
-Exemplo de feedback contextualizado: "O projeto EcoConnect menciona '500 usuários ativos' e '65% engajamento', demonstrando validação prática. Entretanto, não apresenta dados sobre custo de aquisição de usuários nem análise de concorrentes diretos."
 """
 
     return prompt
