@@ -23,8 +23,8 @@ def build_evaluation_prompt(project_data: Dict[str, Any]) -> str:
     Constrói o prompt completo de avaliação baseado nos dados do projeto (otimizado para ~3000 tokens).
     """
     
-    prompt = f"""Avaliador acadêmico especializado em inovação e empreendedorismo. Avalie usando escala 1-5:
-1-2=Ruim (incompleto, sem evidências), 3=Médio (coerente, evidências parciais), 4=Bom (estruturado, evidências claras), 5=Excelente (validado, comprovado).
+    prompt = f"""Avaliador acadêmico especializado em inovação e empreendedorismo. Avalie usando escala 1-3:
+1=Ruim (incompleto, sem evidências), 2=Médio (coerente, evidências parciais), 3=Bom (estruturado, validado).
 
 PROJETO:
 Título: {project_data.get('project_title', 'N/A')}
@@ -36,37 +36,52 @@ Impacto: {project_data.get('social_impact', 'N/A')}
 Viabilidade: {project_data.get('tec_eco_viability', 'N/A')}
 Aplicação: {project_data.get('application_potencial', 'N/A')}
 
-CRITÉRIOS (15 critérios baseados em Lean Canvas):
+CRITÉRIOS (15 critérios):
 """
 
-    # Adiciona cada critério de forma compacta
+    # Adiciona cada critério de forma compacta (apenas nome e definição)
     for idx, (key, criterion) in enumerate(EVALUATION_CRITERIA.items(), 1):
-        # Pega apenas o nível médio (3) como referência
-        level_3 = criterion['levels'][2]
-        prompt += f"{idx}. {criterion['name']}: {criterion['definition']} N3={level_3['description']}\n"
+        prompt += f"{idx}. {criterion['name']}: {criterion['definition']}\n"
 
-    # Adiciona instruções de saída - formato compatível com o sistema existente
+    # Adiciona instruções de saída com os 15 critérios individualizados
     prompt += """
 Responda em JSON (sem markdown):
 {
     "full_feedback": "Avaliação geral em 3-4 parágrafos, pontos fortes e melhorias.",
+    "criteria_evaluation": {
+        "proposta_de_valor": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "pertinencia_ao_problema": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "alinhamento_com_objetivos": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "adequacao_ao_contexto": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "originalidade": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "capacidade_de_diferenciacao": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "uso_inteligente_tecnologias": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "impacto_social_ambiental": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "escalabilidade": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "sustentabilidade": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "indicadores_de_sucesso": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "capacidade_de_melhoria": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "segmento_de_clientes": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "modelo_geracao_valor": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."},
+        "vantagem_competitiva": {"level": 1, "label": "Ruim", "feedback": "Análise específica com evidências."}
+    },
     "analysis": {
-        "clarity_problem": "Análise agrupando critérios 1-3 (Proposta Valor, Pertinência, Alinhamento). Cite evidências.",
-        "inovation_grade": "Análise agrupando critérios 4-7 (Originalidade, Diferenciação, Tecnologias, Vantagem). Cite evidências.",
-        "social_impact": "Análise agrupando critérios 8-12 (Impacto, Escalabilidade, Sustentabilidade, Indicadores, Melhoria). Cite evidências.",
-        "tec_eco_viability": "Análise agrupando critério 14 (Modelo Valor). Cite evidências.",
-        "application_potencial": "Análise agrupando critérios 4,13 (Adequação Contexto, Segmento Clientes). Cite evidências."
+        "clarity_problem": "Análise agrupada: critérios 1-3.",
+        "inovation_grade": "Análise agrupada: critérios 5-7,15.",
+        "social_impact": "Análise agrupada: critérios 8-12.",
+        "tec_eco_viability": "Análise agrupada: critério 14.",
+        "application_potencial": "Análise agrupada: critérios 4,13."
     },
     "resums": {
         "clarity_resum": "Resumo 2-3 frases: proposta, pertinência, alinhamento.",
-        "inovation_grade_resum": "Resumo 2-3 frases: inovação, diferenciação, tecnologia.",
+        "inovation_grade_resum": "Resumo 2-3 frases: inovação, diferenciação, tecnologias.",
         "social_impact_resum": "Resumo 2-3 frases: impacto, sustentabilidade, melhoria.",
         "tec_eco_viability_resum": "Resumo 2-3 frases: viabilidade, modelo, escalabilidade.",
         "application_potencial_resum": "Resumo 2-3 frases: aplicação, contexto, clientes."
     }
 }
 
-Avalie com evidências do texto, considere os 15 critérios agrupados nos 5 campos.
+Para cada critério em criteria_evaluation: level (1-3) e label (Ruim/Médio/Bom) com base nas evidências.
 """
 
     return prompt

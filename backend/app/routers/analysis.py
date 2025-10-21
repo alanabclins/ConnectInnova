@@ -145,6 +145,7 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
         ai_feedback_application_potencial=ai_data["analysis"].get(
             "application_potencial", ""
         ),
+        criteria_evaluation=ai_data.get("criteria_evaluation", {}),  # Salva os 15 critérios
     )
 
     feedback_doc = Feedback(**feedback_schema.model_dump())
@@ -170,4 +171,5 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
         "feedback_id": str(feedback_doc.uuid),
         "resum_id": str(resum_doc.uuid),
         "feedback_summary": ai_data["full_feedback"],
+        "criteria_evaluation": ai_data.get("criteria_evaluation", {}),  # Avaliação dos 15 critérios
     }

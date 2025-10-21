@@ -22,6 +22,9 @@ class Feedback(Document):
     ai_feedback_social_impact: Optional[str] = None
     ai_feedback_tec_eco_viability: Optional[str] = None
     ai_feedback_application_potencial: Optional[str] = None
+    
+    # Avaliação detalhada dos 15 critérios (escala 1-3)
+    criteria_evaluation: Optional[dict] = Field(default_factory=dict)
 
     class Settings:
         name = "Feedback"

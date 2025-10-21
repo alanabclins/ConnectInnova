@@ -14,6 +14,7 @@ class FeedbackSchema(BaseModel):
     ai_feedback_social_impact: Optional[str] = None
     ai_feedback_tec_eco_viability: Optional[str] = None
     ai_feedback_application_potencial: Optional[str] = None
+    criteria_evaluation: Optional[dict] = Field(default=None, description="Avaliação dos 15 critérios (level, label, feedback)")
 
     # >>> Corrigido: passe um callable (lambda) como default_factory
     timestamp: datetime = Field(default_factory=lambda: datetime.utcnow())
