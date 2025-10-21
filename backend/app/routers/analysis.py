@@ -5,6 +5,7 @@ from fastapi import APIRouter, Body, HTTPException
 from google import genai
 
 from app.config.config import settings
+from app.evaluation_criteria import EVALUATION_CRITERIA
 from app.models.ai_resume import AIResum
 from app.models.feedback import Feedback
 from app.models.projects import Project
@@ -70,38 +71,56 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
     if not student:
         raise HTTPException(status_code=404, detail="Aluno vinculado não encontrado.")
 
-    # 3️ Cria o prompt dinâmico
+    # 3️ Cria o prompt dinâmico estruturado com base nos 15 critérios
+    
+    # Constrói a tabela de critérios de forma compacta
+    criteria_table = ""
+    for idx, (key, criterion) in enumerate(EVALUATION_CRITERIA.items(), 1):
+        criteria_table += f"\n{idx}. **{criterion['name']}**: {criterion['definition']}\n"
+        # Apenas os níveis extremos e médio para economizar tokens
+        for level_data in [criterion['levels'][0], criterion['levels'][2], criterion['levels'][4]]:
+            criteria_table += f"N{level_data['level']} ({level_data['label']}): {level_data['description']}\n"
+
     prompt = f"""
-    Analise o seguinte projeto universitário e descreva os seguintes aspectos:
-    - Clareza do problema
-    - Grau de inovação
-    - Impacto social
-    - Viabilidade técnica e econômica
-    - Potencial de aplicação
+Você é um avaliador acadêmico especializado em inovação e empreendedorismo. Avalie o projeto com base nos critérios abaixo, usando escala 1-5:
+- Níveis 1-2 (Ruim): Incompleto, sem evidências
+- Nível 3 (Médio): Coerente, evidências parciais
+- Nível 4 (Bom): Estruturado, com evidências
+- Nível 5 (Excelente): Completo, validado, comprovado
 
-    Dados do projeto:
-    Título: {project.project_title}
-    Descrição: {project.project_description}
-    Solução proposta: {project.solution_proposal}
+PROJETO:
+Título: {project.project_title}
+Descrição: {project.project_description}
+Solução: {project.solution_proposal}
+Problema: {project.clarity_problem}
+Inovação: {project.inovation_grade}
+Impacto: {project.social_impact}
+Viabilidade: {project.tec_eco_viability}
+Aplicação: {project.application_potencial}
 
-    Responda EXCLUSIVAMENTE em formato JSON:
-    {{
-        "full_feedback": "texto geral sobre o projeto",
-        "analysis": {{
-            "clarity_problem": "...",
-            "inovation_grade": "...",
-            "social_impact": "...",
-            "tec_eco_viability": "...",
-            "application_potencial": "..."
-        }},
-        "resums": {{
-            "clarity_resum": "...",
-            "inovation_grade_resum": "...",
-            "social_impact_resum": "...",
-            "tec_eco_viability_resum": "...",
-            "application_potencial_resum": "..."
-        }}
+CRITÉRIOS (analise cada um considerando os níveis):
+{criteria_table}
+
+Responda em JSON (sem markdown):
+{{
+    "full_feedback": "Avaliação geral em 3-4 parágrafos com pontos fortes e áreas de melhoria baseada nos 15 critérios.",
+    "analysis": {{
+        "clarity_problem": "Análise sobre clareza do problema, pertinência, alinhamento. Cite evidências e indique nível implicitamente.",
+        "inovation_grade": "Análise sobre inovação, originalidade, diferenciação, tecnologias. Cite evidências.",
+        "social_impact": "Análise sobre impacto social/ambiental, sustentabilidade, melhoria. Cite evidências.",
+        "tec_eco_viability": "Análise sobre viabilidade técnica/econômica, modelo de valor, escalabilidade. Cite evidências.",
+        "application_potencial": "Análise sobre aplicação, contexto, clientes, indicadores. Cite evidências."
+    }},
+    "resums": {{
+        "clarity_resum": "Resumo em 2-3 frases: problema, pertinência, alinhamento.",
+        "inovation_grade_resum": "Resumo em 2-3 frases: inovação, diferenciação, tecnologias.",
+        "social_impact_resum": "Resumo em 2-3 frases: impacto, sustentabilidade, melhoria.",
+        "tec_eco_viability_resum": "Resumo em 2-3 frases: viabilidade, modelo, escalabilidade.",
+        "application_potencial_resum": "Resumo em 2-3 frases: aplicação, contexto, indicadores."
     }}
+}}
+
+Avalie com base nas evidências do texto, considere todos os 15 critérios agrupados nos 5 campos acima.
     """
 
     if custom_prompt:

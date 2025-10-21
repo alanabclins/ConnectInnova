@@ -43,7 +43,7 @@ class EvaluationCriterion(TypedDict):
 # =============================================================================
 
 EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
-    
+
     "proposta_de_valor": {
         "name": "Proposta de Valor",
         "definition": (
@@ -1179,14 +1179,14 @@ def get_level_description(criterion_key: str, level: int) -> CriterionLevel:
         ValueError: Se o nível for inválido
     """
     criterion = get_criterion(criterion_key)
-    
+
     if not 1 <= level <= 5:
         raise ValueError(f"Nível deve estar entre 1 e 5, recebido: {level}")
-    
+
     for level_data in criterion["levels"]:
         if level_data["level"] == level:
             return level_data
-    
+
     raise ValueError(f"Nível {level} não encontrado para o critério '{criterion_key}'")
 
 
