@@ -5,26 +5,56 @@ import { cn } from "@/lib/utils";
 export interface AvCardData {
   name: string;
   level: number; // 1-5
-  levelLabel: string; // "Ruim", "Médio", "Bom"
+  label?: string;
   justification: string;
-  suggestion: string;
+  suggestion?: string;
 }
 
 interface AvCardProps {
   avCard: AvCardData;
 }
 
-const getLevelColor = (level: number) => {
-  if (level >= 4) return "bg-status-good text-white";
-  if (level === 3) return "bg-status-medium text-white";
-  return "bg-status-poor text-white";
-};
+const levelMap = [
+  {
+    min: 5,
+    label: "Excelente",
+    color: "bg-green-600 text-white",
+    border: "border-l-green-600",
+  },
+  {
+    min: 4,
+    label: "Bom",
+    color: "bg-green-600 text-white",
+    border: "border-l-green-600",
+  },
+  {
+    min: 3,
+    label: "Mediano",
+    color: "bg-yellow-600 text-white",
+    border: "border-l-yellow-600",
+  },
+  {
+    min: 2,
+    label: "Ruim",
+    color: "bg-red-500 text-white",
+    border: "border-l-red-500",
+  },
+  {
+    min: 1,
+    label: "Péssimo",
+    color: "bg-red-500 text-white",
+    border: "border-l-red-500",
+  },
+];
 
-const getLevelBorderColor = (level: number) => {
-  if (level >= 4) return "border-l-status-good";
-  if (level === 3) return "border-l-status-medium";
-  return "border-l-status-poor";
-};
+const getLevelColor = (level: number) =>
+  levelMap.find((l) => level >= l.min)?.color || "bg-red-500 text-white";
+
+const getLevelBorderColor = (level: number) =>
+  levelMap.find((l) => level >= l.min)?.border || "border-l-red-500";
+
+const getLevelLabel = (level: number) =>
+  levelMap.find((l) => level >= l.min)?.label || "Péssimo";
 
 export const AvCard = ({ avCard }: AvCardProps) => {
   return (
@@ -45,8 +75,7 @@ export const AvCard = ({ avCard }: AvCardProps) => {
               getLevelColor(avCard.level)
             )}
           >
-            {" "}
-            Nível {avCard.level} - {avCard.levelLabel}{" "}
+            Nível {avCard.level} - {getLevelLabel(avCard.level)}
           </Badge>
         </div>
       </CardHeader>
