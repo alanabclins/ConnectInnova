@@ -1,8 +1,9 @@
 from typing import Any, List
 from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 
-from .. import models, schemas
+from .. import models
 from ..auth.auth import get_current_active_user
 
 router = APIRouter()
