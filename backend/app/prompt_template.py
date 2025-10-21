@@ -20,262 +20,53 @@ from app.evaluation_criteria import EVALUATION_CRITERIA
 
 def build_evaluation_prompt(project_data: Dict[str, Any]) -> str:
     """
-    Constrói o prompt completo de avaliação baseado nos dados do projeto.
-    
-    Args:
-        project_data: Dicionário com dados do projeto incluindo:
-            - project_title: Título do projeto
-            - project_description: Descrição do projeto
-            - solution_proposal: Proposta de solução
-            - clarity_problem: Informações sobre o problema
-            - inovation_grade: Informações sobre inovação
-            - social_impact: Informações sobre impacto social
-            - tec_eco_viability: Informações sobre viabilidade
-            - application_potencial: Informações sobre potencial de aplicação
-            
-    Returns:
-        String contendo o prompt completo formatado
+    Constrói o prompt completo de avaliação baseado nos dados do projeto (otimizado para ~3000 tokens).
     """
+    
+    prompt = f"""Avaliador acadêmico especializado em inovação e empreendedorismo. Avalie usando escala 1-5:
+1-2=Ruim (incompleto, sem evidências), 3=Médio (coerente, evidências parciais), 4=Bom (estruturado, evidências claras), 5=Excelente (validado, comprovado).
 
-    prompt = f"""
-# PAPEL E CONTEXTO
+PROJETO:
+Título: {project_data.get('project_title', 'N/A')}
+Descrição: {project_data.get('project_description', 'N/A')}
+Solução: {project_data.get('solution_proposal', 'N/A')}
+Problema: {project_data.get('clarity_problem', 'N/A')}
+Inovação: {project_data.get('inovation_grade', 'N/A')}
+Impacto: {project_data.get('social_impact', 'N/A')}
+Viabilidade: {project_data.get('tec_eco_viability', 'N/A')}
+Aplicação: {project_data.get('application_potencial', 'N/A')}
 
-Você é um **avaliador acadêmico especializado em inovação, empreendedorismo e projetos tecnológicos**. 
-Seu objetivo é avaliar projetos universitários e startups de forma rigorosa, objetiva e construtiva, 
-utilizando critérios bem definidos baseados em metodologias como Lean Canvas, Business Model Canvas 
-e frameworks de avaliação de inovação.
-
-Você possui expertise em:
-- Análise de modelos de negócio e geração de valor
-- Avaliação de inovação tecnológica e social
-- Validação de problemas e soluções
-- Mensuração de impacto e escalabilidade
-- Empreendedorismo e gestão de startups
-
----
-
-# INSTRUÇÕES GERAIS DE PROCEDIMENTO
-
-1. **Avalie cada critério SEPARADAMENTE e INDEPENDENTEMENTE**
-2. **Compare o texto do projeto com as definições de níveis apresentadas**
-3. **Justifique cada avaliação com base em EVIDÊNCIAS TEXTUAIS** encontradas no projeto
-4. **Seja objetivo, construtivo e específico** nos feedbacks
-5. **Identifique lacunas e oportunidades de melhoria** de forma clara
-6. **Utilize a escala de 1 a 5** conforme as definições detalhadas abaixo
-7. **Forneça next_steps acionáveis** que ajudem o time a evoluir para o próximo nível
-
----
-
-# ESCALA DE CLASSIFICAÇÃO
-
-- **RUIM (Níveis 1-2)**: Resposta incompleta, incoerente, genérica ou sem fundamentação. Ausência de evidências ou validação.
-- **MÉDIO (Nível 3)**: Resposta coerente, mas com falhas significativas de clareza, validação ou aplicabilidade. Evidências parciais.
-- **BOM (Nível 4)**: Resposta bem estruturada, com evidências claras, aplicabilidade demonstrada e boa fundamentação.
-- **EXCELENTE (Nível 5)**: Resposta completa, validada com evidências sólidas, impacto comprovado e qualidade exemplar.
-
----
-
-# DADOS DO PROJETO A SER AVALIADO
-
-**Título do Projeto:**
-{project_data.get('project_title', 'Não informado')}
-
-**Descrição do Projeto:**
-{project_data.get('project_description', 'Não informado')}
-
-**Proposta de Solução:**
-{project_data.get('solution_proposal', 'Não informado')}
-
-**Informações sobre o Problema:**
-{project_data.get('clarity_problem', 'Não informado')}
-
-**Informações sobre Inovação:**
-{project_data.get('inovation_grade', 'Não informado')}
-
-**Informações sobre Impacto Social:**
-{project_data.get('social_impact', 'Não informado')}
-
-**Informações sobre Viabilidade Técnica e Econômica:**
-{project_data.get('tec_eco_viability', 'Não informado')}
-
-**Informações sobre Potencial de Aplicação:**
-{project_data.get('application_potencial', 'Não informado')}
-
----
-
-# TABELA DE REFERÊNCIA: CRITÉRIOS DE AVALIAÇÃO
-
-Avalie o projeto nos seguintes 15 critérios, utilizando as definições e escalas detalhadas abaixo:
-
+CRITÉRIOS (15 critérios baseados em Lean Canvas):
 """
 
-    # Adiciona cada critério com suas definições e níveis
+    # Adiciona cada critério de forma compacta
     for idx, (key, criterion) in enumerate(EVALUATION_CRITERIA.items(), 1):
-        prompt += f"""
-## {idx}. {criterion['name']}
+        # Pega apenas o nível médio (3) como referência
+        level_3 = criterion['levels'][2]
+        prompt += f"{idx}. {criterion['name']}: {criterion['definition']} N3={level_3['description']}\n"
 
-**Definição:** {criterion['definition']}
-
-**Indicadores Mensuráveis a Buscar:**
-{chr(10).join(f'- {indicator}' for indicator in criterion['measurable_indicators'])}
-
-**Escala de Níveis:**
-
-"""
-        # Adiciona cada nível do critério
-        for level_data in criterion['levels']:
-            prompt += f"""**Nível {level_data['level']} ({level_data['label']}):**
-- Descrição: {level_data['description']}
-- Sinais textuais esperados:
-{chr(10).join(f'  • {indicator}' for indicator in level_data['indicators'])}
-
-"""
-
-    # Adiciona instruções de saída
+    # Adiciona instruções de saída - formato compatível com o sistema existente
     prompt += """
----
-
-# FORMATO DE SAÍDA OBRIGATÓRIO
-
-Você DEVE responder EXCLUSIVAMENTE em formato JSON válido, seguindo EXATAMENTE a estrutura abaixo.
-NÃO inclua comentários, explicações fora do JSON ou blocos de código markdown.
-
-```json
+Responda em JSON (sem markdown):
 {
-    "full_feedback": "Avaliação geral do projeto em 3-5 parágrafos, destacando principais pontos fortes e áreas de melhoria de forma construtiva e específica.",
-    
-    "criteria_evaluation": {
-        "proposta_de_valor": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto, explicando por que este nível foi atribuído.",
-            "next_step": "Ação concreta e acionável para evoluir para o próximo nível."
-        },
-        "pertinencia_ao_problema": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "alinhamento_com_objetivos": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "adequacao_ao_contexto": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "originalidade": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "capacidade_de_diferenciacao": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "uso_inteligente_tecnologias": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "impacto_social_ambiental": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "escalabilidade": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "sustentabilidade": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "indicadores_de_sucesso": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "capacidade_de_melhoria": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "segmento_de_clientes": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "modelo_geracao_valor": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        },
-        "vantagem_competitiva": {
-            "level": 1,
-            "label": "Ruim",
-            "feedback": "Descrição objetiva e específica baseada em evidências do texto.",
-            "next_step": "Ação concreta para melhorar."
-        }
+    "full_feedback": "Avaliação geral em 3-4 parágrafos, pontos fortes e melhorias.",
+    "analysis": {
+        "clarity_problem": "Análise agrupando critérios 1-3 (Proposta Valor, Pertinência, Alinhamento). Cite evidências.",
+        "inovation_grade": "Análise agrupando critérios 4-7 (Originalidade, Diferenciação, Tecnologias, Vantagem). Cite evidências.",
+        "social_impact": "Análise agrupando critérios 8-12 (Impacto, Escalabilidade, Sustentabilidade, Indicadores, Melhoria). Cite evidências.",
+        "tec_eco_viability": "Análise agrupando critério 14 (Modelo Valor). Cite evidências.",
+        "application_potencial": "Análise agrupando critérios 4,13 (Adequação Contexto, Segmento Clientes). Cite evidências."
     },
-    
-    "summary": {
-        "average_score": 0.0,
-        "strengths": [
-            "Ponto forte 1 com base em evidências",
-            "Ponto forte 2 com base em evidências",
-            "Ponto forte 3 com base em evidências"
-        ],
-        "improvement_areas": [
-            "Área de melhoria 1 específica",
-            "Área de melhoria 2 específica",
-            "Área de melhoria 3 específica"
-        ],
-        "priority_actions": [
-            "Ação prioritária 1 para maior impacto",
-            "Ação prioritária 2 para maior impacto",
-            "Ação prioritária 3 para maior impacto"
-        ]
+    "resums": {
+        "clarity_resum": "Resumo 2-3 frases: proposta, pertinência, alinhamento.",
+        "inovation_grade_resum": "Resumo 2-3 frases: inovação, diferenciação, tecnologia.",
+        "social_impact_resum": "Resumo 2-3 frases: impacto, sustentabilidade, melhoria.",
+        "tec_eco_viability_resum": "Resumo 2-3 frases: viabilidade, modelo, escalabilidade.",
+        "application_potencial_resum": "Resumo 2-3 frases: aplicação, contexto, clientes."
     }
 }
-```
 
----
-
-# DIRETRIZES FINAIS
-
-1. **Baseie-se APENAS nas informações fornecidas no projeto**
-2. **Cite evidências específicas** do texto ao justificar cada nível
-3. **Seja construtivo e educativo** nos feedbacks
-4. **Forneça next_steps práticos e acionáveis**
-5. **Mantenha objetividade e imparcialidade**
-6. **Use linguagem clara e profissional**
-7. **Calcule average_score como a média aritmética dos 15 níveis**
-8. **Identifique 3-5 pontos fortes reais baseados em evidências**
-9. **Identifique 3-5 áreas de melhoria prioritárias**
-10. **Sugira 3-5 ações prioritárias ordenadas por impacto**
-
----
-
-Agora, proceda com a avaliação completa do projeto apresentado, seguindo rigorosamente todas as instruções e o formato JSON especificado.
+Avalie com evidências do texto, considere os 15 critérios agrupados nos 5 campos.
 """
 
     return prompt
