@@ -8,6 +8,7 @@ from app.config.config import settings
 from app.models.ai_resume import AIResum
 from app.models.projects import Project
 from app.models.users import User
+
 from ..prompt_template import build_resum_prompt  # ✅ usa o prompt que você mostrou
 
 router = APIRouter()
@@ -29,22 +30,22 @@ async def generate_resum(project_uuid: UUID):
     project = await Project.find_one(Project.uuid == project_uuid)
     if not project:
         raise HTTPException(status_code=404, detail="Projeto não encontrado.")
-    
+
     # 2️⃣ Busca o aluno vinculado
     student = await User.find_one(User.uuid == project.student_id)
     if not student:
         raise HTTPException(status_code=404, detail="Aluno vinculado não encontrado.")
-    
+
     # 3️⃣ Cria o prompt com base nos dados do projeto
     project_data = {
-        'project_title': project.project_title,
-        'project_description': project.project_description,
-        'solution_proposal': project.solution_proposal,
-        'clarity_problem': project.clarity_problem,
-        'inovation_grade': project.inovation_grade,
-        'social_impact': project.social_impact,
-        'tec_eco_viability': project.tec_eco_viability,
-        'application_potencial': project.application_potencial,
+        "project_title": project.project_title,
+        "project_description": project.project_description,
+        "solution_proposal": project.solution_proposal,
+        "clarity_problem": project.clarity_problem,
+        "inovation_grade": project.inovation_grade,
+        "social_impact": project.social_impact,
+        "tec_eco_viability": project.tec_eco_viability,
+        "application_potencial": project.application_potencial,
     }
 
     prompt = build_resum_prompt(project_data)
@@ -81,7 +82,9 @@ async def generate_resum(project_uuid: UUID):
 
     # 5️⃣ Valida o formato do JSON
     if not ai_data or "resums" not in ai_data:
-        raise HTTPException(status_code=500, detail="❌ Resposta da IA em formato inválido ou incompleto.")
+        raise HTTPException(
+            status_code=500, detail="❌ Resposta da IA em formato inválido ou incompleto."
+        )
 
     resums_data = ai_data["resums"]
 
@@ -102,5 +105,5 @@ async def generate_resum(project_uuid: UUID):
     return {
         "message": "✅ Resumo gerado com sucesso!",
         "resum_id": str(resum_doc.uuid),
-        "resums": resums_data
+        "resums": resums_data,
     }

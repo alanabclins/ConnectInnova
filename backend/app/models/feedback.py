@@ -18,11 +18,16 @@ class Feedback(Document):
     )
 
     ai_feedback_clarity_problem: Optional[str] = None
+    ai_feedback_clarity_problem_level: Optional[int] = None
     ai_feedback_inovation_grade: Optional[str] = None
+    ai_feedback_inovation_grade_level: Optional[int] = None
     ai_feedback_social_impact: Optional[str] = None
+    ai_feedback_social_impact_level: Optional[int] = None
     ai_feedback_tec_eco_viability: Optional[str] = None
+    ai_feedback_tec_eco_viability_level: Optional[int] = None
     ai_feedback_application_potencial: Optional[str] = None
-    
+    ai_feedback_application_potencial_level: Optional[int] = None
+
     # Avaliação detalhada dos 15 critérios (escala 1-3)
     criteria_evaluation: Optional[dict] = Field(default_factory=dict)
 

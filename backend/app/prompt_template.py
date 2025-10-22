@@ -22,7 +22,7 @@ def build_evaluation_prompt(project_data: Dict[str, Any]) -> str:
     """
     Constrói o prompt completo de avaliação baseado nos dados do projeto (otimizado para ~3000 tokens).
     """
-    
+
     prompt = f"""Você é um avaliador acadêmico sênior, especializado em inovação e empreendedorismo (Lean Canvas).
 Sua tarefa é analisar o projeto abaixo e fornecer um feedback detalhado para CADA UM dos 15 critérios de avaliação, além de um feedback geral.
 
@@ -147,27 +147,29 @@ Sua resposta deve ser APENAS um objeto JSON válido, sem markdown (```json) ou q
     return prompt
 
 
-def build_simple_prompt(project_title: str, project_description: str, solution_proposal: str) -> str:
+def build_simple_prompt(
+    project_title: str, project_description: str, solution_proposal: str
+) -> str:
     """
     Constrói uma versão simplificada do prompt para projetos com dados mínimos.
-    
+
     Args:
         project_title: Título do projeto
         project_description: Descrição do projeto
         solution_proposal: Proposta de solução
-        
+
     Returns:
         String contendo o prompt simplificado
     """
     project_data = {
-        'project_title': project_title,
-        'project_description': project_description,
-        'solution_proposal': solution_proposal,
-        'clarity_problem': 'Não informado',
-        'inovation_grade': 'Não informado',
-        'social_impact': 'Não informado',
-        'tec_eco_viability': 'Não informado',
-        'application_potencial': 'Não informado'
+        "project_title": project_title,
+        "project_description": project_description,
+        "solution_proposal": solution_proposal,
+        "clarity_problem": "Não informado",
+        "inovation_grade": "Não informado",
+        "social_impact": "Não informado",
+        "tec_eco_viability": "Não informado",
+        "application_potencial": "Não informado",
     }
 
     return build_evaluation_prompt(project_data)
@@ -177,7 +179,7 @@ def build_resum_prompt(project_data: dict[str, Any]) -> str:
     """
     Constrói o prompt para resumo do projeto.
     """
-    prompt2 = f'''
+    prompt2 = f"""
 Seu papel é resumir os seguintes campos de cada projeto:
 PROJETO:
 Título: {project_data.get('project_title', 'N/A')}
@@ -199,13 +201,14 @@ IMPORTANTE! VOCÊ DEVE RETORNAR UM RESUMO PARA CADA CAMPO SEPARADO, EM FORMATO J
         "application_potencial_resum": "..."
     }}
 }}
-'''
+"""
     return prompt2
+
 
 def get_criteria_summary() -> str:
     """
     Retorna um resumo dos critérios de avaliação para documentação.
-    
+
     Returns:
         String formatada com lista de todos os critérios
     """
@@ -218,41 +221,41 @@ def get_criteria_summary() -> str:
 
 # Template de exemplo para testes
 EXAMPLE_PROJECT_DATA = {
-    'project_title': 'EcoConnect - Plataforma de Reciclagem Inteligente',
-    'project_description': (
-        'Aplicativo mobile que conecta pessoas que desejam descartar materiais '
-        'recicláveis com cooperativas de reciclagem locais, facilitando a logística '
-        'e aumentando a taxa de reciclagem urbana.'
+    "project_title": "EcoConnect - Plataforma de Reciclagem Inteligente",
+    "project_description": (
+        "Aplicativo mobile que conecta pessoas que desejam descartar materiais "
+        "recicláveis com cooperativas de reciclagem locais, facilitando a logística "
+        "e aumentando a taxa de reciclagem urbana."
     ),
-    'solution_proposal': (
-        'Plataforma digital com geolocalização que permite agendamento de coletas, '
-        'gamificação para incentivar usuários, e dashboard para cooperativas '
-        'gerenciarem rotas de coleta de forma otimizada.'
+    "solution_proposal": (
+        "Plataforma digital com geolocalização que permite agendamento de coletas, "
+        "gamificação para incentivar usuários, e dashboard para cooperativas "
+        "gerenciarem rotas de coleta de forma otimizada."
     ),
-    'clarity_problem': (
-        'Apenas 4% do lixo reciclável no Brasil é efetivamente reciclado. '
-        'Entrevistamos 50 moradores e identificamos que a principal barreira '
-        'é a dificuldade de encontrar pontos de coleta e a falta de incentivos.'
+    "clarity_problem": (
+        "Apenas 4% do lixo reciclável no Brasil é efetivamente reciclado. "
+        "Entrevistamos 50 moradores e identificamos que a principal barreira "
+        "é a dificuldade de encontrar pontos de coleta e a falta de incentivos."
     ),
-    'inovation_grade': (
-        'Utilizamos algoritmos de otimização de rotas e gamificação com recompensas '
-        'reais em estabelecimentos parceiros. Não existe solução similar no mercado '
-        'que integre estes elementos.'
+    "inovation_grade": (
+        "Utilizamos algoritmos de otimização de rotas e gamificação com recompensas "
+        "reais em estabelecimentos parceiros. Não existe solução similar no mercado "
+        "que integre estes elementos."
     ),
-    'social_impact': (
-        'Projeto pode beneficiar mais de 10.000 famílias em comunidades onde '
-        'cooperativas atuam, gerando renda através da reciclagem e reduzindo '
-        'poluição ambiental.'
+    "social_impact": (
+        "Projeto pode beneficiar mais de 10.000 famílias em comunidades onde "
+        "cooperativas atuam, gerando renda através da reciclagem e reduzindo "
+        "poluição ambiental."
     ),
-    'tec_eco_viability': (
-        'App desenvolvido em React Native, backend em Node.js. Modelo freemium '
-        'com assinatura premium para empresas. Custo inicial de R$50k para MVP.'
+    "tec_eco_viability": (
+        "App desenvolvido em React Native, backend em Node.js. Modelo freemium "
+        "com assinatura premium para empresas. Custo inicial de R$50k para MVP."
     ),
-    'application_potencial': (
-        'Piloto validado em 2 bairros com 500 usuários ativos. Taxa de engajamento '
-        'de 65% e feedback positivo de 90% dos usuários. Expansão planejada para '
-        '5 cidades em 12 meses.'
-    )
+    "application_potencial": (
+        "Piloto validado em 2 bairros com 500 usuários ativos. Taxa de engajamento "
+        "de 65% e feedback positivo de 90% dos usuários. Expansão planejada para "
+        "5 cidades em 12 meses."
+    ),
 }
 
 
@@ -270,4 +273,3 @@ if __name__ == "__main__":
     print()
     prompt = build_evaluation_prompt(EXAMPLE_PROJECT_DATA)
     print(prompt)
-

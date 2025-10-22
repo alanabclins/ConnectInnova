@@ -23,6 +23,7 @@ from typing import Dict, List, TypedDict
 
 class CriterionLevel(TypedDict):
     """Estrutura de um nível de avaliação"""
+
     level: int
     label: str  # Ruim, Médio, Bom, Excelente
     description: str
@@ -31,6 +32,7 @@ class CriterionLevel(TypedDict):
 
 class EvaluationCriterion(TypedDict):
     """Estrutura completa de um critério de avaliação"""
+
     name: str
     definition: str
     levels: List[CriterionLevel]
@@ -42,7 +44,6 @@ class EvaluationCriterion(TypedDict):
 # =============================================================================
 
 EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
-
     "proposta_de_valor": {
         "name": "Proposta de Valor",
         "definition": (
@@ -54,30 +55,42 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Descrição clara e objetiva do valor entregue ao usuário",
             "Feedback de usuários reais ou potenciais",
             "Demonstração de diferencial em relação a concorrentes",
-            "Protótipo funcional ou MVP testado"
+            "Protótipo funcional ou MVP testado",
         ],
         "levels": [
             {
                 "level": 1,
                 "label": "Ruim",
                 "description": "Não apresenta claramente o problema nem o diferencial. Falta definição do valor.",
-                "indicators": ["Ausência de descrição do problema", "Não menciona benefícios", "Texto genérico"]
+                "indicators": [
+                    "Ausência de descrição do problema",
+                    "Não menciona benefícios",
+                    "Texto genérico",
+                ],
             },
             {
                 "level": 2,
                 "label": "Médio",
                 "description": "Problema e solução apresentados, mas com diferenciação pouco evidente.",
-                "indicators": ["Problema sem validação", "Solução básica", "Diferencial não fundamentado"]
+                "indicators": [
+                    "Problema sem validação",
+                    "Solução básica",
+                    "Diferencial não fundamentado",
+                ],
             },
             {
                 "level": 3,
                 "label": "Bom",
                 "description": "Problema e solução bem definidos, com diferencial claro e evidências de validação.",
-                "indicators": ["Problema com contexto", "Solução detalhada", "Diferencial justificado", "Evidências presentes"]
-            }
-        ]
+                "indicators": [
+                    "Problema com contexto",
+                    "Solução detalhada",
+                    "Diferencial justificado",
+                    "Evidências presentes",
+                ],
+            },
+        ],
     },
-
     "pertinencia_ao_problema": {
         "name": "Pertinência ao Problema",
         "definition": (
@@ -88,30 +101,41 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Documentação de entrevistas com usuários",
             "Dados quantitativos ou qualitativos que comprovam a relevância",
             "Testes ou protótipos que abordam diretamente a dor identificada",
-            "Feedback de stakeholders sobre a adequação da solução"
+            "Feedback de stakeholders sobre a adequação da solução",
         ],
         "levels": [
             {
                 "level": 1,
                 "label": "Ruim",
                 "description": "A solução não se relaciona com o problema identificado.",
-                "indicators": ["Solução desconectada", "Sem relação lógica", "Não aborda necessidade"]
+                "indicators": [
+                    "Solução desconectada",
+                    "Sem relação lógica",
+                    "Não aborda necessidade",
+                ],
             },
             {
                 "level": 2,
                 "label": "Médio",
                 "description": "Aborda o problema, mas de forma limitada ou superficial.",
-                "indicators": ["Solução parcial", "Resolve parte do problema", "Falta profundidade"]
+                "indicators": [
+                    "Solução parcial",
+                    "Resolve parte do problema",
+                    "Falta profundidade",
+                ],
             },
             {
                 "level": 3,
                 "label": "Bom",
                 "description": "Responde adequadamente à necessidade central com dados ou feedback.",
-                "indicators": ["Solução alinhada", "Aborda pontos principais", "Validação presente"]
-            }
-        ]
+                "indicators": [
+                    "Solução alinhada",
+                    "Aborda pontos principais",
+                    "Validação presente",
+                ],
+            },
+        ],
     },
-
     "alinhamento_com_objetivos": {
         "name": "Alinhamento com os Objetivos",
         "definition": (
@@ -123,7 +147,7 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Coerência entre entregas planejadas e objetivos definidos",
             "Métricas que mostram contribuição direta aos objetivos",
             "Análise de resultados alcançados vs. objetivos propostos",
-            "Rastreabilidade entre funcionalidades e objetivos"
+            "Rastreabilidade entre funcionalidades e objetivos",
         ],
         "levels": [
             {
@@ -133,8 +157,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Objetivos não mencionados ou ausentes",
                     "Solução não relacionada às metas",
-                    "Desconexão total entre proposta e objetivos"
-                ]
+                    "Desconexão total entre proposta e objetivos",
+                ],
             },
             {
                 "level": 2,
@@ -145,20 +169,18 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Objetivos vagos ou genéricos",
                     "Conexão fraca entre solução e metas",
-                    "Foco em objetivos secundários"
-                ]
+                    "Foco em objetivos secundários",
+                ],
             },
             {
                 "level": 3,
                 "label": "Médio",
-                "description": (
-                    "Atende parcialmente aos objetivos, sem detalhar como."
-                ),
+                "description": ("Atende parcialmente aos objetivos, sem detalhar como."),
                 "indicators": [
                     "Objetivos declarados mas sem detalhamento",
                     "Algum alinhamento visível mas incompleto",
-                    "Falta clareza sobre como atingir os objetivos"
-                ]
+                    "Falta clareza sobre como atingir os objetivos",
+                ],
             },
             {
                 "level": 4,
@@ -168,8 +190,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Objetivos bem definidos",
                     "Solução claramente conectada às metas",
                     "Explicação de como cada parte contribui",
-                    "Rastreabilidade presente"
-                ]
+                    "Rastreabilidade presente",
+                ],
             },
             {
                 "level": 5,
@@ -182,12 +204,11 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Objetivos mensuráveis e bem documentados",
                     "Métricas comprovam alinhamento",
                     "Resultados demonstrados para cada objetivo",
-                    "Análise de impacto presente"
-                ]
-            }
-        ]
+                    "Análise de impacto presente",
+                ],
+            },
+        ],
     },
-
     "adequacao_ao_contexto": {
         "name": "Adequação ao Contexto",
         "definition": (
@@ -199,7 +220,7 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Testes de usabilidade contextualizados",
             "Feedback contextualizado de usuários reais",
             "Documentação de adaptações culturais/sociais",
-            "Análise de restrições técnicas e ambientais"
+            "Análise de restrições técnicas e ambientais",
         ],
         "levels": [
             {
@@ -209,8 +230,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Ausência de menção ao público-alvo",
                     "Não considera contexto de uso",
-                    "Solução genérica sem adaptação"
-                ]
+                    "Solução genérica sem adaptação",
+                ],
             },
             {
                 "level": 2,
@@ -219,8 +240,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Menção superficial ao público",
                     "Contexto descrito vagamente",
-                    "Poucas adaptações específicas"
-                ]
+                    "Poucas adaptações específicas",
+                ],
             },
             {
                 "level": 3,
@@ -231,8 +252,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Público identificado mas sem detalhes",
                     "Contexto mencionado mas não aprofundado",
-                    "Adaptações mínimas"
-                ]
+                    "Adaptações mínimas",
+                ],
             },
             {
                 "level": 4,
@@ -242,8 +263,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Público bem caracterizado",
                     "Contexto analisado em detalhes",
                     "Adaptações claras e justificadas",
-                    "Considera restrições relevantes"
-                ]
+                    "Considera restrições relevantes",
+                ],
             },
             {
                 "level": 5,
@@ -255,23 +276,20 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Personas detalhadas e validadas",
                     "Testes em contexto real",
                     "Feedback contextualizado positivo",
-                    "Adaptações comprovadamente efetivas"
-                ]
-            }
-        ]
+                    "Adaptações comprovadamente efetivas",
+                ],
+            },
+        ],
     },
-
     "originalidade": {
         "name": "Originalidade",
-        "definition": (
-            "Grau de inovação ou aprimoramento apresentado pela solução."
-        ),
+        "definition": ("Grau de inovação ou aprimoramento apresentado pela solução."),
         "measurable_indicators": [
             "Análise comparativa com soluções existentes",
             "Uso de tecnologias ou abordagens inéditas",
             "Reconhecimento de inovação (prêmios, publicações, patentes)",
             "Evidências de diferenciação técnica ou metodológica",
-            "Feedback externo sobre o caráter inovador"
+            "Feedback externo sobre o caráter inovador",
         ],
         "levels": [
             {
@@ -281,8 +299,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Reprodução de solução conhecida",
                     "Ausência de elementos novos",
-                    "Não apresenta inovação"
-                ]
+                    "Não apresenta inovação",
+                ],
             },
             {
                 "level": 2,
@@ -291,20 +309,18 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Modificações cosméticas",
                     "Variações irrelevantes",
-                    "Baixo grau de novidade"
-                ]
+                    "Baixo grau de novidade",
+                ],
             },
             {
                 "level": 3,
                 "label": "Médio",
-                "description": (
-                    "Introduz elementos novos, mas sem grande diferenciação."
-                ),
+                "description": ("Introduz elementos novos, mas sem grande diferenciação."),
                 "indicators": [
                     "Alguns elementos inovadores",
                     "Combinação de ideias existentes",
-                    "Inovação incremental"
-                ]
+                    "Inovação incremental",
+                ],
             },
             {
                 "level": 4,
@@ -313,8 +329,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Abordagem ou tecnologia diferenciada",
                     "Inovação clara e justificada",
-                    "Aplicabilidade prática da inovação"
-                ]
+                    "Aplicabilidade prática da inovação",
+                ],
             },
             {
                 "level": 5,
@@ -327,12 +343,11 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Inovação radical ou disruptiva",
                     "Reconhecimento externo",
                     "Potencial de transformação do mercado/área",
-                    "Originalidade comprovada e documentada"
-                ]
-            }
-        ]
+                    "Originalidade comprovada e documentada",
+                ],
+            },
+        ],
     },
-
     "capacidade_de_diferenciacao": {
         "name": "Capacidade de Diferenciação",
         "definition": (
@@ -343,7 +358,7 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Pesquisa de percepção de valor pelos usuários",
             "Evidências de desempenho superior (métricas comparativas)",
             "Documentação de diferenciais técnicos ou funcionais",
-            "Feedback comparativo de usuários"
+            "Feedback comparativo de usuários",
         ],
         "levels": [
             {
@@ -353,8 +368,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Sem distinção de outras soluções",
                     "Não menciona diferenciais",
-                    "Igual a alternativas existentes"
-                ]
+                    "Igual a alternativas existentes",
+                ],
             },
             {
                 "level": 2,
@@ -363,8 +378,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Diferenciais mencionados mas vagos",
                     "Distinções superficiais",
-                    "Baixa relevância dos diferenciais"
-                ]
+                    "Baixa relevância dos diferenciais",
+                ],
             },
             {
                 "level": 3,
@@ -375,8 +390,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Alguns diferenciais identificados",
                     "Distinção parcial",
-                    "Relevância moderada"
-                ]
+                    "Relevância moderada",
+                ],
             },
             {
                 "level": 4,
@@ -386,8 +401,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Diferenciais bem definidos",
                     "Relevância clara para usuários",
                     "Comparação favorável com alternativas",
-                    "Justificativa sólida dos diferenciais"
-                ]
+                    "Justificativa sólida dos diferenciais",
+                ],
             },
             {
                 "level": 5,
@@ -400,12 +415,11 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Diferenciais comprovados com dados",
                     "Percepção positiva validada",
                     "Superioridade demonstrada",
-                    "Reconhecimento externo dos diferenciais"
-                ]
-            }
-        ]
+                    "Reconhecimento externo dos diferenciais",
+                ],
+            },
+        ],
     },
-
     "uso_inteligente_tecnologias": {
         "name": "Uso Inteligente de Tecnologias ou Métodos",
         "definition": (
@@ -417,7 +431,7 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Documentação de frameworks, ferramentas e arquiteturas utilizadas",
             "Presença de protótipos ou implementações funcionais",
             "Evidências de eficiência técnica (performance, escalabilidade)",
-            "Análise de trade-offs tecnológicos"
+            "Análise de trade-offs tecnológicos",
         ],
         "levels": [
             {
@@ -427,8 +441,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Tecnologias não mencionadas",
                     "Escolhas inadequadas ao problema",
-                    "Ausência de fundamentação técnica"
-                ]
+                    "Ausência de fundamentação técnica",
+                ],
             },
             {
                 "level": 2,
@@ -437,8 +451,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Tecnologias mencionadas superficialmente",
                     "Sem explicação das escolhas",
-                    "Uso genérico sem otimização"
-                ]
+                    "Uso genérico sem otimização",
+                ],
             },
             {
                 "level": 3,
@@ -447,8 +461,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Tecnologias apropriadas",
                     "Justificativa básica presente",
-                    "Oportunidades de otimização não exploradas"
-                ]
+                    "Oportunidades de otimização não exploradas",
+                ],
             },
             {
                 "level": 4,
@@ -458,38 +472,35 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Escolhas tecnológicas bem fundamentadas",
                     "Uso eficiente demonstrado",
                     "Integração coerente de tecnologias",
-                    "Considerações de trade-offs"
-                ]
+                    "Considerações de trade-offs",
+                ],
             },
             {
                 "level": 5,
                 "label": "Excelente",
                 "description": (
-                    "Integra de maneira inovadora, estratégica e "
-                    "comprovadamente eficaz."
+                    "Integra de maneira inovadora, estratégica e " "comprovadamente eficaz."
                 ),
                 "indicators": [
                     "Uso estratégico e otimizado",
                     "Inovação na aplicação tecnológica",
                     "Eficácia comprovada com métricas",
-                    "Referência técnica na área"
-                ]
-            }
-        ]
+                    "Referência técnica na área",
+                ],
+            },
+        ],
     },
-
     "impacto_social_ambiental": {
         "name": "Impacto Social ou Ambiental",
         "definition": (
-            "Grau de benefício concreto gerado para pessoas, comunidades "
-            "ou meio ambiente."
+            "Grau de benefício concreto gerado para pessoas, comunidades " "ou meio ambiente."
         ),
         "measurable_indicators": [
             "Dados quantitativos de impacto (pessoas beneficiadas, recursos economizados)",
             "Resultados qualitativos documentados (testemunhos, casos de uso)",
             "Alcance e escala de beneficiários",
             "Feedback de comunidades ou stakeholders impactados",
-            "Métricas de impacto social/ambiental (ODS, indicadores ESG)"
+            "Métricas de impacto social/ambiental (ODS, indicadores ESG)",
         ],
         "levels": [
             {
@@ -499,8 +510,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Não menciona impacto social/ambiental",
                     "Sem evidência de benefícios",
-                    "Foco apenas comercial/técnico"
-                ]
+                    "Foco apenas comercial/técnico",
+                ],
             },
             {
                 "level": 2,
@@ -509,8 +520,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Impacto mencionado genericamente",
                     "Sem dados ou comprovação",
-                    "Benefícios não demonstrados"
-                ]
+                    "Benefícios não demonstrados",
+                ],
             },
             {
                 "level": 3,
@@ -519,8 +530,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Alguns benefícios documentados",
                     "Impacto localizado",
-                    "Evidências iniciais de benefícios"
-                ]
+                    "Evidências iniciais de benefícios",
+                ],
             },
             {
                 "level": 4,
@@ -530,8 +541,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Impacto bem documentado",
                     "Dados de beneficiários",
                     "Evidências claras de benefícios",
-                    "Feedback positivo de impactados"
-                ]
+                    "Feedback positivo de impactados",
+                ],
             },
             {
                 "level": 5,
@@ -543,12 +554,11 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Impacto quantificado com métricas",
                     "Grande alcance comprovado",
                     "Reconhecimento externo do impacto",
-                    "Transformação demonstrada"
-                ]
-            }
-        ]
+                    "Transformação demonstrada",
+                ],
+            },
+        ],
     },
-
     "escalabilidade": {
         "name": "Escalabilidade",
         "definition": (
@@ -559,7 +569,7 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Documentação de processos e procedimentos",
             "Evidências de testes em múltiplos contextos",
             "Análise de requisitos para expansão",
-            "Casos de replicação bem-sucedida"
+            "Casos de replicação bem-sucedida",
         ],
         "levels": [
             {
@@ -569,8 +579,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Solução única e não transferível",
                     "Dependência total de contexto específico",
-                    "Sem possibilidade de expansão"
-                ]
+                    "Sem possibilidade de expansão",
+                ],
             },
             {
                 "level": 2,
@@ -579,8 +589,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Escalabilidade não considerada",
                     "Ausência de documentação para replicação",
-                    "Muitas barreiras para expansão"
-                ]
+                    "Muitas barreiras para expansão",
+                ],
             },
             {
                 "level": 3,
@@ -589,8 +599,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Possível replicar com ajustes",
                     "Alguma documentação presente",
-                    "Escalabilidade limitada"
-                ]
+                    "Escalabilidade limitada",
+                ],
             },
             {
                 "level": 4,
@@ -600,8 +610,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Modelo replicável bem definido",
                     "Documentação adequada",
                     "Processos padronizados",
-                    "Viabilidade de expansão clara"
-                ]
+                    "Viabilidade de expansão clara",
+                ],
             },
             {
                 "level": 5,
@@ -611,23 +621,20 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Replicação comprovada",
                     "Documentação completa",
                     "Sucesso em múltiplos contextos",
-                    "Infraestrutura para escala"
-                ]
-            }
-        ]
+                    "Infraestrutura para escala",
+                ],
+            },
+        ],
     },
-
     "sustentabilidade": {
         "name": "Sustentabilidade",
-        "definition": (
-            "Capacidade de manter resultados e operações no longo prazo."
-        ),
+        "definition": ("Capacidade de manter resultados e operações no longo prazo."),
         "measurable_indicators": [
             "Plano financeiro ou modelo de sustentação",
             "Parcerias estratégicas estabelecidas",
             "Engajamento contínuo de stakeholders",
             "Indicadores de viabilidade financeira",
-            "Estratégias de manutenção e continuidade"
+            "Estratégias de manutenção e continuidade",
         ],
         "levels": [
             {
@@ -637,8 +644,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Dependência total de financiamento externo",
                     "Sem plano de continuidade",
-                    "Inviabilidade no longo prazo"
-                ]
+                    "Inviabilidade no longo prazo",
+                ],
             },
             {
                 "level": 2,
@@ -647,8 +654,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Viabilidade temporária",
                     "Sem estratégia de longo prazo",
-                    "Recursos limitados"
-                ]
+                    "Recursos limitados",
+                ],
             },
             {
                 "level": 3,
@@ -657,8 +664,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Algum planejamento de sustentação",
                     "Recursos identificados mas não garantidos",
-                    "Sustentabilidade incerta"
-                ]
+                    "Sustentabilidade incerta",
+                ],
             },
             {
                 "level": 4,
@@ -668,8 +675,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Plano de sustentação definido",
                     "Fontes de recursos identificadas",
                     "Parcerias em desenvolvimento",
-                    "Viabilidade demonstrada"
-                ]
+                    "Viabilidade demonstrada",
+                ],
             },
             {
                 "level": 5,
@@ -681,12 +688,11 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Modelo financeiro validado",
                     "Parcerias estabelecidas",
                     "Autossustentabilidade demonstrada",
-                    "Planejamento de longo prazo robusto"
-                ]
-            }
-        ]
+                    "Planejamento de longo prazo robusto",
+                ],
+            },
+        ],
     },
-
     "indicadores_de_sucesso": {
         "name": "Indicadores de Sucesso",
         "definition": (
@@ -697,7 +703,7 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Métricas de desempenho quantificáveis",
             "Relatórios de resultados periódicos",
             "Sistema de monitoramento contínuo",
-            "Dashboards ou ferramentas de acompanhamento"
+            "Dashboards ou ferramentas de acompanhamento",
         ],
         "levels": [
             {
@@ -707,8 +713,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Ausência total de métricas",
                     "Não menciona indicadores",
-                    "Sem forma de medir sucesso"
-                ]
+                    "Sem forma de medir sucesso",
+                ],
             },
             {
                 "level": 2,
@@ -717,8 +723,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Métricas vagas ou irrelevantes",
                     "Não foram coletadas",
-                    "Sem metodologia de medição"
-                ]
+                    "Sem metodologia de medição",
+                ],
             },
             {
                 "level": 3,
@@ -727,8 +733,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "KPIs identificados",
                     "Não há coleta sistemática",
-                    "Mensuração incompleta"
-                ]
+                    "Mensuração incompleta",
+                ],
             },
             {
                 "level": 4,
@@ -738,8 +744,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "KPIs bem definidos",
                     "Coleta de dados iniciada",
                     "Alguns resultados disponíveis",
-                    "Processo de medição em andamento"
-                ]
+                    "Processo de medição em andamento",
+                ],
             },
             {
                 "level": 5,
@@ -752,12 +758,11 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Dados coletados continuamente",
                     "Análises regulares",
                     "Resultados documentados e analisados",
-                    "Dashboards ou relatórios disponíveis"
-                ]
-            }
-        ]
+                    "Dashboards ou relatórios disponíveis",
+                ],
+            },
+        ],
     },
-
     "capacidade_de_melhoria": {
         "name": "Capacidade de Melhoria",
         "definition": (
@@ -768,7 +773,7 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Histórico de iterações e versões",
             "Planos de melhoria estruturados",
             "Documentação de mudanças e evolução",
-            "Processos ágeis ou metodologias iterativas"
+            "Processos ágeis ou metodologias iterativas",
         ],
         "levels": [
             {
@@ -778,8 +783,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Solução rígida",
                     "Não considera feedback",
-                    "Sem evolução planejada"
-                ]
+                    "Sem evolução planejada",
+                ],
             },
             {
                 "level": 2,
@@ -788,8 +793,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Feedback coletado mas ignorado",
                     "Sem processo de melhoria",
-                    "Resistência a mudanças"
-                ]
+                    "Resistência a mudanças",
+                ],
             },
             {
                 "level": 3,
@@ -798,8 +803,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Algumas melhorias implementadas",
                     "Processo ad-hoc",
-                    "Falta sistematização"
-                ]
+                    "Falta sistematização",
+                ],
             },
             {
                 "level": 4,
@@ -809,37 +814,32 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Processo de melhoria definido",
                     "Feedback incorporado regularmente",
                     "Iterações documentadas",
-                    "Ciclos de melhoria visíveis"
-                ]
+                    "Ciclos de melhoria visíveis",
+                ],
             },
             {
                 "level": 5,
                 "label": "Excelente",
-                "description": (
-                    "Cultura contínua de melhoria com base em dados e feedback."
-                ),
+                "description": ("Cultura contínua de melhoria com base em dados e feedback."),
                 "indicators": [
                     "Cultura de melhoria contínua",
                     "Dados direcionam evoluções",
                     "Histórico robusto de iterações",
                     "Metodologia ágil aplicada",
-                    "Aprendizado sistemático"
-                ]
-            }
-        ]
+                    "Aprendizado sistemático",
+                ],
+            },
+        ],
     },
-
     "segmento_de_clientes": {
         "name": "Segmento de Clientes",
-        "definition": (
-            "Clareza e coerência na definição do público-alvo da solução."
-        ),
+        "definition": ("Clareza e coerência na definição do público-alvo da solução."),
         "measurable_indicators": [
             "Personas detalhadas e documentadas",
             "Dados de segmentação demográfica e comportamental",
             "Validação direta com público-alvo",
             "Testes de usabilidade com usuários reais",
-            "Pesquisas de mercado ou perfil de usuário"
+            "Pesquisas de mercado ou perfil de usuário",
         ],
         "levels": [
             {
@@ -849,8 +849,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Ausência de definição de público",
                     "Não menciona usuários-alvo",
-                    "Falta total de segmentação"
-                ]
+                    "Falta total de segmentação",
+                ],
             },
             {
                 "level": 2,
@@ -859,8 +859,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Descrição vaga do público",
                     "Sem dados demográficos",
-                    "Segmentação superficial"
-                ]
+                    "Segmentação superficial",
+                ],
             },
             {
                 "level": 3,
@@ -869,8 +869,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Segmento identificado",
                     "Descrição básica presente",
-                    "Falta validação com usuários reais"
-                ]
+                    "Falta validação com usuários reais",
+                ],
             },
             {
                 "level": 4,
@@ -880,8 +880,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Público bem caracterizado",
                     "Dados demográficos presentes",
                     "Personas desenvolvidas",
-                    "Alguma validação realizada"
-                ]
+                    "Alguma validação realizada",
+                ],
             },
             {
                 "level": 5,
@@ -893,23 +893,20 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Personas completas e validadas",
                     "Dados comportamentais ricos",
                     "Validação extensa com usuários",
-                    "Segmentação precisa e comprovada"
-                ]
-            }
-        ]
+                    "Segmentação precisa e comprovada",
+                ],
+            },
+        ],
     },
-
     "modelo_geracao_valor": {
         "name": "Modelo de Geração de Valor (ou Viabilidade do Modelo de Negócio)",
-        "definition": (
-            "Clareza sobre como a solução cria, entrega e captura valor."
-        ),
+        "definition": ("Clareza sobre como a solução cria, entrega e captura valor."),
         "measurable_indicators": [
             "Estrutura de custos documentada",
             "Fontes de receita identificadas e analisadas",
             "Canvas de modelo de negócio (Business Model Canvas)",
             "Simulações financeiras ou projeções",
-            "Análise de viabilidade econômica"
+            "Análise de viabilidade econômica",
         ],
         "levels": [
             {
@@ -919,8 +916,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Ausência de modelo de negócio",
                     "Não menciona geração de valor",
-                    "Sem análise financeira"
-                ]
+                    "Sem análise financeira",
+                ],
             },
             {
                 "level": 2,
@@ -929,8 +926,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Modelo vago ou incompleto",
                     "Sem detalhamento de receitas/custos",
-                    "Viabilidade não demonstrada"
-                ]
+                    "Viabilidade não demonstrada",
+                ],
             },
             {
                 "level": 3,
@@ -939,8 +936,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Estrutura básica presente",
                     "Custos e receitas mencionados",
-                    "Falta análise de viabilidade"
-                ]
+                    "Falta análise de viabilidade",
+                ],
             },
             {
                 "level": 4,
@@ -950,8 +947,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Modelo bem estruturado",
                     "Estimativas financeiras presentes",
                     "Lógica de geração de valor clara",
-                    "Análise preliminar de viabilidade"
-                ]
+                    "Análise preliminar de viabilidade",
+                ],
             },
             {
                 "level": 5,
@@ -964,12 +961,11 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Projeções financeiras detalhadas",
                     "Validação de mercado",
                     "Viabilidade comprovada",
-                    "Plano de captura de valor claro"
-                ]
-            }
-        ]
+                    "Plano de captura de valor claro",
+                ],
+            },
+        ],
     },
-
     "vantagem_competitiva": {
         "name": "Vantagem Competitiva (ou Vantagem Injusta)",
         "definition": (
@@ -981,7 +977,7 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
             "Know-how exclusivo documentado",
             "Parcerias estratégicas exclusivas",
             "Barreiras de entrada documentadas",
-            "Recursos ou competências únicas"
+            "Recursos ou competências únicas",
         ],
         "levels": [
             {
@@ -991,8 +987,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Facilmente replicável",
                     "Sem elementos únicos",
-                    "Ausência de barreiras"
-                ]
+                    "Ausência de barreiras",
+                ],
             },
             {
                 "level": 2,
@@ -1001,8 +997,8 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Vantagens temporárias",
                     "Baixa barreira de entrada",
-                    "Fácil imitação"
-                ]
+                    "Fácil imitação",
+                ],
             },
             {
                 "level": 3,
@@ -1011,21 +1007,19 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                 "indicators": [
                     "Alguma vantagem identificada",
                     "Sustentabilidade incerta",
-                    "Barreira moderada"
-                ]
+                    "Barreira moderada",
+                ],
             },
             {
                 "level": 4,
                 "label": "Bom",
-                "description": (
-                    "Diferencial claro e apoiado por competências exclusivas."
-                ),
+                "description": ("Diferencial claro e apoiado por competências exclusivas."),
                 "indicators": [
                     "Vantagem bem definida",
                     "Competências únicas",
                     "Difícil de replicar",
-                    "Barreira significativa"
-                ]
+                    "Barreira significativa",
+                ],
             },
             {
                 "level": 5,
@@ -1038,11 +1032,11 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
                     "Recursos exclusivos",
                     "Parcerias estratégicas",
                     "Barreira forte comprovada",
-                    "Difícil ou impossível de copiar"
-                ]
-            }
-        ]
-    }
+                    "Difícil ou impossível de copiar",
+                ],
+            },
+        ],
+    },
 }
 
 
@@ -1050,16 +1044,17 @@ EVALUATION_CRITERIA: Dict[str, EvaluationCriterion] = {
 # FUNÇÕES AUXILIARES
 # =============================================================================
 
+
 def get_criterion(criterion_key: str) -> EvaluationCriterion:
     """
     Retorna um critério específico por sua chave.
-    
+
     Args:
         criterion_key: Chave do critério (ex: 'proposta_de_valor')
-        
+
     Returns:
         Dicionário com a estrutura completa do critério
-        
+
     Raises:
         KeyError: Se o critério não existir
     """
@@ -1071,14 +1066,14 @@ def get_criterion(criterion_key: str) -> EvaluationCriterion:
 def get_level_description(criterion_key: str, level: int) -> CriterionLevel:
     """
     Retorna a descrição de um nível específico de um critério.
-    
+
     Args:
         criterion_key: Chave do critério
         level: Nível de 1 a 5
-        
+
     Returns:
         Dicionário com informações do nível
-        
+
     Raises:
         KeyError: Se o critério não existir
         ValueError: Se o nível for inválido
@@ -1098,10 +1093,10 @@ def get_level_description(criterion_key: str, level: int) -> CriterionLevel:
 def get_label_for_level(level: int) -> str:
     """
     Retorna o rótulo qualitativo para um nível numérico.
-    
+
     Args:
         level: Nível de 1 a 5
-        
+
     Returns:
         String com rótulo: "Ruim", "Médio", "Bom", ou "Excelente"
     """
@@ -1120,7 +1115,7 @@ def get_label_for_level(level: int) -> str:
 def list_all_criteria() -> List[str]:
     """
     Retorna lista com nomes de todos os critérios disponíveis.
-    
+
     Returns:
         Lista de strings com nomes dos critérios
     """
@@ -1130,7 +1125,7 @@ def list_all_criteria() -> List[str]:
 def get_criteria_keys() -> List[str]:
     """
     Retorna lista com as chaves de todos os critérios.
-    
+
     Returns:
         Lista de strings com chaves dos critérios
     """
@@ -1151,4 +1146,3 @@ __all__ = [
     "list_all_criteria",
     "get_criteria_keys",
 ]
-

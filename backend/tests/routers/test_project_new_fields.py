@@ -1,11 +1,13 @@
 """
 Testes para a criação de projetos com os novos campos do Lean Canvas
 """
+
 import pytest
 from fastapi import status
 from httpx import AsyncClient
 
 from app.config.config import settings
+
 from ..utils import create_test_user, generate_user_auth_headers
 
 
@@ -23,22 +25,19 @@ async def test_create_project_with_new_fields_success(client: AsyncClient) -> No
         "project_title": "EcoConnect - Plataforma de Reciclagem",
         "project_description": "Aplicativo mobile que conecta pessoas com cooperativas de reciclagem",
         "solution_proposal": "Plataforma digital com geolocalização e gamificação",
-        
         # Problema e Proposta de Valor (NOVOS)
         "problem_description": "Apenas 4% do lixo reciclável é efetivamente reciclado no Brasil",
         "target_audience": "Moradores urbanos de classe média interessados em sustentabilidade",
         "value_proposition": "Facilitar reciclagem com recompensas e impacto mensurável",
-        
         # Lean Canvas (NOVOS)
         "customer_segment": "Famílias urbanas 25-45 anos, conscientes ambientalmente",
         "revenue_model": "Freemium: gratuito para usuários, premium para empresas (R$199/mês)",
         "competitive_advantage": "Algoritmo de otimização de rotas + gamificação + parcerias locais",
-        
         # Inovação e Impacto (NOVOS)
         "innovation": "IA para otimização de rotas e gamificação com economia comportamental",
         "social_impact": "10.000 famílias beneficiadas, redução de 500 toneladas de lixo/ano",
         "technical_feasibility": "React Native + Node.js + MongoDB. MVP R$50k, 3 meses",
-        "scalability": "Modelo replicável, documentado. Piloto 2 bairros, expansão 5 cidades"
+        "scalability": "Modelo replicável, documentado. Piloto 2 bairros, expansão 5 cidades",
     }
 
     response = await client.post(
@@ -49,12 +48,12 @@ async def test_create_project_with_new_fields_success(client: AsyncClient) -> No
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    
+
     assert data["message"] == "Projeto cadastrado com sucesso!"
     assert "project_uuid" in data
     assert "project_id_mongo" in data
     assert "timestamp" in data
-    
+
     print("\n✅ Projeto criado com novos campos:")
     print(f"   UUID: {data['project_uuid']}")
 
@@ -87,7 +86,7 @@ async def test_create_project_backward_compatibility(client: AsyncClient) -> Non
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    
+
     assert data["message"] == "Projeto cadastrado com sucesso!"
     print("\n✅ Retrocompatibilidade OK - Frontend antigo ainda funciona")
 
@@ -105,7 +104,6 @@ async def test_create_project_field_aggregation(client: AsyncClient) -> None:
         "project_title": "Teste Agregação",
         "project_description": "Teste",
         "solution_proposal": "Teste",
-        
         # Novos campos separados
         "problem_description": "Problema X",
         "target_audience": "Público Y",
@@ -127,7 +125,7 @@ async def test_create_project_field_aggregation(client: AsyncClient) -> None:
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    
+
     assert data["message"] == "Projeto cadastrado com sucesso!"
     print("\n✅ Agregação automática funcionando")
     print("   Backend agrega campos individuais nos campos para IA")
@@ -156,7 +154,7 @@ async def test_create_project_missing_optional_fields(client: AsyncClient) -> No
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    
+
     assert data["message"] == "Projeto cadastrado com sucesso!"
     print("\n✅ Campos opcionais funcionando - apenas básicos enviados")
 
@@ -171,24 +169,25 @@ async def test_create_project_unauthenticated(client: AsyncClient) -> None:
         "project_description": "Teste",
         "solution_proposal": "Teste",
     }
-    
+
     response = await client.post(
         f"{settings.API_V1_STR}/projects/",
         json=payload,
     )
-    
+
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     print("\n✅ Autenticação obrigatória funcionando")
 
 
 if __name__ == "__main__":
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("TESTES DE CRIAÇÃO DE PROJETOS COM NOVOS CAMPOS")
-    print("="*80)
+    print("=" * 80)
     print("\nPara rodar os testes:")
     print("  cd backend")
     print("  uv run pytest tests/routers/test_project_new_fields.py -v")
     print("\nOu rodar teste específico:")
-    print("  uv run pytest tests/routers/test_project_new_fields.py::test_create_project_with_new_fields_success -v")
-    print("="*80 + "\n")
-
+    print(
+        "  uv run pytest tests/routers/test_project_new_fields.py::test_create_project_with_new_fields_success -v"
+    )
+    print("=" * 80 + "\n")
