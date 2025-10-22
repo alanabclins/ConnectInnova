@@ -23,84 +23,127 @@ def build_evaluation_prompt(project_data: Dict[str, Any]) -> str:
     Constrói o prompt completo de avaliação baseado nos dados do projeto (otimizado para ~3000 tokens).
     """
     
-    prompt = f"""Você é um avaliador acadêmico especializado em inovação e empreendedorismo.
-Analise o projeto abaixo com base nos 15 critérios, usando escala 1-3, lembre-se de que o projeto está resumido:
-- 1 (Ruim): Incompleto, sem evidências
-- 2 (Médio): Coerente, evidências parciais  
-- 3 (Bom): Estruturado, validado
+    prompt = f"""Você é um avaliador acadêmico sênior, especializado em inovação e empreendedorismo (Lean Canvas).
+Sua tarefa é analisar o projeto abaixo e fornecer um feedback detalhado para CADA UM dos 15 critérios de avaliação, além de um feedback geral.
 
-IMPORTANTE: Para cada critério, cite EVIDÊNCIAS ESPECÍFICAS do texto do projeto. Use trechos reais, dados mencionados e informações concretas fornecidas, e classifique com as notas de 1 a 3, escreva pelo menos de 4 a 5 linhas para o feedback de cada um dos campos abaixo.
+REGRAS DE AVALIAÇÃO:
+- Use a escala 1-3: 1 (Ruim: Incompleto, sem evidências), 2 (Médio: Coerente, evidências parciais), 3 (Bom: Estruturado, validado).
+- Para CADA critério, escreva um feedback de 4-5 linhas.
+- CRÍTICO: Seu feedback deve citar EVIDÊNCIAS ESPECÍFICAS do texto do projeto. Use trechos reais, dados e informações concretas.
+- Se algo estiver ausente, mencione explicitamente: "O projeto não apresenta dados sobre..."
+- Se algo estiver presente, cite: "O projeto cita que '...' o que demonstra..."
 
-PROJETO:
-Título: {project_data.get('project_title', 'N/A')}
-Descrição: {project_data.get('project_description', 'N/A')}
-Solução: {project_data.get('solution_proposal', 'N/A')}
-Problema: {project_data.get('clarity_problem', 'N/A')}
-Inovação: {project_data.get('inovation_grade', 'N/A')}
-Impacto: {project_data.get('social_impact', 'N/A')}
-Viabilidade: {project_data.get('tec_eco_viability', 'N/A')}
-Aplicação: {project_data.get('application_potencial', 'N/A')}
+PROJETO A SER AVALIADO:
+- Título: {project_data.get('project_title', 'N/A')}
+- Descrição: {project_data.get('project_description', 'N/A')}
+- Solução: {project_data.get('solution_proposal', 'N/A')}
+- Problema: {project_data.get('clarity_problem', 'N/A')}
+- Inovação: {project_data.get('inovation_grade', 'N/A')}
+- Impacto: {project_data.get('social_impact', 'N/A')}
+- Viabilidade: {project_data.get('tec_eco_viability', 'N/A')}
+- Aplicação: {project_data.get('application_potencial', 'N/A')}
 
-CRITÉRIOS (avalie cada um):
+LISTA DE CRITÉRIOS OBRIGATÓRIOS (Avalie todos os 15):
+1. proposta_de_valor: {EVALUATION_CRITERIA['proposta_de_valor']['definition']}
+2. pertinencia_ao_problema: {EVALUATION_CRITERIA['pertinencia_ao_problema']['definition']}
+3. alinhamento_com_objetivos: {EVALUATION_CRITERIA['alinhamento_com_objetivos']['definition']}
+4. adequacao_ao_contexto: {EVALUATION_CRITERIA['adequacao_ao_contexto']['definition']}
+5. originalidade: {EVALUATION_CRITERIA['originalidade']['definition']}
+6. capacidade_de_diferenciacao: {EVALUATION_CRITERIA['capacidade_de_diferenciacao']['definition']}
+7. uso_inteligente_tecnologias: {EVALUATION_CRITERIA['uso_inteligente_tecnologias']['definition']}
+8. impacto_social_ambiental: {EVALUATION_CRITERIA['impacto_social_ambiental']['definition']}
+9. escalabilidade: {EVALUATION_CRITERIA['escalabilidade']['definition']}
+10. sustentabilidade: {EVALUATION_CRITERIA['sustentabilidade']['definition']}
+11. indicadores_de_sucesso: {EVALUATION_CRITERIA['indicadores_de_sucesso']['definition']}
+12. capacidade_de_melhoria: {EVALUATION_CRITERIA['capacidade_de_melhoria']['definition']}
+13. segmento_de_clientes: {EVALUATION_CRITERIA['segmento_de_clientes']['definition']}
+14. modelo_geracao_valor: {EVALUATION_CRITERIA['modelo_geracao_valor']['definition']}
+15. vantagem_competitiva: {EVALUATION_CRITERIA['vantagem_competitiva']['definition']}
+
+INSTRUÇÃO DE SAÍDA:
+Sua resposta deve ser APENAS um objeto JSON válido, sem markdown (```json) ou qualquer outro texto. Siga exatamente a estrutura abaixo:
+
+{{
+  "full_feedback": "Escreva aqui um resumo executivo da análise geral do projeto (4-5 frases), citando o nome do projeto e os principais pontos fortes e fracos.",
+  "criteria_evaluation": {{
+    "proposta_de_valor": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "pertinencia_ao_problema": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "alinhamento_com_objetivos": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "adequacao_ao_contexto": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "originalidade": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "capacidade_de_diferenciacao": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "uso_inteligente_tecnologias": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "impacto_social_ambiental": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "escalabilidade": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "sustentabilidade": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "indicadores_de_sucesso": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "capacidade_de_melhoria": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "segmento_de_clientes": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "modelo_geracao_valor": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }},
+    "vantagem_competitiva": {{
+      "level": <int 1, 2 ou 3>,
+      "label": "<String Ruim, Médio ou Bom>",
+      "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+    }}
+  }}
+}}
 """
-
-    # Adiciona cada critério de forma compacta
-    for idx, (key, criterion) in enumerate(EVALUATION_CRITERIA.items(), 1):
-        prompt += f"{idx}. {criterion['name']}: {criterion['definition']}\n"
-
-    # Adiciona instruções de saída com feedbacks contextualizados
-    prompt += """
-Responda em JSON (sem markdown):
-{
-    "full_feedback": "Avaliação geral do projeto em parágrafos. Mencione o nome do projeto, cite dados específicos fornecidos (números, evidências, testes), destaque pontos fortes concretos e sugira melhorias específicas.",
-    "criteria_evaluation": {
-        "proposta_de_valor": {
-            "level": 2,
-            "label": "Médio",
-            "feedback": "Análise contextualizada: cite trechos específicos do projeto (ex: 'O projeto menciona [dado X] mas não apresenta [evidência Y]'), identifique o que está presente e o que falta."
-        },
-        "pertinencia_ao_problema": {"level": 2, "label": "Médio", "feedback": "Cite dados/evidências do projeto e avalie adequação da solução.","nota de 1 a 3"},
-        "alinhamento_com_objetivos": {"level": 2, "label": "Médio", "feedback": "Cite objetivos mencionados e avalie coerência.","nota de 1 a 3"},
-        "adequacao_ao_contexto": {"level": 2, "label": "Médio", "feedback": "Cite público-alvo/contexto mencionado e avalie adaptação.","nota de 1 a 3"},
-        "originalidade": {"level": 2, "label": "Médio", "feedback": "Cite elementos inovadores mencionados e avalie grau de novidade.","nota de 1 a 3"},
-        "capacidade_de_diferenciacao": {"level": 2, "label": "Médio", "feedback": "Cite diferenciais mencionados e compare com mercado.","nota de 1 a 3"},
-        "uso_inteligente_tecnologias": {"level": 2, "label": "Médio", "feedback": "Cite tecnologias mencionadas e avalie escolhas técnicas.","nota de 1 a 3"},
-        "impacto_social_ambiental": {"level": 2, "label": "Médio", "feedback": "Cite dados de impacto (números, alcance) e avalie escala.","nota de 1 a 3"},
-        "escalabilidade": {"level": 2, "label": "Médio", "feedback": "Avalie potencial de expansão com base no descrito.","nota de 1 a 3"},
-        "sustentabilidade": {"level": 2, "label": "Médio", "feedback": "Cite modelo financeiro/parcerias e avalie viabilidade longo prazo.","nota de 1 a 3"},
-        "indicadores_de_sucesso": {"level": 2, "label": "Médio", "feedback": "Identifique métricas mencionadas e avalie completude.","nota de 1 a 3"},
-        "capacidade_de_melhoria": {"level": 2, "label": "Médio", "feedback": "Avalie se há menção a feedback, iterações ou processos de melhoria.","nota de 1 a 3"},
-        "segmento_de_clientes": {"level": 2, "label": "Médio", "feedback": "Cite público-alvo descrito e avalie nível de detalhamento.","nota de 1 a 3"},
-        "modelo_geracao_valor": {"level": 2, "label": "Médio", "feedback": "Cite fontes receita/custos mencionados e avalie viabilidade.","nota de 1 a 3"},
-        "vantagem_competitiva": {"level": 2, "label": "Médio", "feedback": "Cite vantagens mencionadas e avalie sustentabilidade do diferencial.","nota de 1 a 3"}
-    },
-    "analysis": {
-        "clarity_problem": "Análise agrupada: critérios 1-3, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3",
-        "inovation_grade": "Análise agrupada: critérios 5-7, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3",
-        "social_impact": "Análise agrupada: critérios 8-12, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3",
-        "tec_eco_viability": "Análise agrupada: critério 14, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3",
-        "application_potencial": "Análise agrupada: critérios 4, análise de pelo menos 3 a 4 linhas e por fim uma nota geral para o critério de 1 a 3"
-    },
-    "resums": {
-        "clarity_resum": "Resumo 4-5 frases: proposta, pertinência, análise de pelo menos 3 a 4 linhas com nota de 1 a 3"",
-        "inovation_grade_resum": "Resumo 4-5 frases: inovação, diferenciação, tecnologias e nota de 1 a 3"",
-        "social_impact_resum": "Resumo 4-5 frases: impacto, sustentabilidade, melhoria e nota de 1 a 3"",
-        "tec_eco_viability_resum": "Resumo 4-5 frases: viabilidade, modelo, escalabilidade e nota de 1 a 3"",
-        "application_potencial_resum": "Resumo 4-5 frases: aplicação, contexto, clientes e nota de 1 a 3""
-    }
-}
-
-INSTRUÇÕES DE FEEDBACK:
-1. Para CADA critério, cite evidências específicas do projeto (trechos, dados, números)
-2. Se algo estiver ausente, mencione explicitamente: "O projeto não menciona..."
-3. Se algo estiver presente, cite: "O projeto apresenta X, Y, Z..."
-4. No full_feedback, use o nome do projeto e cite exemplos concretos
-5. Seja específico e evite feedback genérico
-6. Dê notas de 1 = 'ruim', 2 = 'médio' = 3 = 'bom' para cada critério na sua avaliação, junto aos pontos fortes e fracos que você colocar.
-7. Coloque ao menos 4 a 5 linhas para cada avaliação de cada critério
-
-"""
-
     return prompt
 
 
@@ -129,6 +172,35 @@ def build_simple_prompt(project_title: str, project_description: str, solution_p
 
     return build_evaluation_prompt(project_data)
 
+
+def build_resum_prompt(project_data: dict[str, Any]) -> str:
+    """
+    Constrói o prompt para resumo do projeto.
+    """
+    prompt2 = f'''
+Seu papel é resumir os seguintes campos de cada projeto:
+PROJETO:
+Título: {project_data.get('project_title', 'N/A')}
+Descrição: {project_data.get('project_description', 'N/A')}
+Solução: {project_data.get('solution_proposal', 'N/A')}
+Problema: {project_data.get('clarity_problem', 'N/A')}
+Inovação: {project_data.get('inovation_grade', 'N/A')}
+Impacto: {project_data.get('social_impact', 'N/A')}
+Viabilidade: {project_data.get('tec_eco_viability', 'N/A')}
+Aplicação: {project_data.get('application_potencial', 'N/A')}
+
+IMPORTANTE! VOCÊ DEVE RETORNAR UM RESUMO PARA CADA CAMPO SEPARADO, EM FORMATO JSON SEM MARKDOWN no seguinte formato:
+{{
+    "resums": {{
+        "clarity_resum": "...",
+        "inovation_grade_resum": "...",
+        "social_impact_resum": "...",
+        "tec_eco_viability_resum": "...",
+        "application_potencial_resum": "..."
+    }}
+}}
+'''
+    return prompt2
 
 def get_criteria_summary() -> str:
     """
