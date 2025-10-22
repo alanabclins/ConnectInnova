@@ -1,7 +1,7 @@
-from uuid import UUID
-from pydantic import BaseModel, Field
-from typing import Dict, Any
 from datetime import datetime
+from uuid import UUID
+
+from pydantic import BaseModel, Field
 
 
 class ResumDetail(BaseModel):

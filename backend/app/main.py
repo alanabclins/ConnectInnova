@@ -12,7 +12,6 @@ from .models.feedback import Feedback
 from .models.projects import Project
 from .models.users import User
 from .routers.api import api_router
-from .routers.projects import router as project_router
 
 
 @asynccontextmanager

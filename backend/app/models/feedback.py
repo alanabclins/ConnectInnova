@@ -2,12 +2,15 @@ from datetime import UTC, datetime
 from typing import Annotated, Optional
 from uuid import UUID, uuid4
 
-from app.schemas.feedback import CriteriaEvaluationContainer
 from beanie import Document, Indexed
 from pydantic import Field
 
+from app.schemas.feedback import CriteriaEvaluationContainer
+
+
 class Feedback(Document):
     """Documento de Feedback unificado para análise de IA e histórico."""
+
     uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
         default_factory=uuid4
     )
@@ -16,8 +19,12 @@ class Feedback(Document):
 
     # O campo 'feedback' armazena o resumo e metadados
     feedback: dict = Field(
-        default_factory=lambda: {"content": "", "status": "draft", "timestamp": datetime.now(UTC)},
-        description="Contém o resumo (content), status e data de criação/atualização."
+        default_factory=lambda: {
+            "content": "",
+            "status": "draft",
+            "timestamp": datetime.now(UTC),
+        },
+        description="Contém o resumo (content), status e data de criação/atualização.",
     )
 
     # O campo principal para o resultado da análise detalhada

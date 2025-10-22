@@ -13,23 +13,46 @@ import ProjectService from "@/services/project.service";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
-interface Project {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt?: string;
-}
-
-interface ProjectResponse {
+export interface ProjectDetails {
+  _id: string;
   uuid: string;
   project_title: string;
   project_description: string;
+  solution_proposal: string;
+  student_id: string;
   timestamp: string;
+
+  problem_description: string;
+  target_audience: string;
+  value_proposition: string;
+  customer_segment: string;
+  revenue_model: string;
+  competitive_advantage: string;
+  innovation: string;
+  social_impact: string;
+  technical_feasibility: string;
+  scalability: string;
+  who_are_you: string;
+  academy_info: string;
+  market_info: string;
+
+  clarity_problem: string;
+  inovation_grade: string;
+  social_impact_aggregated: string;
+  tec_eco_viability: string;
+  application_potencial: string;
+}
+
+interface ProjectCardData {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
 }
 
 export default function MyProjects() {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectDetails[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,16 +62,8 @@ export default function MyProjects() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const data: ProjectResponse[] = await ProjectService.getProjects();
-
-      const mapped = data.map((p) => ({
-        id: p.uuid,
-        name: p.project_title,
-        description: p.project_description,
-        createdAt: p.timestamp,
-      }));
-
-      setProjects(mapped);
+      const data: ProjectDetails[] = await ProjectService.getProjects();
+      setProjects(data);
     } catch (error) {
       console.error("Erro ao carregar projetos:", error);
       toast.error("Erro ao carregar projetos. Tente novamente.");
@@ -58,10 +73,19 @@ export default function MyProjects() {
   };
 
   const handleAddProject = () => navigate("project-stories");
-  const handleProjectClick = (id: string) =>
+  
+  const handleProjectClick = (projectId: string, projectData: ProjectDetails) =>
     navigate(`/home/dashboard`, {
-      state: { projectId: id },
+      state: { projectId, projectData },
     });
+
+  const projectCardData: (ProjectCardData & { fullData: ProjectDetails })[] = projects.map(p => ({
+    id: p.uuid,
+    name: p.project_title,
+    description: p.project_description,
+    createdAt: p.timestamp,
+    fullData: p,
+  }));
 
   if (loading) {
     return (
@@ -95,15 +119,18 @@ export default function MyProjects() {
             className="w-full h-48"
           >
             <CarouselContent className="-ml-2 py-4">
-              {projects.map((project) => (
+              {projectCardData.map((project) => (
                 <CarouselItem
                   key={project.id}
                   className="pl-4 md:basis-1/2 lg:basis-1/3"
                 >
                   <div className="h-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:z-10">
                     <ProjectCard
-                      {...project}
-                      onClick={() => handleProjectClick(project.id)}
+                      id={project.id}
+                      name={project.name}
+                      description={project.description}
+                      createdAt={project.createdAt}
+                      onClick={() => handleProjectClick(project.id, project.fullData)}
                     />
                   </div>
                 </CarouselItem>

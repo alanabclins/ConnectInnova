@@ -1,2 +1,1 @@
-from . import evaluation_criteria
-from . import prompt_template
+from . import evaluation_criteria, prompt_template

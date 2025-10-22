@@ -16,32 +16,20 @@ interface AvCardProps {
 
 const levelMap = [
   {
-    min: 5,
-    label: "Excelente",
-    color: "bg-green-600 text-white",
-    border: "border-l-green-600",
-  },
-  {
-    min: 4,
+    min: 3,
     label: "Bom",
     color: "bg-green-600 text-white",
     border: "border-l-green-600",
   },
   {
-    min: 3,
+    min: 2,
     label: "Mediano",
     color: "bg-yellow-600 text-white",
     border: "border-l-yellow-600",
   },
   {
-    min: 2,
-    label: "Ruim",
-    color: "bg-red-500 text-white",
-    border: "border-l-red-500",
-  },
-  {
     min: 1,
-    label: "Péssimo",
+    label: "Ruim",
     color: "bg-red-500 text-white",
     border: "border-l-red-500",
   },

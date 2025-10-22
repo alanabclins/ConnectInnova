@@ -5,7 +5,12 @@ import {
   AIGeneratedSummary,
   LoadingSkeleton,
   ErrorMessage,
-} from "@/components/AiGeneratedSumary"; 
+} from "@/components/AiGeneratedSumary";
+import { toast } from "sonner";
+
+// =========================================================================
+// INTERFACES
+// =========================================================================
 
 interface AnalysisData {
   clarity_resum: string;
@@ -20,6 +25,16 @@ interface ProjectFormData {
   project_description: string;
 }
 
+interface ResumResponse {
+  message: string;
+  resum_id: string;
+  resums: AnalysisData;
+}
+
+// =========================================================================
+// COMPONENTE PRINCIPAL
+// =========================================================================
+
 const SummaryPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,73 +44,109 @@ const SummaryPage = () => {
     projectData?: ProjectFormData;
   };
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isSummaryLoading, setIsSummaryLoading] = useState(true);
+  const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isErrorState, setIsErrorState] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
 
     if (!projectId || !projectData) {
-      setError(
-        "Dados do projeto não encontrados. Por favor, volte e tente novamente."
-      );
-      setIsLoading(false);
+      const msg =
+        "Dados do projeto não encontrados. Por favor, volte e tente novamente.";
+      toast.error(msg);
+      setError(msg);
+      setIsErrorState(true);
       return;
     }
 
-    const fetchProjectAnalysis = async () => {
+    setIsErrorState(false);
+
+    const fetchSummary = async () => {
       try {
-        setIsLoading(true);
-        setError(null);
+        setIsSummaryLoading(true);
+        const resumResponse: ResumResponse =
+          await AnalysisService.resumAnalysis(projectId);
 
-        const analysisResponse = await AnalysisService.analyzeProject(
-          projectId
-        );
-
-        if (!analysisResponse?.resum_id) {
-          throw new Error(
-            "ID do resumo não encontrado na resposta da análise."
-          );
-        }
-
-        const resumResponse = await AnalysisService.resumAnalysis(
-          analysisResponse.resum_id
-        );
-
-        if (resumResponse && resumResponse.length > 0) {
-          setAnalysis(resumResponse[0]);
+        if (resumResponse?.resums) {
+          setAnalysis(resumResponse.resums);
+          setError(null);
+          // Inicia a análise detalhada assim que o resumo estiver pronto
+          fetchFullAnalysis(projectId);
         } else {
           throw new Error("O resumo da análise não foi encontrado.");
         }
       } catch (err) {
-        console.error("Erro ao carregar análise:", err);
-        setError(
-          "Não foi possível carregar o resumo da análise. Tente novamente mais tarde."
-        );
-        setAnalysis(null);
+        console.error("Erro ao carregar resumo:", err);
+        const msg =
+          "Não foi possível carregar o resumo da análise. Verifique sua conexão.";
+        toast.error(msg);
+        setError(msg);
+        setIsErrorState(true);
       } finally {
-        setIsLoading(false);
+        setIsSummaryLoading(false);
       }
     };
 
-    fetchProjectAnalysis();
+    const fetchFullAnalysis = async (id: string) => {
+      let analysisToastId;
+      try {
+        setIsAnalysisLoading(true);
+
+        analysisToastId = toast.loading(
+          "Finalizando análise detalhada (15 critérios)... Isso pode levar um momento.",
+          {
+            duration: 0,
+            id: "analysis-loading",
+          }
+        );
+
+        await AnalysisService.generateFullAnalysis(id);
+
+        toast.success("Análise detalhada concluída!", {
+          description: "O dashboard está pronto. Você já pode navegar.",
+          id: analysisToastId,
+        });
+      } catch (err) {
+        console.error("Erro ao gerar análise completa:", err);
+        toast.error(
+          "Falha ao gerar análise detalhada. O dashboard pode não carregar corretamente.",
+          { id: analysisToastId }
+        );
+      } finally {
+        setIsAnalysisLoading(false);
+      }
+    };
+
+    fetchSummary();
   }, [projectId, projectData]);
 
   const handleGoToDashboard = () => {
-    if (projectId) {
+    if (projectId && projectData && !isAnalysisLoading) {
       navigate(`/home/dashboard`, {
-        state: { projectId: projectId },
+        state: {
+          projectId: projectId,
+          projectData: projectData,
+        },
       });
     }
   };
 
-  if (isLoading) {
+  if (isSummaryLoading) {
     return <LoadingSkeleton />;
   }
 
-  if (error) {
-    return <ErrorMessage message={error} />;
+  if (isErrorState || (error && !analysis)) {
+    return (
+      <ErrorMessage
+        message={
+          error ||
+          "Ocorreu um erro inesperado e o resumo não pôde ser carregado."
+        }
+      />
+    );
   }
 
   if (analysis && projectData) {
@@ -104,6 +155,7 @@ const SummaryPage = () => {
         analysis={analysis}
         projectData={projectData}
         onGoToDashboard={handleGoToDashboard}
+        isAnalysisLoading={isAnalysisLoading}
       />
     );
   }

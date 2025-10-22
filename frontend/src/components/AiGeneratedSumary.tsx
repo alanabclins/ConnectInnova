@@ -1,11 +1,9 @@
-// src/components/AIGeneratedSummary.tsx
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IconSparkles, IconCheck, IconPlus } from "@tabler/icons-react";
+import { IconSparkles, IconCheck, IconPlus, IconLoader2 } from "@tabler/icons-react";
 
 interface AnalysisData {
   clarity_resum: string;
@@ -24,12 +22,14 @@ interface AIGeneratedSummaryProps {
   analysis: AnalysisData;
   projectData: ProjectFormData;
   onGoToDashboard: () => void;
+  isAnalysisLoading: boolean;
 }
 
 export const AIGeneratedSummary: React.FC<AIGeneratedSummaryProps> = ({
   analysis,
   projectData,
   onGoToDashboard,
+  isAnalysisLoading,
 }) => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -66,10 +66,20 @@ export const AIGeneratedSummary: React.FC<AIGeneratedSummaryProps> = ({
         <div className="pt-4 pb-8">
           <Button
             onClick={onGoToDashboard}
+            disabled={isAnalysisLoading}
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-base font-medium"
           >
-            <IconSparkles className="w-5 h-5 mr-2" />
-            Ir para o dashboard
+            {isAnalysisLoading ? (
+              <>
+                <IconLoader2 className="w-5 h-5 mr-2 animate-spin" />
+                Finalizando análise detalhada...
+              </>
+            ) : (
+              <>
+                <IconSparkles className="w-5 h-5 mr-2" />
+                Ir para o dashboard
+              </>
+            )}
           </Button>
         </div>
       </div>

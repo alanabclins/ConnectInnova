@@ -1,14 +1,15 @@
 import json
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from google import genai
 
+from app import models
+from app.auth.auth import get_current_active_user
 from app.config.config import settings
 from app.models.ai_resume import AIResum
 from app.models.projects import Project
 from app.models.users import User
-
 from app.routers.ai_config import prompt_template
 
 router = APIRouter()
@@ -20,7 +21,9 @@ client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 
 @router.get("/{project_uuid}")
-async def generate_resum(project_uuid: UUID):
+async def generate_resum(
+    project_uuid: UUID, current_user: models.User = Depends(get_current_active_user)
+):
     """
     Gera um resumo simplificado de cada aspecto do projeto
     (clareza, inovação, impacto, viabilidade e aplicabilidade)

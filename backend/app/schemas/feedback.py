@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -33,6 +32,7 @@ class CriteriaEvaluationContainer(BaseModel):
 
 class FeedbackCreateUpdate(BaseModel):
     """Schema para criar ou atualizar o documento de Feedback no DB."""
+
     project_id: UUID
     student_id: UUID
     feedback_content: str = Field(
@@ -46,6 +46,7 @@ class FeedbackCreateUpdate(BaseModel):
 
 class ProjectAnalysisResponse(BaseModel):
     """Schema de resposta para o endpoint de análise de projeto."""
+
     message: str = Field(..., description="Mensagem de status da operação.")
     feedback_id: UUID = Field(
         ..., description="UUID do documento de feedback salvo no banco de dados."
