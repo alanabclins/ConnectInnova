@@ -608,18 +608,3 @@ def get_label_for_level(level: int) -> str:
 
 
 __all__ = ["EVALUATION_CRITERIA", "get_label_for_level"]
-
-
-def get_label_for_level(level: int) -> str:
-    """Retorna o rótulo para um nível numérico (1-3)."""
-    if level == 1:
-        return "Ruim"
-    elif level == 2:
-        return "Médio"
-    elif level == 3:
-        return "Bom"
-    else:
-        raise ValueError(f"Nível inválido: {level}. Deve estar entre 1 e 3.")
-
-
-__all__ = ["EVALUATION_CRITERIA", "get_label_for_level"]

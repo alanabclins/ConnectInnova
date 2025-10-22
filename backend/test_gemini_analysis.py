@@ -61,7 +61,7 @@ EXAMPLE_PROJECT = {
         "de 65% após 3 meses e feedback positivo de 90% dos usuários. Expansão "
         "planejada para 5 cidades em 12 meses. Já temos 3 cooperativas interessadas "
         "em participar."
-    )
+    ),
 }
 
 
@@ -74,7 +74,11 @@ def build_test_prompt(project_data: dict) -> str:
     for idx, (key, criterion) in enumerate(EVALUATION_CRITERIA.items(), 1):
         criteria_table += f"\n{idx}. **{criterion['name']}**: {criterion['definition']}\n"
         # Apenas os níveis extremos e médio para economizar tokens
-        for level_data in [criterion['levels'][0], criterion['levels'][2], criterion['levels'][4]]:
+        for level_data in [
+            criterion["levels"][0],
+            criterion["levels"][2],
+            criterion["levels"][4],
+        ]:
             criteria_table += f"N{level_data['level']} ({level_data['label']}): {level_data['description']}\n"
 
     prompt = f"""
@@ -246,6 +250,7 @@ async def test_gemini_analysis():
     except Exception as e:
         print(f"❌ ERRO ao chamar Gemini: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -270,4 +275,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

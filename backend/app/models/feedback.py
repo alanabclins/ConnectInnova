@@ -2,9 +2,9 @@ from datetime import UTC, datetime
 from typing import Annotated, Optional
 from uuid import UUID, uuid4
 
+from app.schemas.feedback import CriteriaEvaluationContainer
 from beanie import Document, Indexed
-from pydantic import Field
-
+from pydantic import Field, BaseModel
 
 class Feedback(Document):
     uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)] = Field(
@@ -28,8 +28,7 @@ class Feedback(Document):
     ai_feedback_application_potencial: Optional[str] = None
     ai_feedback_application_potencial_level: Optional[int] = None
 
-    # Avaliação detalhada dos 15 critérios (escala 1-3)
-    criteria_evaluation: Optional[dict] = Field(default_factory=dict)
+    criteria_evaluation: Optional[CriteriaEvaluationContainer] = None
 
     class Settings:
         name = "Feedback"

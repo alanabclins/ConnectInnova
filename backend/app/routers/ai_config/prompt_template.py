@@ -15,7 +15,7 @@ O template inclui:
 
 from typing import Any, Dict
 
-from app.evaluation_criteria import EVALUATION_CRITERIA
+from .evaluation_criteria import EVALUATION_CRITERIA
 
 
 def build_evaluation_prompt(project_data: Dict[str, Any]) -> str:

@@ -9,7 +9,7 @@ from app.models.ai_resume import AIResum
 from app.models.projects import Project
 from app.models.users import User
 
-from ..prompt_template import build_resum_prompt  # ✅ usa o prompt que você mostrou
+from app.routers.ai_config import prompt_template
 
 router = APIRouter()
 
@@ -48,7 +48,7 @@ async def generate_resum(project_uuid: UUID):
         "application_potencial": project.application_potencial,
     }
 
-    prompt = build_resum_prompt(project_data)
+    prompt = prompt_template.build_resum_prompt(project_data)
 
     # 4️⃣ Envia para o Gemini
     try:
