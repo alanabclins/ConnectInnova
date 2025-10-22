@@ -11,6 +11,7 @@ import MyProjects from "./screens/my-projects-page";
 import ProtectedRoute from "./components/protectedRouter";
 import RootRedirect from "./components/root-redirect";
 import authService from "@/services/auth.service";
+import DashboardPage from "./screens/dashboard-page";
 
 const redirectIfLoggedIn = () => {
   if (authService.isAuthenticated()) {
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "summary",
         element: <SummaryPage />,
+      },
+      {
+        path: "dashboard",
+        element: <DashboardPage />,
       },
     ],
   },
