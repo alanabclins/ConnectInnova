@@ -24,8 +24,14 @@ class ProjectCreate(BaseModel):
     technical_feasibility: Optional[str] = Field(default="", description="Viabilidade técnica")
     scalability: Optional[str] = Field(default="", description="Escalabilidade")
     
+    # Informações Pessoais (Step 5)
+    who_are_you: Optional[str] = Field(default="", description="Sobre você - trajetória e experiências")
+    academy_info: Optional[str] = Field(default="", description="Informações acadêmicas")
+    market_info: Optional[str] = Field(default="", description="Currículo e experiência profissional")
+    
     # Campos agregados legados (retrocompatibilidade - aceita se vier do frontend antigo)
     clarity_problem: Optional[str] = Field(default=None)
     inovation_grade: Optional[str] = Field(default=None)
+    social_impact_aggregated: Optional[str] = Field(default=None)
     tec_eco_viability: Optional[str] = Field(default=None)
     application_potencial: Optional[str] = Field(default=None)

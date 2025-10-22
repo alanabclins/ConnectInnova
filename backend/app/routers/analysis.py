@@ -78,7 +78,7 @@ async def analyze_project(project_uuid: UUID, custom_prompt: str = Body(None)):
         'solution_proposal': project.solution_proposal,
         'clarity_problem': project.clarity_problem,
         'inovation_grade': project.inovation_grade,
-        'social_impact': project.social_impact,
+        'social_impact': project.social_impact_aggregated,
         'tec_eco_viability': project.tec_eco_viability,
         'application_potencial': project.application_potencial
     }

@@ -31,8 +31,8 @@ async def create_project(
         # inovation_grade: usa campo innovation ou legado
         inovation_grade_text = project.inovation_grade or project.innovation or ""
         
-        # social_impact: mantém como está
-        social_impact_text = project.social_impact or ""
+        # social_impact_aggregated: usa campo social_impact ou legado
+        social_impact_aggregated_text = project.social_impact_aggregated or project.social_impact or ""
         
         # tec_eco_viability: agrega viabilidade + receita + escalabilidade
         tec_eco_viability_text = project.tec_eco_viability or ""
@@ -70,13 +70,19 @@ async def create_project(
             revenue_model=project.revenue_model or "",
             competitive_advantage=project.competitive_advantage or "",
             innovation=project.innovation or "",
+            social_impact=project.social_impact or "",
             technical_feasibility=project.technical_feasibility or "",
             scalability=project.scalability or "",
+            
+            # Informações Pessoais (Step 5)
+            who_are_you=project.who_are_you or "",
+            academy_info=project.academy_info or "",
+            market_info=project.market_info or "",
             
             # Campos agregados (para o prompt da IA)
             clarity_problem=clarity_problem_text,
             inovation_grade=inovation_grade_text,
-            social_impact=social_impact_text,
+            social_impact_aggregated=social_impact_aggregated_text,
             tec_eco_viability=tec_eco_viability_text,
             application_potencial=application_potencial_text,
             

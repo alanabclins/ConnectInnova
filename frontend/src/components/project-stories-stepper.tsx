@@ -103,6 +103,11 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
         social_impact: socialImpactInput,
         technical_feasibility: technicalFeasibilityInput,
         scalability: scalabilityInput,
+        
+        // Informações Pessoais (Step 5)
+        who_are_you: whoAreYouInput,
+        academy_info: academyInfo,
+        market_info: marketInfo,
       };
 
       const response = await ProjectService.createProject(projectData);
