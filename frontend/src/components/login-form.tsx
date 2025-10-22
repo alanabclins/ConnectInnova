@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { replace, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +23,6 @@ export function LoginForm({
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
   );
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +118,7 @@ export function LoginForm({
               href="/forgot-password"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
-              Forgot your password?
+              Esqueceu sua senha?
             </a>
           </div>
           <Input
@@ -149,7 +147,7 @@ export function LoginForm({
             <>
               {/* <Loader2 className="mr-2 h-4 w-4 animate-spin" /> */}
               <Spinner variant={"circle"} />
-              Loading...
+              Carregando...
             </>
           ) : (
             "Login"
@@ -157,9 +155,9 @@ export function LoginForm({
         </Button>
 
         <div className="text-center text-sm">
-          Don&apos;t have an account?{" "}
+          Ainda não possui uma conta?{" "}
           <a href="/register" className="underline underline-offset-4">
-            Sign up
+            Cadastre-se
           </a>
         </div>
       </div>
