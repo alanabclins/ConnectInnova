@@ -1,109 +1,75 @@
+// src/components/AIGeneratedSummary.tsx
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IconSparkles, IconCheck, IconPlus } from "@tabler/icons-react";
-import AnalysisService from "@/services/analysis.service";
 
-interface AIGeneratedSummaryProps {
-  projectId: string;
-  formsProjectData: {
-        project_title: string,
-        project_description: string,
-        solution_proposal: string,
-        clarity_problem: string,
-        inovation_grade: string,
-        social_impact: string,
-        tec_eco_viability: string,
-        application_potencial: string,
-        student_id: string, 
-      };
-  onRegenerate?: () => void;
+interface AnalysisData {
+  clarity_resum: string;
+  inovation_grade_resum: string;
+  social_impact_resum: string;
+  tec_eco_viability_resum: string;
+  application_potencial_resum: string;
 }
 
-const loadingStages = [
-  "Analisando informações do projeto...",
-  "Processando dados pessoais...",
-  "Gerando insights...",
-  "Finalizando resumo...",
-];
+interface ProjectFormData {
+  project_title: string;
+  project_description: string;
+}
+
+interface AIGeneratedSummaryProps {
+  analysis: AnalysisData;
+  projectData: ProjectFormData;
+  onGoToDashboard: () => void;
+}
 
 export const AIGeneratedSummary: React.FC<AIGeneratedSummaryProps> = ({
-  projectId, 
-  formsProjectData,
-  onRegenerate,
+  analysis,
+  projectData,
+  onGoToDashboard,
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadingStage, setLoadingStage] = useState(0);
-  const [projectData, setProjectData] = useState<any>(null);
-
-  useEffect(() => {
-  if (!projectId) {
-    setProjectData(formsProjectData);
-    setIsLoading(false);
-    return;
-  }
-
-  const interval = setInterval(() => {
-    setLoadingStage((prev) => (prev < loadingStages.length - 1 ? prev + 1 : prev));
-  }, 1200);
-
-  const fetchProjectAnalysis = async () => {
-    try {
-      // Primeiro busca a análise do projeto via UUID
-      const analysisResponse = await AnalysisService.analyzeProject(projectId);
-
-      // Depois pega o resumo gerado pela IA usando o resum_id retornado
-      const resumResponse = await AnalysisService.resumAnalysis(analysisResponse.resum_id);
-
-      setProjectData(resumResponse[0]); // Define os dados de resumo gerados pela IA
-    } catch (error) {
-      console.error("Erro ao carregar análise:", error);
-      setProjectData(null);
-    } finally {
-      clearInterval(interval);
-      setIsLoading(false);
-    }
-  };
-
-  fetchProjectAnalysis();
-
-  return () => clearInterval(interval);
-}, [projectId]);
-
-
-  if (isLoading) return <LoadingSkeleton stage={loadingStage} />;
-
-  if (!projectData)
-    return (
-      <ErrorMessage message="Erro ao carregar dados do projeto." />
-    );
-
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-4">
-        <HeaderCard data={formsProjectData} />
+        <HeaderCard data={projectData} />
 
         <Card className="p-4 md:p-6">
           <h2 className="text-lg font-semibold mb-4 text-foreground">
             Resumos gerados pela IA
           </h2>
 
-          <SummaryItem title="Clareza do Projeto" text={projectData?.clarity_resum} />
-          <SummaryItem title="Grau de Inovação" text={projectData?.inovation_grade_resum} />
-          <SummaryItem title="Impacto Social" text={projectData?.social_impact_resum} />
-          <SummaryItem title="Viabilidade Técnica e Econômica" text={projectData?.tec_eco_viability_resum} />
-          <SummaryItem title="Potencial de Aplicação" text={projectData?.application_potencial_resum} />
+          <SummaryItem
+            title="Clareza do Projeto"
+            text={analysis.clarity_resum}
+          />
+          <SummaryItem
+            title="Grau de Inovação"
+            text={analysis.inovation_grade_resum}
+          />
+          <SummaryItem
+            title="Impacto Social"
+            text={analysis.social_impact_resum}
+          />
+          <SummaryItem
+            title="Viabilidade Técnica e Econômica"
+            text={analysis.tec_eco_viability_resum}
+          />
+          <SummaryItem
+            title="Potencial de Aplicação"
+            text={analysis.application_potencial_resum}
+          />
         </Card>
 
         <div className="pt-4 pb-8">
           <Button
-            onClick={onRegenerate}
+            onClick={onGoToDashboard}
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-base font-medium"
           >
             <IconSparkles className="w-5 h-5 mr-2" />
-            Regenerar Resumo
+            Ir para o dashboard
           </Button>
         </div>
       </div>
@@ -113,7 +79,7 @@ export const AIGeneratedSummary: React.FC<AIGeneratedSummaryProps> = ({
 
 // ---------------------- Componentes Auxiliares ----------------------
 
-const HeaderCard: React.FC<{ data: any }> = ({ data }) => (
+const HeaderCard: React.FC<{ data: ProjectFormData }> = ({ data }) => (
   <Card className="p-4 md:p-6">
     <div className="flex items-start justify-between gap-4 mb-3">
       <div className="flex items-center gap-3">
@@ -154,21 +120,33 @@ const SummaryItem: React.FC<{ title: string; text?: string }> = ({
   </div>
 );
 
-const ErrorMessage: React.FC<{ message: string }> = ({ message }) => (
-  <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+export const ErrorMessage: React.FC<{ message: string }> = ({ message }) => (
+  <div className="min-h-screen flex items-center justify-center text-center text-muted-foreground p-4">
     {message}
   </div>
 );
 
-const LoadingSkeleton: React.FC<{ stage: number }> = ({ stage }) => {
-  const stages = [
-    "Analisando informações do projeto...",
-    "Processando dados pessoais...",
-    "Gerando insights...",
-    "Finalizando resumo...",
-  ];
+const loadingStages = [
+  "Analisando informações do projeto...",
+  "Processando dados pessoais...",
+  "Gerando insights...",
+  "Finalizando resumo...",
+];
 
-  const progress = ((stage + 1) / stages.length) * 100;
+export const LoadingSkeleton: React.FC = () => {
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStage((prev) =>
+        prev < loadingStages.length - 1 ? prev + 1 : prev
+      );
+    }, 1200);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const progress = ((stage + 1) / loadingStages.length) * 100;
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -182,7 +160,7 @@ const LoadingSkeleton: React.FC<{ stage: number }> = ({ stage }) => {
           </div>
 
           <p className="text-sm md:text-base text-muted-foreground animate-pulse">
-            {stages[stage] || "Processando..."}
+            {loadingStages[stage] || "Processando..."}
           </p>
 
           <div className="mt-4 max-w-md mx-auto h-2 bg-muted rounded-full overflow-hidden">
