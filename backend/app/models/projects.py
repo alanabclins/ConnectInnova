@@ -28,7 +28,7 @@ class Project(Document):
     
     # Campos Novos - Inovação e Impacto
     innovation: Optional[str] = Field(default="")
-    social_impact: Optional[str] = Field(default="")
+    social_impact_agreggated: Optional[str] = Field(default="")
     technical_feasibility: Optional[str] = Field(default="")
     scalability: Optional[str] = Field(default="")
     
@@ -40,7 +40,7 @@ class Project(Document):
     # Campos Agregados (gerados automaticamente pelo backend)
     clarity_problem: str
     inovation_grade: str
-    social_impact_aggregated: str
+    social_impact: str
     tec_eco_viability: str
     application_potencial: str
     

@@ -63,7 +63,7 @@ async def analyze_project(project_uuid: UUID):
         'solution_proposal': project.solution_proposal,
         'clarity_problem': project.clarity_problem,
         'inovation_grade': project.inovation_grade,
-        'social_impact': project.social_impact_aggregated,
+        'social_impact': project.social_impact_agreggated,
         'tec_eco_viability': project.tec_eco_viability,
         'application_potencial': project.application_potencial
     }
@@ -73,7 +73,7 @@ async def analyze_project(project_uuid: UUID):
     # 4️⃣ Envia para o Gemini
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash", # Recomendo usar um modelo mais robusto como gemini-1.5-pro-latest se o JSON falhar
+            model="gemini-2.5-flash", # Recomendo usar um modelo mais robusto como gemini-1.5-pro-latest se o JSON falhar
             contents=prompt,
         )
         ai_raw = getattr(response, "text", None)
