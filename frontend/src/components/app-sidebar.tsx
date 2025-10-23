@@ -1,5 +1,5 @@
-"use client";
-
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   IconHome,
   IconBook,
@@ -9,6 +9,8 @@ import {
   IconChevronLeft,
   IconLogout,
 } from "@tabler/icons-react";
+import { LogOut, ChevronsUpDown, BadgeCheck, Bell } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -16,108 +18,197 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/auth/authContext";
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog";
-import * as React from "react";
-
-// 1. A importação do 'next/image' foi REMOVIDA
-
-// Import da sua logo (isso continua igual e correto)
 import logoCinnova from "@/assets/logo-nome-cinnova.png";
+import logo from "@/assets/logo-cinnova.png";
 
 interface NavItem {
   icon: React.ElementType;
   label: string;
-  active?: boolean;
+  clickLink?: string;
 }
 
 const navItems: NavItem[] = [
-  { icon: IconHome, label: "Início", active: true },
-  { icon: IconBook, label: "Minha trilha" },
-  { icon: IconCompass, label: "Explorar projetos" },
-  { icon: IconTarget, label: "Desafios" },
-  { icon: IconFileText, label: "Editais" },
+  { icon: IconHome, label: "Início", clickLink: "/home" },
+  { icon: IconBook, label: "Minha trilha", clickLink: "/minha-trilha" },
+  { icon: IconCompass, label: "Explorar projetos", clickLink: "/explorar" },
+  { icon: IconTarget, label: "Desafios", clickLink: "/desafios" },
+  { icon: IconFileText, label: "Editais", clickLink: "/editais" },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, logout } = useAuth();
   const [isLogoutDialogOpen, setLogoutDialogOpen] = React.useState(false);
 
+  const { state, toggleSidebar, isMobile } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  const handleTabClick = (href: string) => {
+    navigate(href);
+  };
+
+  const userFullname = [user?.first_name, user?.last_name]
+    .filter(Boolean)
+    .join(" ");
+  const userFallback =
+    (user?.first_name?.charAt(0) || "") + (user?.last_name?.charAt(0) || "");
+
   return (
     <>
       <Sidebar collapsible="icon" {...props}>
-        {/* Cabeçalho com brand */}
         <SidebarHeader>
-          <div className="p-4">
-            {/* 2. O componente <Image> foi substituído pela tag <img> */}
-            <img
-              src={logoCinnova}
-              alt="Logotipo da C-Innova"
-              className="h-8 w-auto" // As mesmas classes de estilo funcionam
-            />
-          </div>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                tooltip="Connect Innova"
+              >
+                <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <img src={logo} alt="C-Innova" className="size-8" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">Connect</span>
+                  <span className="truncate font-medium">Innova</span>
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarHeader>
 
-        {/* O resto do componente continua igual... */}
         <SidebarContent>
-          <nav className="flex-1 px-2">
-            <ul className="space-y-2">
-              {navItems.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <li key={index}>
-                    <button
-                      className={cn(
-                        "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
-                        item.active
-                          ? "bg-primary text-primary-foreground shadow-lg"
+          <SidebarMenu className="flex-1">
+            {navItems.map((item, index) => {
+              const Icon = item.icon;
+              const isActive = !!item.clickLink && pathname === item.clickLink;
+
+              return (
+                <SidebarMenuItem key={index} className="px-2 mb-2">
+                  <SidebarMenuButton
+                    onClick={() => handleTabClick(item.clickLink!)}
+                    disabled={!item.clickLink}
+                    isActive={isActive}
+                    tooltip={item.label}
+                    className={cn(
+                        "w-full flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-200",
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-lg !bg-primary"
                           : "text-muted-foreground hover:bg-sidebar-item-hover hover:text-foreground"
                       )}
-                    >
-                      <Icon size={20} stroke={1.5} />
-                      <span className="font-medium">{item.label}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+                  >
+                    <Icon size={20} stroke={1.5} />
+                    <span className="font-medium">{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
+          </SidebarMenu>
         </SidebarContent>
 
         <SidebarFooter>
-          <div className="flex items-center justify-between bg-sidebar-item rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                <span className="text-sm font-medium text-foreground">
-                  {user?.first_name?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="max-w-[130px]">
-                <p className="font-medium text-foreground truncate">
-                  {user?.first_name} {user?.last_name}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  AgroPlus
-                </p>
-              </div>
-            </div>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    size="lg"
+                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    tooltip={userFullname || "Menu do Usuário"}
+                  >
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage src={user?.picture} alt={userFullname} />
+                      <AvatarFallback className="rounded-lg">
+                        {userFallback.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">
+                        {userFullname}
+                      </span>
+                      <span className="truncate text-xs">{user?.email}</span>
+                    </div>
+                    <ChevronsUpDown className="ml-auto size-4" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg"
+                  side={isMobile ? "bottom" : "right"}
+                  align="end"
+                  sideOffset={4}
+                >
+                  <DropdownMenuLabel className="p-0 font-normal">
+                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage src={user?.picture} alt={userFullname} />
+                        <AvatarFallback className="rounded-lg">
+                          {userFallback.toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">
+                          {userFullname}
+                        </span>
+                        <span className="truncate text-xs">{user?.email}</span>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <BadgeCheck className="mr-2 size-4" />
+                      Account
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Bell className="mr-2 size-4" />
+                      Notifications
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setLogoutDialogOpen(true)}>
+                    <LogOut className="mr-2 size-4" />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
 
-            <div className="flex items-center gap-2">
-              <IconChevronLeft
-                size={16}
-                stroke={1.5}
-                className="text-muted-foreground"
-              />
-              <button
-                onClick={() => setLogoutDialogOpen(true)}
-                className="text-muted-foreground hover:text-red-500 transition-colors"
-                aria-label="Sair"
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={toggleSidebar}
+                tooltip={isCollapsed ? "Expandir" : "Recolher"}
               >
-                <IconLogout size={16} stroke={1.5} />
-              </button>
-            </div>
-          </div>
+                <IconChevronLeft
+                  size={16}
+                  stroke={1.5}
+                  className={cn(
+                    "transition-transform duration-300",
+                    isCollapsed && "rotate-180"
+                  )}
+                />
+                <span>{isCollapsed ? "Expandir" : "Recolher"}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarFooter>
 
         <SidebarRail />

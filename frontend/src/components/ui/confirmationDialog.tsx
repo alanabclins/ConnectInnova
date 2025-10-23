@@ -36,7 +36,6 @@ export function ConfirmationDialog({
 }: ConfirmationDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      {/* A propriedade 'onInteractOutside' foi removida do componente abaixo */}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

@@ -96,7 +96,7 @@ const SummaryPage = () => {
         setIsAnalysisLoading(true);
 
         analysisToastId = toast.loading(
-          "Finalizando análise detalhada (15 critérios)... Isso pode levar um momento.",
+          "Finalizando análise detalhada. Isso pode levar um momento.",
           {
             duration: 0,
             id: "analysis-loading",
