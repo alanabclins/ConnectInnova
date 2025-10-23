@@ -70,76 +70,93 @@ Sua resposta deve ser APENAS um objeto JSON válido, sem markdown (```json) ou q
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "pertinencia_ao_problema": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"      
     }},
+
     "alinhamento_com_objetivos": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"    
     }},
     "adequacao_ao_contexto": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "originalidade": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "capacidade_de_diferenciacao": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "uso_inteligente_tecnologias": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "impacto_social_ambiental": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "escalabilidade": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "sustentabilidade": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "indicadores_de_sucesso": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "capacidade_de_melhoria": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "segmento_de_clientes": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "modelo_geracao_valor": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }},
     "vantagem_competitiva": {{
       "level": <int 1, 2 ou 3>,
       "label": "<String Ruim, Médio ou Bom>",
       "feedback": "<Seu feedback de 4-5 linhas citando evidências para este critério...>"
+      "improvement" : "<Sua sugestão de melhoria para este critério, se o critério estiver em branco ou não puder ser avaliado, sugira que o usuário desenvolva o critério>"
     }}
   }}
 }}

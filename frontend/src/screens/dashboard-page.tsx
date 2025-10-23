@@ -10,6 +10,7 @@ interface CriterionDetail {
   level: number;
   label: string;
   feedback: string;
+  improvement: string;
 }
 
 interface CriteriaEvaluationContainer {
@@ -32,16 +33,16 @@ interface CriteriaEvaluationContainer {
 }
 
 interface RawAnalysisResponse {
-    _id: string;
-    uuid: string;
-    project_id: string;
-    student_id: string;
-    feedback: {
-        content: string;
-        status: string;
-        timestamp: string;
-    };
-    criteria_evaluation: CriteriaEvaluationContainer;
+  _id: string;
+  uuid: string;
+  project_id: string;
+  student_id: string;
+  feedback: {
+    content: string;
+    status: string;
+    timestamp: string;
+  };
+  criteria_evaluation: CriteriaEvaluationContainer;
 }
 
 export interface ProjectDetails {
@@ -98,13 +99,16 @@ const CRITERIA_MAP: { [key in keyof CriteriaEvaluationContainer]: string } = {
 export default function DashboardPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { projectId, projectData: initialProjectData } = (location.state || {}) as {
+  const { projectId, projectData: initialProjectData } = (location.state ||
+    {}) as {
     projectId: string;
     projectData: ProjectDetails | undefined;
   };
 
   const [loading, setLoading] = useState(true);
-  const [analysisState, setAnalysisState] = useState<AnalysisState | null>(null);
+  const [analysisState, setAnalysisState] = useState<AnalysisState | null>(
+    null
+  );
 
   useEffect(() => {
     if (!projectId || !initialProjectData) {
@@ -118,14 +122,12 @@ export default function DashboardPage() {
   const loadAnalysis = async () => {
     try {
       setLoading(true);
-      const analysisDetails: RawAnalysisResponse = await analysisService.getFeedback(
-        projectId,
-        false
-      );
+      const analysisDetails: RawAnalysisResponse =
+        await analysisService.getFeedback(projectId, false);
 
       if (analysisDetails) {
         setAnalysisState({
-          projectData: initialProjectData as ProjectDetails, 
+          projectData: initialProjectData as ProjectDetails,
           analysis: analysisDetails,
         });
       } else {
@@ -150,7 +152,9 @@ export default function DashboardPage() {
     const criteria = analysis.criteria_evaluation;
     const cards: AvCardData[] = [];
 
-    (Object.keys(CRITERIA_MAP) as (keyof CriteriaEvaluationContainer)[]).forEach((key) => {
+    (
+      Object.keys(CRITERIA_MAP) as (keyof CriteriaEvaluationContainer)[]
+    ).forEach((key) => {
       const detail = criteria[key];
       const name = CRITERIA_MAP[key];
 
@@ -158,13 +162,12 @@ export default function DashboardPage() {
         name: name,
         level: detail.level,
         justification: detail.feedback,
-        suggestion: detail.feedback,
+        suggestion: detail.improvement,
       });
     });
 
     return cards;
   }, [analysis]);
-
 
   if (loading) {
     return (
@@ -177,8 +180,9 @@ export default function DashboardPage() {
   if (!project || !analysis) {
     return null;
   }
-  
-  const summaryContent = analysis.feedback?.content || project.project_description;
+
+  const summaryContent =
+    analysis.feedback?.content || project.project_description;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -190,12 +194,16 @@ export default function DashboardPage() {
       />
 
       <div className="flex flex-1 flex-col gap-6 p-6 md:p-8">
-        <h2 className="text-2xl font-bold text-foreground mt-4">Resumo da Análise</h2>
+        <h2 className="text-2xl font-bold text-foreground mt-4">
+          Resumo da Análise
+        </h2>
         <div className="text-lg text-muted-foreground p-4 rounded-md shadow-sm border border-border">
           {summaryContent}
         </div>
-        
-        <h2 className="text-2xl font-bold text-foreground mt-4">Avaliação Detalhada por Critério</h2>
+
+        <h2 className="text-2xl font-bold text-foreground mt-4">
+          Avaliação Detalhada por Critério
+        </h2>
         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
           {avCards.map((avCard, index) => (
             <AvCard key={index} avCard={avCard} />

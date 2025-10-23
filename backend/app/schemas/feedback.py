@@ -10,6 +10,7 @@ class CriterionDetail(BaseModel):
     )
     label: str = Field(..., description="Rótulo qualitativo do nível (ex: 'Bom').")
     feedback: str = Field(..., description="Feedback detalhado da IA sobre este critério.")
+    improvement: str = Field(..., description="Melhoria sugerida pela IA")
 
 
 class CriteriaEvaluationContainer(BaseModel):
