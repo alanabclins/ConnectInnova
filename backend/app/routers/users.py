@@ -19,7 +19,7 @@ router = APIRouter()
 @router.post("", response_model=schemas.User)
 async def register_user(
     email: EmailStr = Body(...),
-    password: str = Body(...),
+    password: str = Body(..., min_length=8),
     name: str = Body(...),
     first_name: str = Body(None),
     last_name: str = Body(None),
@@ -72,8 +72,11 @@ async def update_profile(
     """
     update_data = update.model_dump(exclude={"is_active", "is_superuser"}, exclude_unset=True)
     try:
-        if update_data["password"]:
-            update_data["hashed_password"] = get_hashed_password(update_data["password"])
+        if "password" in update_data and update_data["password"]:
+            password_value = update_data["password"].strip()
+            if not password_value or len(password_value) < 8:
+                raise HTTPException(status_code=400, detail="Password must have at least 8 characters")
+            update_data["hashed_password"] = get_hashed_password(password_value)
             del update_data["password"]
     except KeyError:
         pass
@@ -116,8 +119,11 @@ async def update_user(
         raise HTTPException(status_code=404, detail="User not found")
     update_data = update.model_dump(exclude_unset=True)
     try:
-        if update_data["password"]:
-            update_data["hashed_password"] = get_hashed_password(update_data["password"])
+        if "password" in update_data and update_data["password"]:
+            password_value = update_data["password"].strip()
+            if not password_value or len(password_value) < 8:
+                raise HTTPException(status_code=400, detail="Password must have at least 8 characters")
+            update_data["hashed_password"] = get_hashed_password(password_value)
             del update_data["password"]
     except KeyError:
         pass
