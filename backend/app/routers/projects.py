@@ -2,6 +2,8 @@ from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from beanie import PydanticObjectId
+
 from .. import models, schemas
 from ..auth.auth import get_current_active_user
 
@@ -111,3 +113,63 @@ async def get_projects(current_user: models.User = Depends(get_current_active_us
         return projects
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao buscar projetos: {e}")
+
+from uuid import UUID
+
+@router.patch("/{project_uuid}", response_model=schemas.ProjectResponse)
+async def update_project(
+    project_uuid: str,
+    project_update: schemas.ProjectCreate,
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
+    try:
+        # Converter para UUID
+        project_uuid_obj = UUID(project_uuid)
+
+        # Buscar o projeto pelo UUID
+        project = await models.Project.find_one(models.Project.uuid == project_uuid_obj)
+
+        if not project:
+            raise HTTPException(status_code=404, detail="Projeto não encontrado.")
+
+        agg = _aggregate_project_fields(project_update)
+
+        update_data = {
+            "project_title": project_update.project_title,
+            "project_description": project_update.project_description,
+            "solution_proposal": project_update.solution_proposal,
+            "problem_description": project_update.problem_description or "",
+            "target_audience": project_update.target_audience or "",
+            "value_proposition": project_update.value_proposition or "",
+            "customer_segment": project_update.customer_segment or "",
+            "revenue_model": project_update.revenue_model or "",
+            "competitive_advantage": project_update.competitive_advantage or "",
+            "innovation": project_update.innovation or "",
+            "social_impact": project_update.social_impact or "",
+            "technical_feasibility": project_update.technical_feasibility or "",
+            "scalability": project_update.scalability or "",
+            "who_are_you": project_update.who_are_you or "",
+            "academy_info": project_update.academy_info or "",
+            "market_info": project_update.market_info or "",
+            "clarity_problem": agg["clarity_problem"],
+            "inovation_grade": agg["inovation_grade"],
+            "social_impact_aggregated": agg["social_impact_aggregated"],
+            "tec_eco_viability": agg["tec_eco_viability"],
+            "application_potencial": agg["application_potencial"],
+        }
+
+        await project.set(update_data)
+
+        return {
+            "message": "Projeto atualizado com sucesso!",
+            "project_id_mongo": str(project.id),
+            "project_uuid": project.uuid,
+            "timestamp": project.timestamp,
+        }
+
+    except ValueError:
+        raise HTTPException(status_code=400, detail="UUID inválido.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar projeto: {e}")
