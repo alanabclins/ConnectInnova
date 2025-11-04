@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { IconCircleCheck } from "@tabler/icons-react";
 
 export interface AvCardData {
   name: string;
@@ -53,7 +54,7 @@ export const AvCard = ({ avCard }: AvCardProps) => {
       )}
     >
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-4">
           <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
             {avCard.name}
           </h3>
@@ -78,12 +79,21 @@ export const AvCard = ({ avCard }: AvCardProps) => {
         </div>
         {avCard.suggestion && (
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-5">
               Sugestão de Melhoria
             </h4>
-            <p className="text-sm leading-relaxed text-primary/90 font-medium">
-              {avCard.suggestion}
-            </p>
+            {avCard.suggestion === "N/A" ? (
+              <div className="flex items-center gap-2 p-3 bg-success/10 rounded-md border border-success/20">
+                <IconCircleCheck className="w-5 h-5 text-success flex-shrink-0" />
+                <p className="text-sm font-medium text-success">
+                  Tudo certo! Nenhuma melhoria é necessária aqui.
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm leading-relaxed text-primary/90 font-medium">
+                {avCard.suggestion}
+              </p>
+            )}
           </div>
         )}
       </CardContent>

@@ -1,3 +1,4 @@
+import type { ProjectFormData } from "@/hooks/useProjectForm";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL;
@@ -16,6 +17,48 @@ class ProjectService {
       return response.data; // A ideia é o uuid vir por aqui
     } catch (error: any) {
       console.error("Erro ao criar projeto:", error);
+      throw error;
+    }
+  }
+
+  async getProjectDetails(projectUuid: string): Promise<any> {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${API_URL}/projects/${projectUuid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao buscar detalhes do projeto:", error);
+      throw error;
+    }
+  }
+
+  async updateProject(
+    projectUuid: string,
+    projectData: ProjectFormData
+  ): Promise<any> {
+    try {
+      const token = localStorage.getItem("token");
+      
+      const response = await axios.patch(
+        `${API_URL}/projects/${projectUuid}`,
+        projectData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao atualizar projeto:", error);
       throw error;
     }
   }

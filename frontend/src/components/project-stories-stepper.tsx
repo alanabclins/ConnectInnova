@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ProjectService from "@/services/project.service";
 import { CircularStepIndicator } from "./CircularStepIndicator";
 import { ActionButton } from "./ActionButton";
@@ -14,6 +14,7 @@ import { useProjectForm, type ProjectFormData } from "@/hooks/useProjectForm";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import type { JSX } from "react";
+import type { ProjectDetails } from "@/types/project.types";
 
 interface ProjectStepperProps {
   onComplete?: () => void;
@@ -22,48 +23,84 @@ interface ProjectStepperProps {
 const TOTAL_STEPS = 5;
 
 interface StepContentProps {
-  getFieldProps: (key: keyof ProjectFormData, placeholder: string, isTextArea?: boolean, minHeightClass?: string) => any;
+  getFieldProps: (
+    key: keyof ProjectFormData,
+    placeholder: string,
+    isTextArea?: boolean,
+    minHeightClass?: string
+  ) => any;
   FieldError: (props: { fieldKey: keyof ProjectFormData }) => JSX.Element;
 }
 
-const Step1Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError }) => (
+const Step1Content: React.FC<StepContentProps> = ({
+  getFieldProps,
+  FieldError,
+}) => (
   <div className="flex flex-col md:flex-row gap-6 w-full">
     <div className="flex-1 flex flex-col gap-3">
       <Input {...getFieldProps("project_title", "Título do projeto")} />
       <FieldError fieldKey="project_title" />
 
       <Textarea
-        {...getFieldProps("project_description", "Descrição do projeto - Descreva de forma geral seu projeto", true, "min-h-[260px]")}
+        {...getFieldProps(
+          "project_description",
+          "Descrição do projeto - Descreva de forma geral seu projeto",
+          true,
+          "min-h-[260px]"
+        )}
       />
       <FieldError fieldKey="project_description" />
     </div>
     <div className="flex-1 flex flex-col gap-4">
       <Textarea
-        {...getFieldProps("solution_proposal", "Proposta de solução - Como você pretende resolver o problema?", true, "min-h-[340px]")}
+        {...getFieldProps(
+          "solution_proposal",
+          "Proposta de solução - Como você pretende resolver o problema?",
+          true,
+          "min-h-[340px]"
+        )}
       />
       <FieldError fieldKey="solution_proposal" />
     </div>
   </div>
 );
 
-const Step2Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError }) => (
+const Step2Content: React.FC<StepContentProps> = ({
+  getFieldProps,
+  FieldError,
+}) => (
   <div className="flex flex-col gap-6 w-full">
     <div className="flex flex-col gap-3">
       <Textarea
-        {...getFieldProps("problem_description", "Descrição do Problema - Qual problema real você está resolvendo? Apresente dados, pesquisas ou evidências.", true, "min-h-[140px]")}
+        {...getFieldProps(
+          "problem_description",
+          "Descrição do Problema - Qual problema real você está resolvendo? Apresente dados, pesquisas ou evidências.",
+          true,
+          "min-h-[140px]"
+        )}
       />
       <FieldError fieldKey="problem_description" />
     </div>
     <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1 flex flex-col gap-3">
         <Textarea
-          {...getFieldProps("target_audience", "Público-alvo - Quem são os principais beneficiados? Descreva personas se possível.", true, "min-h-[140px]")}
+          {...getFieldProps(
+            "target_audience",
+            "Público-alvo - Quem são os principais beneficiados? Descreva personas se possível.",
+            true,
+            "min-h-[140px]"
+          )}
         />
         <FieldError fieldKey="target_audience" />
       </div>
       <div className="flex-1 flex flex-col gap-3">
         <Textarea
-          {...getFieldProps("value_proposition", "Proposta de Valor - Qual o principal benefício/diferencial que você oferece?", true, "min-h-[140px]")}
+          {...getFieldProps(
+            "value_proposition",
+            "Proposta de Valor - Qual o principal benefício/diferencial que você oferece?",
+            true,
+            "min-h-[140px]"
+          )}
         />
         <FieldError fieldKey="value_proposition" />
       </div>
@@ -71,24 +108,42 @@ const Step2Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError })
   </div>
 );
 
-const Step3Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError }) => (
+const Step3Content: React.FC<StepContentProps> = ({
+  getFieldProps,
+  FieldError,
+}) => (
   <div className="flex flex-col gap-6 w-full">
     <div className="flex flex-col gap-3">
       <Textarea
-        {...getFieldProps("customer_segment", "Segmento de Clientes - Quem pagará pela solução? Defina perfil, tamanho do mercado.", true, "min-h-[120px]")}
+        {...getFieldProps(
+          "customer_segment",
+          "Segmento de Clientes - Quem pagará pela solução? Defina perfil, tamanho do mercado.",
+          true,
+          "min-h-[120px]"
+        )}
       />
       <FieldError fieldKey="customer_segment" />
     </div>
     <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1 flex flex-col gap-3">
         <Textarea
-          {...getFieldProps("revenue_model", "Modelo de Receita - Como você vai ganhar dinheiro? Preços, planos, monetização.", true, "min-h-[140px]")}
+          {...getFieldProps(
+            "revenue_model",
+            "Modelo de Receita - Como você vai ganhar dinheiro? Preços, planos, monetização.",
+            true,
+            "min-h-[140px]"
+          )}
         />
         <FieldError fieldKey="revenue_model" />
       </div>
       <div className="flex-1 flex flex-col gap-3">
         <Textarea
-          {...getFieldProps("competitive_advantage", "Vantagem Competitiva - O que torna sua solução difícil de copiar? Diferenciais únicos.", true, "min-h-[140px]")}
+          {...getFieldProps(
+            "competitive_advantage",
+            "Vantagem Competitiva - O que torna sua solução difícil de copiar? Diferenciais únicos.",
+            true,
+            "min-h-[140px]"
+          )}
         />
         <FieldError fieldKey="competitive_advantage" />
       </div>
@@ -96,18 +151,31 @@ const Step3Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError })
   </div>
 );
 
-const Step4Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError }) => (
+const Step4Content: React.FC<StepContentProps> = ({
+  getFieldProps,
+  FieldError,
+}) => (
   <div className="flex flex-col gap-6 w-full">
     <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1 flex flex-col gap-3">
         <Textarea
-          {...getFieldProps("innovation", "Grau de Inovação - O que há de inovador? Tecnologias, métodos, abordagens únicas.", true, "min-h-[150px]")}
+          {...getFieldProps(
+            "innovation",
+            "Grau de Inovação - O que há de inovador? Tecnologias, métodos, abordagens únicas.",
+            true,
+            "min-h-[150px]"
+          )}
         />
         <FieldError fieldKey="innovation" />
       </div>
       <div className="flex-1 flex flex-col gap-3">
         <Textarea
-          {...getFieldProps("social_impact", "Impacto Social/Ambiental - Quantas pessoas beneficiadas? Que mudança você gera?", true, "min-h-[150px]")}
+          {...getFieldProps(
+            "social_impact",
+            "Impacto Social/Ambiental - Quantas pessoas beneficiadas? Que mudança você gera?",
+            true,
+            "min-h-[150px]"
+          )}
         />
         <FieldError fieldKey="social_impact" />
       </div>
@@ -115,13 +183,23 @@ const Step4Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError })
     <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1 flex flex-col gap-3">
         <Textarea
-          {...getFieldProps("technical_feasibility", "Viabilidade Técnica e Econômica - Tecnologias usadas, custos, recursos necessários.", true, "min-h-[120px]")}
+          {...getFieldProps(
+            "technical_feasibility",
+            "Viabilidade Técnica e Econômica - Tecnologias usadas, custos, recursos necessários.",
+            true,
+            "min-h-[120px]"
+          )}
         />
         <FieldError fieldKey="technical_feasibility" />
       </div>
       <div className="flex-1 flex flex-col gap-3">
         <Textarea
-          {...getFieldProps("scalability", "Escalabilidade - A solução pode crescer? Como replicar em outros contextos?", true, "min-h-[120px]")}
+          {...getFieldProps(
+            "scalability",
+            "Escalabilidade - A solução pode crescer? Como replicar em outros contextos?",
+            true,
+            "min-h-[120px]"
+          )}
         />
         <FieldError fieldKey="scalability" />
       </div>
@@ -129,21 +207,39 @@ const Step4Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError })
   </div>
 );
 
-const Step5Content: React.FC<StepContentProps> = ({ getFieldProps, FieldError }) => (
+const Step5Content: React.FC<StepContentProps> = ({
+  getFieldProps,
+  FieldError,
+}) => (
   <div className="flex flex-col md:flex-row gap-6 w-full">
     <div className="flex-1 flex flex-col gap-4">
       <Textarea
-        {...getFieldProps("who_are_you", "Quem é você? - Conte sobre sua trajetória, experiências e motivações.", true, "min-h-[200px]")}
+        {...getFieldProps(
+          "who_are_you",
+          "Quem é você? - Conte sobre sua trajetória, experiências e motivações.",
+          true,
+          "min-h-[200px]"
+        )}
       />
       <FieldError fieldKey="who_are_you" />
     </div>
     <div className="flex-1 flex flex-col gap-4">
       <Textarea
-        {...getFieldProps("academy_info", "Informações Acadêmicas - Formação, instituição, curso, período.", true, "min-h-[100px]")}
+        {...getFieldProps(
+          "academy_info",
+          "Informações Acadêmicas - Formação, instituição, curso, período.",
+          true,
+          "min-h-[100px]"
+        )}
       />
       <FieldError fieldKey="academy_info" />
       <Textarea
-        {...getFieldProps("market_info", "Currículo/Experiência - Projetos anteriores, habilidades, experiências relevantes.", true, "min-h-[100px]")}
+        {...getFieldProps(
+          "market_info",
+          "Currículo/Experiência - Projetos anteriores, habilidades, experiências relevantes.",
+          true,
+          "min-h-[100px]"
+        )}
       />
       <FieldError fieldKey="market_info" />
     </div>
@@ -162,6 +258,13 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
   onComplete,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { projectToEdit, isEditing } = (location.state || {}) as {
+    projectToEdit?: ProjectDetails;
+    isEditing?: boolean;
+  };
+
   const {
     currentStep,
     formData,
@@ -171,18 +274,14 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
     FieldError: FieldErrorComponent,
     stepTitles,
     validateStep,
-  } = useProjectForm(TOTAL_STEPS);
+  } = useProjectForm(TOTAL_STEPS, projectToEdit);
 
   const CurrentStepComponent = STEP_COMPONENTS[currentStep];
 
-  const handleComplete = async () => {
-    if (!validateStep()) return;
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
+  const handleCreateProject = async () => {
     try {
       const response = await ProjectService.createProject(formData);
-      
+
       toast.success("Projeto adicionado com sucesso!", {
         description: "Iniciando análise de IA...",
       });
@@ -206,16 +305,55 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
     }
   };
 
+  const handleUpdateProject = async () => {
+    if (!projectToEdit?.uuid) {
+      toast.error("ID do projeto não encontrado para atualização.");
+      return;
+    }
+
+    try {
+      await ProjectService.updateProject(projectToEdit.uuid, formData);
+      toast.success("Projeto atualizado com sucesso!");
+      
+      navigate("/home/summary", {
+        state: {
+          projectId: projectToEdit.uuid,
+          projectData: {
+            project_title: formData.project_title,
+            project_description: formData.project_description,
+          },
+        },
+      });
+
+      if (onComplete) onComplete();
+    } catch (error: any) {
+      console.error("Erro ao atualizar projeto:", error);
+      toast.error("Não foi possível atualizar o projeto. Tente novamente.");
+    }
+  };
+
+  const handleComplete = async () => {
+    if (!validateStep()) return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (isEditing) {
+      await handleUpdateProject();
+    } else {
+      await handleCreateProject();
+    }
+  };
+
   const currentStepData = stepTitles[currentStep - 1];
 
   return (
     <div className="min-h-[calc(100dvh-80px)] flex flex-col bg-background text-foreground px-8 py-12">
       <div className="max-w-7xl mx-auto flex flex-col flex-grow w-full">
-        {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div className="max-w-2xl">
             <h1 className="text-2xl md:text-3xl font-bold mb-4">
-              {currentStepData.title}
+              {isEditing
+                ? `Editando: ${currentStepData.title}`
+                : currentStepData.title}
             </h1>
             <p className="text-muted-foreground text-md md:text-md leading-relaxed">
               {currentStepData.description}
@@ -227,18 +365,16 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
           />
         </div>
 
-        {/* Step content and Action buttons (Conteúdo principal) */}
         <div className="flex-grow flex flex-col justify-between">
           <form className="mb-4 flex flex-col gap-6 w-full">
             {CurrentStepComponent && (
-              <CurrentStepComponent 
-                getFieldProps={getFieldProps} 
-                FieldError={FieldErrorComponent} 
+              <CurrentStepComponent
+                getFieldProps={getFieldProps}
+                FieldError={FieldErrorComponent}
               />
             )}
           </form>
 
-          {/* Action buttons - Movidos para dentro do flex-grow, mas acima do footer */}
           <div className="flex flex-wrap gap-4 mt-auto mb-8">
             <ActionButton
               icon={IconFileText}
@@ -258,8 +394,6 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
           </div>
         </div>
 
-
-        {/* Footer */}
         <div className="flex flex-col md:flex-row justify-between items-start pt-8 md:pt-0">
           <p className="text-muted-foreground text-sm max-w-md">
             Fique tranquilo: Suas informações são analisadas em total sigilo e
@@ -286,7 +420,9 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                 onClick={handleComplete}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 gap-2"
               >
-                <span>Tudo adicionado!</span>
+                <span>
+                  {isEditing ? "Salvar Alterações" : "Tudo adicionado!"}
+                </span>
                 <IconCheck className="w-4 h-4" />
               </Button>
             )}

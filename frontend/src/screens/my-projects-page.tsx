@@ -11,7 +11,7 @@ import { ProjectCard } from "@/components/project-card";
 import { AddProjectCard } from "@/components/add-project-card";
 import ProjectService from "@/services/project.service";
 import { toast } from "sonner";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import LoadingSpinner from "@/components/loading-spinner";
 
 export interface ProjectDetails {
   _id: string;
@@ -88,11 +88,7 @@ export default function MyProjects() {
   }));
 
   if (loading) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <Spinner variant={"circle"} className="text-primary"/>
-      </div>
-    );
+      return <LoadingSpinner />;
   }
 
   return (

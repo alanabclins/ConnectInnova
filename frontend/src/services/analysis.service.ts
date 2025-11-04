@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 class AnalysisService {
   // Chamada POST para INICIAR a análise completa (15 critérios)
-  async generateFullAnalysis(project_uuid: string) {
+  async generateFullAnalysis(project_uuid: string, regenerate: boolean = false) {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -13,7 +13,7 @@ class AnalysisService {
 
     try {
       const response = await axios.post(
-        `${API_URL}/feedback/${project_uuid}`,
+        `${API_URL}/feedback/${project_uuid}?regenerate=${regenerate}`,
         null, // Corpo da requisição vazio, conforme seu exemplo cURL: -d ''
         {
           headers: {
@@ -37,7 +37,7 @@ class AnalysisService {
     }
   }
 
-  async getFeedback(project_uuid: string, regenerate: boolean = false) {
+  async getFeedback(project_uuid: string) {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -46,7 +46,7 @@ class AnalysisService {
 
     try {
       const response = await axios.get(
-      `${API_URL}/feedback/${project_uuid}?regenerate=${regenerate}`,
+      `${API_URL}/feedback/${project_uuid}`,
       {
         headers: {
         Authorization: `Bearer ${token}`,

@@ -2,81 +2,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
 import { AvCard, type AvCardData } from "@/components/AvCard";
 import { toast } from "sonner";
-import analysisService from "@/services/analysis.service";
+import AnalysisService from "@/services/analysis.service";
+import projectService from "@/services/project.service";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import LoadingSpinner from "@/components/loading-spinner";
 
-interface CriterionDetail {
-  level: number;
-  label: string;
-  feedback: string;
-  improvement: string;
-}
-
-interface CriteriaEvaluationContainer {
-  proposta_de_valor: CriterionDetail;
-  pertinencia_ao_problema: CriterionDetail;
-  alinhamento_com_objetivos: CriterionDetail;
-  adequacao_ao_contexto: CriterionDetail;
-  originalidade: CriterionDetail;
-  capacidade_de_diferenciacao: CriterionDetail;
-  uso_inteligente_tecnologias: CriterionDetail;
-  impacto_social_ambiental: CriterionDetail;
-  escalabilidade: CriterionDetail;
-  sustentabilidade: CriterionDetail;
-  indicadores_de_sucesso: CriterionDetail;
-  capacidade_de_melhoria: CriterionDetail;
-  segmento_de_clientes: CriterionDetail;
-  modelo_geracao_valor: CriterionDetail;
-  vantagem_competitiva: CriterionDetail;
-  [key: string]: CriterionDetail;
-}
-
-interface RawAnalysisResponse {
-  _id: string;
-  uuid: string;
-  project_id: string;
-  student_id: string;
-  feedback: {
-    content: string;
-    status: string;
-    timestamp: string;
-  };
-  criteria_evaluation: CriteriaEvaluationContainer;
-}
-
-export interface ProjectDetails {
-  _id: string;
-  uuid: string;
-  project_title: string;
-  project_description: string;
-  solution_proposal: string;
-  student_id: string;
-  timestamp: string;
-  problem_description: string;
-  target_audience: string;
-  value_proposition: string;
-  customer_segment: string;
-  revenue_model: string;
-  competitive_advantage: string;
-  innovation: string;
-  social_impact: string;
-  technical_feasibility: string;
-  scalability: string;
-  who_are_you: string;
-  academy_info: string;
-  market_info: string;
-  clarity_problem: string;
-  inovation_grade: string;
-  social_impact_aggregated: string;
-  tec_eco_viability: string;
-  application_potencial: string;
-}
-
-interface AnalysisState {
-  projectData: ProjectDetails;
-  analysis: RawAnalysisResponse;
-}
+import type {
+  CriteriaEvaluationContainer,
+  AnalysisState,
+} from "@/types/project.types";
 
 const CRITERIA_MAP: { [key in keyof CriteriaEvaluationContainer]: string } = {
   proposta_de_valor: "Proposta de Valor",
@@ -99,10 +33,9 @@ const CRITERIA_MAP: { [key in keyof CriteriaEvaluationContainer]: string } = {
 export default function DashboardPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { projectId, projectData: initialProjectData } = (location.state ||
-    {}) as {
+
+  const { projectId } = (location.state || {}) as {
     projectId: string;
-    projectData: ProjectDetails | undefined;
   };
 
   const [loading, setLoading] = useState(true);
@@ -111,33 +44,35 @@ export default function DashboardPage() {
   );
 
   useEffect(() => {
-    if (!projectId || !initialProjectData) {
-      toast.error("Detalhes do projeto não fornecidos.");
-      navigate("/home/projects");
+    if (!projectId) {
+      toast.error("ID do projeto não fornecido.");
+      navigate("/home");
       return;
     }
-    loadAnalysis();
+    loadDashboardData();
   }, [projectId]);
 
-  const loadAnalysis = async () => {
+  const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const analysisDetails: RawAnalysisResponse =
-        await analysisService.getFeedback(projectId, false);
+      const [analysisDetails, projectDetails] = await Promise.all([
+        AnalysisService.getFeedback(projectId),
+        projectService.getProjectDetails(projectId),
+      ]);
 
-      if (analysisDetails) {
+      if (analysisDetails && projectDetails) {
         setAnalysisState({
-          projectData: initialProjectData as ProjectDetails,
+          projectData: projectDetails,
           analysis: analysisDetails,
         });
       } else {
-        toast.error("Análise do projeto não encontrada");
-        navigate("/home/projects");
+        toast.error("Análise ou dados do projeto não encontrados");
+        navigate("/home");
       }
     } catch (error) {
-      console.error("Erro ao carregar análise:", error);
-      toast.error("Erro ao carregar análise. Tente novamente.");
-      navigate("/home/projects");
+      console.error("Erro ao carregar dados do dashboard:", error);
+      toast.error("Erro ao carregar dados. Tente novamente.");
+      navigate("/home");
     } finally {
       setLoading(false);
     }
@@ -158,23 +93,21 @@ export default function DashboardPage() {
       const detail = criteria[key];
       const name = CRITERIA_MAP[key];
 
-      cards.push({
-        name: name,
-        level: detail.level,
-        justification: detail.feedback,
-        suggestion: detail.improvement,
-      });
+      if (detail && name) {
+        cards.push({
+          name: name,
+          level: detail.level,
+          justification: detail.feedback,
+          suggestion: detail.improvement,
+        });
+      }
     });
 
     return cards;
   }, [analysis]);
 
   if (loading) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <Spinner variant={"circle"} className="text-primary" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!project || !analysis) {
@@ -191,6 +124,14 @@ export default function DashboardPage() {
         description={project.project_description}
         tags={["Análise de IA", "Feedback", "15 Critérios"]}
         onBack={() => navigate("/home")}
+        onEdit={() =>
+          navigate("/home/project-stories", {
+            state: {
+              isEditing: true,
+              projectToEdit: project,
+            },
+          })
+        }
       />
 
       <div className="flex flex-1 flex-col gap-6 p-6 md:p-8">
@@ -204,7 +145,7 @@ export default function DashboardPage() {
         <h2 className="text-2xl font-bold text-foreground mt-4">
           Avaliação Detalhada por Critério
         </h2>
-        <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 ">
           {avCards.map((avCard, index) => (
             <AvCard key={index} avCard={avCard} />
           ))}
