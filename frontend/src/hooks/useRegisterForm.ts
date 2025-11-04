@@ -8,6 +8,7 @@ import authService from "@/services/auth.service";
 const passwordValidation = z
   .string()
   .min(8, "A senha deve ter no mínimo 8 caracteres")
+  .max(14, "A senha deve ter no máximo 14 caracteres")
   .regex(/[A-Z]/, "A senha deve conter uma letra maiúscula")
   .regex(/[a-z]/, "A senha deve conter uma letra minúscula")
   .regex(/[0-9]/, "A senha deve conter um número")

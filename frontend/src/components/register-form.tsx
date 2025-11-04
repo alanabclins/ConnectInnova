@@ -31,7 +31,7 @@ export function RegisterForm({
 
   const passwordChecks = useMemo(() => {
     return {
-      length: password.length >= 8,
+      length: password.length >= 8 && password.length <=14,
       uppercase: /[A-Z]/.test(password),
       lowercase: /[a-z]/.test(password),
       number: /[0-9]/.test(password),

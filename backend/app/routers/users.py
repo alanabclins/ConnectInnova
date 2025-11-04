@@ -16,17 +16,42 @@ from ..auth.auth import (
 
 router = APIRouter()
 
-def validate_name(cls, value):
-        if "<" in value or ">" in value:
-            raise ValueError("O nome não pode conter tags HTML ou código.")
+def validate_name(field_name: str, value: str | None):
+    if not value:
+        return
 
-        if any(char.isdigit() for char in value):
-            raise ValueError("O nome não pode conter números.")
-        
-        if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$", value):
-            raise ValueError("O nome contém caracteres inválidos.")
-        
-        return value
+    if "<" in value or ">" in value:
+        raise HTTPException(
+            status_code=400,
+            detail=f"O campo '{field_name}' contém código HTML, o que não é permitido."
+        )
+
+    
+    if any(char.isdigit() for char in value):
+        raise HTTPException(
+            status_code=400,
+            detail=f"O campo '{field_name}' contém números, o que não é permitido."
+        )
+
+    
+    if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$", value):
+        raise HTTPException(
+            status_code=400,
+            detail=f"O campo '{field_name}' contém caracteres inválidos."
+        )
+
+    return value
+
+def validate_password(value: str):
+    if not value:
+        return
+    
+    if len(value) < 6 or len(value) > 14:   
+        raise HTTPException(
+            status_code = 400,
+            detail=f'A senha precisa ter no mínimo 6 carácteres e no máximo 14'
+        )
+    
 
 @router.post("", response_model=schemas.User)
 async def register_user(
@@ -39,6 +64,12 @@ async def register_user(
     """
     Register a new user.
     """
+    # ✅ Validação antes de salvar
+    validate_name("name", name)
+    validate_name("first_name", first_name)
+    validate_name("last_name", last_name)
+    validate_password(password)
+
     hashed_password = get_hashed_password(password)
     user = models.User(
         email=email.lower(),
@@ -47,11 +78,15 @@ async def register_user(
         first_name=first_name,
         last_name=last_name,
     )
+
     try:
         await user.create()
         return user
     except errors.DuplicateKeyError:
-        raise HTTPException(status_code=400, detail="User with that email already exists.")
+        raise HTTPException(
+            status_code=400,
+            detail="User with that email already exists."
+        )
 
 
 @router.get("", response_model=list[schemas.User])
