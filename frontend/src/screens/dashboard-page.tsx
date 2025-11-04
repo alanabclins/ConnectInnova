@@ -6,6 +6,8 @@ import AnalysisService from "@/services/analysis.service";
 import projectService from "@/services/project.service";
 import { DashboardHeader } from "@/components/dashboard-header";
 import LoadingSpinner from "@/components/loading-spinner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import ProjUserStories from "./proj-history-page";
 
 import type {
   CriteriaEvaluationContainer,
@@ -42,6 +44,7 @@ export default function DashboardPage() {
   const [analysisState, setAnalysisState] = useState<AnalysisState | null>(
     null
   );
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (!projectId) {
@@ -122,16 +125,9 @@ export default function DashboardPage() {
       <DashboardHeader
         title={project.project_title}
         description={project.project_description}
-        tags={["Análise de IA", "Feedback", "15 Critérios"]}
+        tags={["Análise de IA", "Feedback", "1S Critérios"]}
         onBack={() => navigate("/home")}
-        onEdit={() =>
-          navigate("/home/project-stories", {
-            state: {
-              isEditing: true,
-              projectToEdit: project,
-            },
-          })
-        }
+        onEdit={() => setIsEditModalOpen(true)}
       />
 
       <div className="flex flex-1 flex-col gap-6 p-6 md:p-8">
@@ -151,6 +147,16 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-7xl md:min-w-[80vh] xl:min-w-[130vh] xl:min-h-[85vh] max-h-[95vh] md:p-12 overflow-y-auto">
+          <ProjUserStories
+            isEditing={true}
+            projectToEdit={project}
+            onClose={() => setIsEditModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

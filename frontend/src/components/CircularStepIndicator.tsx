@@ -14,7 +14,7 @@ export const CircularStepIndicator: React.FC<CircularStepIndicatorProps> = ({
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="relative w-20 h-20">
+    <div className="relative w-20 h-20 flex-shrink-0">
       <svg
         className="w-full h-full -rotate-90"
         viewBox="0 0 60 60"
