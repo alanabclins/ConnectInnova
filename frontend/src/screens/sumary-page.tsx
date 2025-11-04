@@ -1,26 +1,166 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { AIGeneratedSummary } from "@/components/AiGeneratedSumary";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import AnalysisService from "@/services/analysis.service";
+import {
+  AIGeneratedSummary,
+  LoadingSkeleton,
+  ErrorMessage,
+} from "@/components/AiGeneratedSumary";
+import { toast } from "sonner";
+
+// =========================================================================
+// INTERFACES
+// =========================================================================
+
+interface AnalysisData {
+  clarity_resum: string;
+  inovation_grade_resum: string;
+  social_impact_resum: string;
+  tec_eco_viability_resum: string;
+  application_potencial_resum: string;
+}
+
+interface ProjectFormData {
+  project_title: string;
+  project_description: string;
+}
+
+interface ResumResponse {
+  message: string;
+  resum_id: string;
+  resums: AnalysisData;
+}
+
+// =========================================================================
+// COMPONENTE PRINCIPAL
+// =========================================================================
 
 const SummaryPage = () => {
+  const navigate = useNavigate();
   const location = useLocation();
 
-  // Recupera o projectId recebido pelo navigate(...)
-  const { projectId, projectData } = (location.state || {}) as { projectId?: string, projectData?: any };
+  const { projectId, projectData } = (location.state || {}) as {
+    projectId?: string;
+    projectData?: ProjectFormData;
+  };
+
+  const [isSummaryLoading, setIsSummaryLoading] = useState(true);
+  const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
+  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isErrorState, setIsErrorState] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
-  }, []);
 
-  if (!projectId) {
+    if (!projectId || !projectData) {
+      const msg =
+        "Dados do projeto não encontrados. Por favor, volte e tente novamente.";
+      toast.error(msg);
+      setError(msg);
+      setIsErrorState(true);
+      return;
+    }
+
+    setIsErrorState(false);
+
+    const fetchSummary = async () => {
+      try {
+        setIsSummaryLoading(true);
+        const resumResponse: ResumResponse =
+          await AnalysisService.resumAnalysis(projectId);
+
+        if (resumResponse?.resums) {
+          setAnalysis(resumResponse.resums);
+          setError(null);
+          // Inicia a análise detalhada assim que o resumo estiver pronto
+          fetchFullAnalysis(projectId);
+        } else {
+          throw new Error("O resumo da análise não foi encontrado.");
+        }
+      } catch (err) {
+        console.error("Erro ao carregar resumo:", err);
+        const msg =
+          "Não foi possível carregar o resumo da análise. Verifique sua conexão.";
+        toast.error(msg);
+        setError(msg);
+        setIsErrorState(true);
+      } finally {
+        setIsSummaryLoading(false);
+      }
+    };
+
+    const fetchFullAnalysis = async (id: string) => {
+      let analysisToastId;
+      try {
+        setIsAnalysisLoading(true);
+
+        analysisToastId = toast.loading(
+          "Finalizando análise detalhada. Isso pode levar um momento.",
+          {
+            duration: 0,
+            id: "analysis-loading",
+          }
+        );
+
+        await AnalysisService.generateFullAnalysis(id);
+
+        toast.success("Análise detalhada concluída!", {
+          description: "O dashboard está pronto. Você já pode navegar.",
+          id: analysisToastId,
+        });
+      } catch (err) {
+        console.error("Erro ao gerar análise completa:", err);
+        toast.error(
+          "Falha ao gerar análise detalhada. O dashboard pode não carregar corretamente.",
+          { id: analysisToastId }
+        );
+      } finally {
+        setIsAnalysisLoading(false);
+      }
+    };
+
+    fetchSummary();
+  }, [projectId, projectData]);
+
+  const handleGoToDashboard = () => {
+    if (projectId && projectData && !isAnalysisLoading) {
+      navigate(`/home/dashboard`, {
+        state: {
+          projectId: projectId,
+          projectData: projectData,
+        },
+      });
+    }
+  };
+
+  if (isSummaryLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  if (isErrorState || (error && !analysis)) {
     return (
-      <div className="flex items-center justify-center h-screen text-red-500 text-lg">
-        Nenhum projeto foi encontrado. Certifique-se de passar um projectId ao navegar para esta página.
-      </div>
+      <ErrorMessage
+        message={
+          error ||
+          "Ocorreu um erro inesperado e o resumo não pôde ser carregado."
+        }
+      />
     );
   }
 
-  return <AIGeneratedSummary projectId={projectId} formsProjectData={projectData}/>;
+  if (analysis && projectData) {
+    return (
+      <AIGeneratedSummary
+        analysis={analysis}
+        projectData={projectData}
+        onGoToDashboard={handleGoToDashboard}
+        isAnalysisLoading={isAnalysisLoading}
+      />
+    );
+  }
+
+  return <ErrorMessage message="Ocorreu um erro inesperado." />;
 };
 
 export default SummaryPage;

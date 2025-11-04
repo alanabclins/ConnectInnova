@@ -12,7 +12,6 @@ from .models.feedback import Feedback
 from .models.projects import Project
 from .models.users import User
 from .routers.api import api_router
-from .routers.projects import router as project_router
 
 
 @asynccontextmanager
@@ -54,4 +53,3 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-app.include_router(project_router)

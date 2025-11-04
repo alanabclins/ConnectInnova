@@ -76,12 +76,31 @@ def create_test_project() -> dict:
     # Simula a criação de dados dinâmicos como a função create_test_project faria
     suffix = "".join(random.choices(string.ascii_lowercase, k=8))
     return {
-        "project_title": f"Título Dinâmico {suffix}",
-        "project_description": f"Descrição Dinâmica {suffix}",
-        "solution_proposal": f"Proposta de Solução {suffix}",
-        "clarity_problem": f"Clareza do Problema {suffix}",
-        "inovation_grade": f"Inovação {suffix}",
-        "social_impact": f"Impacto {suffix}",
-        "tec_eco_viability": f"Viabilidade {suffix}",
-        "application_potencial": f"Potencial {suffix}",
+        # Informações Básicas e Essenciais
+        "project_title": f"Título Dinâmico - {suffix}",
+        "project_description": f"Descrição Geral do Projeto {suffix}",
+        "solution_proposal": f"Proposta de Solução Detalhada {suffix}",
+        # Passo 2: Problema e Proposta de Valor
+        "problem_description": f"O problema de mercado é: {suffix}",
+        "target_audience": f"Público-alvo principal: {suffix}",
+        "value_proposition": f"Proposta de Valor Única: {suffix}",
+        # Passo 3: Modelo de Negócio (Lean Canvas)
+        "customer_segment": f"Segmento de Clientes: {suffix}",
+        "revenue_model": f"Modelo de Receita: {suffix}",
+        "competitive_advantage": f"Vantagem Competitiva: {suffix}",
+        # Passo 4: Inovação e Impacto
+        "innovation": f"Inovação tecnológica: {suffix}",
+        "social_impact": f"Impacto Social e Ambiental: {suffix}",
+        "technical_feasibility": f"Viabilidade Técnica: {suffix}",
+        "scalability": f"Potencial de Escalabilidade: {suffix}",
+        # Passo 5: Informações Pessoais
+        "who_are_you": f"Quem sou eu: {suffix}",
+        "academy_info": f"Informações Acadêmicas: {suffix}",
+        "market_info": f"Informações de Mercado/Currículo: {suffix}",
+        # Campos de Agregação (usados pela IA e que devem ser preenchidos na submissão)
+        "clarity_problem": f"Clareza do Problema (Agregado): {suffix}",
+        "inovation_grade": f"Grau de Inovação (Agregado): {suffix}",
+        "social_impact_aggregated": f"Impacto Social (Agregado): {suffix}",
+        "tec_eco_viability": f"Viabilidade Técnica/Econômica (Agregada): {suffix}",
+        "application_potencial": f"Potencial de Aplicação (Agregado): {suffix}",
     }
