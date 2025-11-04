@@ -56,6 +56,76 @@ async def test_missing_name_field_returns_validation_error(client: AsyncClient):
 
 
 @pytest.mark.anyio
+async def test_name_with_numbers_returns_error(client: AsyncClient):
+    """Test: POST /users with name containing numbers returns validation error"""
+    response = await client.post(
+        f"{settings.API_V1_STR}/users",
+        json={
+            "name": "João Silva 123",  # Nome com números
+            "email": random_email(),
+            "password": random_lower_string(),
+        },
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    data = response.json()
+    assert "detail" in data
+    assert "special characters or numbers" in data["detail"].lower()
+
+
+@pytest.mark.anyio
+async def test_name_with_special_characters_returns_error(client: AsyncClient):
+    """Test: POST /users with name containing special characters returns error"""
+    response = await client.post(
+        f"{settings.API_V1_STR}/users",
+        json={
+            "name": "João@Silva#",  # Nome com caracteres especiais
+            "email": random_email(),
+            "password": random_lower_string(),
+        },
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    data = response.json()
+    assert "detail" in data
+    assert "special characters or numbers" in data["detail"].lower()
+
+
+@pytest.mark.anyio
+async def test_name_with_valid_characters_succeeds(client: AsyncClient):
+    """Test: POST /users with valid name (letters, spaces, hyphens, apostrophes) succeeds"""
+    response = await client.post(
+        f"{settings.API_V1_STR}/users",
+        json={
+            "name": "Maria O'Brien-Silva",  # Nome válido com hífen e apóstrofo
+            "email": random_email(),
+            "password": random_lower_string(),
+        },
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["name"] == "Maria O'Brien-Silva"
+
+
+@pytest.mark.anyio
+async def test_name_with_accents_succeeds(client: AsyncClient):
+    """Test: POST /users with name containing accents succeeds"""
+    response = await client.post(
+        f"{settings.API_V1_STR}/users",
+        json={
+            "name": "José María Peña",  # Nome com acentos
+            "email": random_email(),
+            "password": random_lower_string(),
+        },
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["name"] == "José María Peña"
+
+
+@pytest.mark.anyio
 async def test_get_profile_superuser(
     client: AsyncClient, superuser_token_headers: dict[str, str]
 ) -> None:

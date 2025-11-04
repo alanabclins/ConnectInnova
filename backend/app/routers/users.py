@@ -1,3 +1,4 @@
+import re
 from typing import Any
 from uuid import UUID
 
@@ -13,6 +14,9 @@ from ..auth.auth import (
     get_hashed_password,
 )
 
+# Regex para validar nome: apenas letras, espaços, hífens e acentos
+NAME_PATTERN = re.compile(r"^[a-zA-ZÀ-ÿ\s\-']+$")
+
 router = APIRouter()
 
 
@@ -27,6 +31,13 @@ async def register_user(
     """
     Register a new user.
     """
+    # Validar que o nome não contenha caracteres especiais
+    if not NAME_PATTERN.match(name):
+        raise HTTPException(
+            status_code=400, 
+            detail="Name cannot contain special characters or numbers"
+        )
+    
     hashed_password = get_hashed_password(password)
     user = models.User(
         email=email.lower(),
@@ -70,6 +81,14 @@ async def update_profile(
     """
     Update current user.
     """
+    # Validar nome se estiver sendo atualizado
+    if hasattr(update, 'name') and update.name:
+        if not NAME_PATTERN.match(update.name):
+            raise HTTPException(
+                status_code=400,
+                detail="Name cannot contain special characters or numbers"
+            )
+    
     update_data = update.model_dump(exclude={"is_active", "is_superuser"}, exclude_unset=True)
     try:
         if "password" in update_data and update_data["password"]:
