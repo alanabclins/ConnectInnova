@@ -5,6 +5,7 @@ from beanie.exceptions import RevisionIdWasChanged
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic.networks import EmailStr
 from pymongo import errors
+import re
 
 from .. import models, schemas
 from ..auth.auth import (
@@ -15,6 +16,17 @@ from ..auth.auth import (
 
 router = APIRouter()
 
+def validate_name(cls, value):
+        if "<" in value or ">" in value:
+            raise ValueError("O nome não pode conter tags HTML ou código.")
+
+        if any(char.isdigit() for char in value):
+            raise ValueError("O nome não pode conter números.")
+        
+        if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$", value):
+            raise ValueError("O nome contém caracteres inválidos.")
+        
+        return value
 
 @router.post("", response_model=schemas.User)
 async def register_user(
