@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from .. import models, schemas
 from ..auth.auth import get_current_active_user
@@ -110,4 +111,102 @@ async def get_projects(current_user: models.User = Depends(get_current_active_us
         ).to_list()
         return projects
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar projetos: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro ao buscar projetos: {e}"
+        )
+
+
+@router.get("/{project_uuid}", response_model=schemas.ProjectReturn)
+async def get_project_details(
+    project_uuid: str,
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
+    try:
+        project_uuid_obj = UUID(project_uuid)
+        project = await models.Project.find_one(models.Project.uuid == project_uuid_obj)
+
+        if not project:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Projeto não encontrado."
+            )
+
+        if project.student_id != current_user.uuid:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Usuário não autorizado"
+            )
+
+        return project
+
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="UUID inválido.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao buscar projeto: {e}",
+        )
+
+
+@router.patch("/{project_uuid}", response_model=schemas.ProjectResponse)
+async def update_project(
+    project_uuid: str,
+    project_update: schemas.ProjectCreate,
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
+    try:
+        project_uuid_obj = UUID(project_uuid)
+        project = await models.Project.find_one(models.Project.uuid == project_uuid_obj)
+
+        if not project:
+            raise HTTPException(status_code=404, detail="Projeto não encontrado.")
+
+        if project.student_id != current_user.uuid:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Usuário não autorizado"
+            )
+
+        agg = _aggregate_project_fields(project_update)
+
+        update_data = {
+            "project_title": project_update.project_title,
+            "project_description": project_update.project_description,
+            "solution_proposal": project_update.solution_proposal,
+            "problem_description": project_update.problem_description or "",
+            "target_audience": project_update.target_audience or "",
+            "value_proposition": project_update.value_proposition or "",
+            "customer_segment": project_update.customer_segment or "",
+            "revenue_model": project_update.revenue_model or "",
+            "competitive_advantage": project_update.competitive_advantage or "",
+            "innovation": project_update.innovation or "",
+            "social_impact": project_update.social_impact or "",
+            "technical_feasibility": project_update.technical_feasibility or "",
+            "scalability": project_update.scalability or "",
+            "who_are_you": project_update.who_are_you or "",
+            "academy_info": project_update.academy_info or "",
+            "market_info": project_update.market_info or "",
+            "clarity_problem": agg["clarity_problem"],
+            "inovation_grade": agg["inovation_grade"],
+            "social_impact_aggregated": agg["social_impact_aggregated"],
+            "tec_eco_viability": agg["tec_eco_viability"],
+            "application_potencial": agg["application_potencial"],
+        }
+
+        await project.set(update_data)
+
+        return {
+            "message": "Projeto atualizado com sucesso!",
+            "project_id_mongo": str(project.id),
+            "project_uuid": project.uuid,
+            "timestamp": project.timestamp,
+        }
+
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="UUID inválido.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao atualizar projeto: {e}",
+        )
