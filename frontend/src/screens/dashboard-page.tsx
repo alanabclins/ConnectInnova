@@ -8,6 +8,9 @@ import { DashboardHeader } from "@/components/dashboard-header";
 import LoadingSpinner from "@/components/loading-spinner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ProjUserStories from "./proj-history-page";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { initiatedFullAnalyses } from "./sumary-page";
 
 import type {
   CriteriaEvaluationContainer,
@@ -32,6 +35,19 @@ const CRITERIA_MAP: { [key in keyof CriteriaEvaluationContainer]: string } = {
   vantagem_competitiva: "Vantagem Competitiva",
 };
 
+const AnalysisSkeleton = () => (
+  <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 col-span-full">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <Card key={i} className="p-4 md:p-6">
+        <Skeleton className="h-6 w-1/2 mb-3" />
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-5/6 mb-2" />
+        <Skeleton className="h-4 w-2/3" />
+      </Card>
+    ))}
+  </div>
+);
+
 export default function DashboardPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,6 +57,7 @@ export default function DashboardPage() {
   };
 
   const [loading, setLoading] = useState(true);
+  const [isRegenerating, setIsRegenerating] = useState(false);
   const [analysisState, setAnalysisState] = useState<AnalysisState | null>(
     null
   );
@@ -52,12 +69,12 @@ export default function DashboardPage() {
       navigate("/home");
       return;
     }
-    loadDashboardData();
+    loadDashboardData(true);
   }, [projectId]);
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = async (showGlobalLoader = true) => {
     try {
-      setLoading(true);
+      if (showGlobalLoader) setLoading(true);
       const [analysisDetails, projectDetails] = await Promise.all([
         AnalysisService.getFeedback(projectId),
         projectService.getProjectDetails(projectId),
@@ -77,7 +94,42 @@ export default function DashboardPage() {
       toast.error("Erro ao carregar dados. Tente novamente.");
       navigate("/home");
     } finally {
-      setLoading(false);
+      if (showGlobalLoader) setLoading(false);
+    }
+  };
+
+  const handleEditComplete = async () => {
+    setIsEditModalOpen(false);
+    setIsRegenerating(true);
+    let toastId;
+
+    try {
+      toastId = toast.loading(
+        "Gerando nova avaliação do projeto...",
+        {
+          description: "Isso pode levar alguns instantes.",
+          duration: Infinity,
+        }
+      );
+
+      if (initiatedFullAnalyses.has(projectId)) {
+        initiatedFullAnalyses.delete(projectId);
+      }
+
+      await AnalysisService.generateFullAnalysis(projectId, true);
+      await loadDashboardData(false);
+
+      toast.success("Análise atualizada com sucesso!", {
+        id: toastId,
+        duration: 5000,
+      });
+    } catch (error) {
+      console.error("Erro ao regerar análise:", error);
+      toast.error("Falha ao regerar ou carregar a nova análise.", {
+        id: toastId,
+      });
+    } finally {
+      setIsRegenerating(false);
     }
   };
 
@@ -142,9 +194,13 @@ export default function DashboardPage() {
           Avaliação Detalhada por Critério
         </h2>
         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 ">
-          {avCards.map((avCard, index) => (
-            <AvCard key={index} avCard={avCard} />
-          ))}
+          {isRegenerating ? (
+            <AnalysisSkeleton />
+          ) : (
+            avCards.map((avCard, index) => (
+              <AvCard key={index} avCard={avCard} />
+            ))
+          )}
         </div>
       </div>
 
@@ -153,7 +209,7 @@ export default function DashboardPage() {
           <ProjUserStories
             isEditing={true}
             projectToEdit={project}
-            onClose={() => setIsEditModalOpen(false)}
+            onClose={handleEditComplete}
           />
         </DialogContent>
       </Dialog>

@@ -27,7 +27,7 @@ interface ResumResponse {
   resums: AnalysisData;
 }
 
-const initiatedFullAnalyses = new Set<string>();
+export const initiatedFullAnalyses = new Set<string>();
 
 const SummaryPage = () => {
   const navigate = useNavigate();

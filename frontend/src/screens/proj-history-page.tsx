@@ -19,11 +19,12 @@ export default function ProjUserStories(props: ProjUserStoriesProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { projectToEdit: locationProject, isEditing: locationEditing } =
-    (location.state || {}) as {
-      projectToEdit?: ProjectDetails;
-      isEditing?: boolean;
-    };
+  const { projectToEdit: locationProject, isEditing: locationEditing } = (
+    location.state || {}
+  ) as {
+    projectToEdit?: ProjectDetails;
+    isEditing?: boolean;
+  };
 
   const isEditing = props.isEditing ?? locationEditing ?? false;
   const projectToEdit = props.projectToEdit ?? locationProject;
@@ -32,15 +33,15 @@ export default function ProjUserStories(props: ProjUserStoriesProps) {
     projectId: string;
     projectData: { project_title: string; project_description: string };
   }) => {
-    navigate("/home/summary", {
-      state: {
-        projectId: result.projectId,
-        projectData: result.projectData,
-      },
-    });
-
     if (props.onClose) {
       props.onClose();
+    } else {
+      navigate("/home/summary", {
+        state: {
+          projectId: result.projectId,
+          projectData: result.projectData,
+        },
+      });
     }
   };
 
