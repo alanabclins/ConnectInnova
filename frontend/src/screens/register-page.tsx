@@ -3,9 +3,9 @@ import logoCinnova from "@/assets/logo-nome-cinnova.png";
 
 export default function RegisterPage() {
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
+    <div className="grid min-h-screen xl:grid-cols-2">
       {/* Lado Esquerdo - Branding */}
-      <div className="relative hidden lg:flex flex-col p-10 mesh-gradient-bg">
+      <div className="relative hidden xl:flex flex-col p-10 mesh-gradient-bg">
         <div className="flex items-center gap-3">
           <img
             src={logoCinnova}
@@ -22,7 +22,7 @@ export default function RegisterPage() {
           <img
             src={logoCinnova}
             alt="Logo Connect Innova"
-            className="h-12 lg:hidden mix-blend-color-dodge"
+            className="h-12 xl:hidden mix-blend-color-dodge"
           />
 
           {/* Cabeçalho movido para cá */}
