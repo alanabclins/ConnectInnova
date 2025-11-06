@@ -18,26 +18,26 @@ router = APIRouter()
 
 def validate_name(field_name: str, value: str | None):
     if not value:
-        return
+        return value
 
     if "<" in value or ">" in value:
         raise HTTPException(
             status_code=400,
-            detail=f"O campo '{field_name}' contém código HTML, o que não é permitido."
+            detail=f"O campo 'Nome completo' contém código HTML, o que não é permitido."
         )
 
     
     if any(char.isdigit() for char in value):
         raise HTTPException(
             status_code=400,
-            detail=f"O campo '{field_name}' contém números, o que não é permitido."
+            detail=f"O campo 'Nome completo' contém números, o que não é permitido."
         )
 
     
     if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$", value):
         raise HTTPException(
             status_code=400,
-            detail=f"O campo '{field_name}' contém caracteres inválidos."
+            detail=f"O campo 'Nome completo' contém caracteres inválidos."
         )
 
     return value

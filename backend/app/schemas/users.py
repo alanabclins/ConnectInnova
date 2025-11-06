@@ -17,6 +17,8 @@ class UserBase(BaseModel):
 
     @field_validator('name', 'first_name', 'last_name')
     def name_validator(cls, v):
+        if not v:
+            return v
         if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$", v):
             raise ValueError("O nome contém caracteres inválidos")
         return v
