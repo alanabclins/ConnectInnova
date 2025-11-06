@@ -1,14 +1,14 @@
 from typing import Any, Dict, List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-
+from fastapi.responses import JSONResponse
 from beanie import PydanticObjectId
 
 from .. import models, schemas
 from ..auth.auth import get_current_active_user
 
 router = APIRouter()
-
 
 def _aggregate_project_fields(project: schemas.ProjectCreate) -> Dict[str, str]:
     clarity_problem_text = project.clarity_problem or ""
@@ -50,16 +50,19 @@ def _aggregate_project_fields(project: schemas.ProjectCreate) -> Dict[str, str]:
 
     return {
         "clarity_problem": clarity_problem_text,
-        "inovation_grade": project.inovation_grade or project.innovation or "",
-        "social_impact_aggregated": project.social_impact_aggregated
-        or project.social_impact
-        or "",
+        "inovation_grade": project.inovation or "",
+        "social_impact_aggregated": project.social_impact or "",
         "tec_eco_viability": tec_eco_viability_text,
         "application_potencial": application_potencial_text,
     }
 
-
-@router.post("/", response_model=schemas.ProjectResponse)
+@router.post(
+    "/",
+    response_model=schemas.ProjectResponse,
+    responses={
+        500: {"description": "Erro interno ao cadastrar projeto."},
+    },
+)
 async def create_project(
     project: schemas.ProjectCreate,
     current_user: models.User = Depends(get_current_active_user),
@@ -103,8 +106,13 @@ async def create_project(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao cadastrar projeto: {e}")
 
-
-@router.get("/", response_model=List[schemas.ProjectReturn])
+@router.get(
+    "/",
+    response_model=List[schemas.ProjectReturn],
+    responses={
+        500: {"description": "Erro interno ao buscar projetos."},
+    },
+)
 async def get_projects(current_user: models.User = Depends(get_current_active_user)) -> Any:
     try:
         projects = await models.Project.find(
@@ -114,24 +122,31 @@ async def get_projects(current_user: models.User = Depends(get_current_active_us
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao buscar projetos: {e}")
 
-from uuid import UUID
-
-@router.patch("/{project_uuid}", response_model=schemas.ProjectResponse)
+@router.patch(
+    "/{project_uuid}",
+    response_model=schemas.ProjectResponse,
+    responses={
+        400: {"description": "UUID inválido."},
+        404: {"description": "Projeto não encontrado."},
+        500: {"description": "Erro interno ao atualizar projeto."},
+    },
+)
 async def update_project(
     project_uuid: str,
     project_update: schemas.ProjectCreate,
     current_user: models.User = Depends(get_current_active_user),
 ) -> Any:
     try:
-        # Converter para UUID
+        # Converter o UUID recebido
         project_uuid_obj = UUID(project_uuid)
 
-        # Buscar o projeto pelo UUID
+        # Buscar o projeto no banco
         project = await models.Project.find_one(models.Project.uuid == project_uuid_obj)
 
         if not project:
             raise HTTPException(status_code=404, detail="Projeto não encontrado.")
 
+        # Agregar campos
         agg = _aggregate_project_fields(project_update)
 
         update_data = {

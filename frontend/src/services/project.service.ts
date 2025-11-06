@@ -36,6 +36,28 @@ class ProjectService {
       throw error;
     }
   }
+
+  async updateProject(projectUuid: string, projectData: any): Promise<any> {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.patch(
+      `${API_URL}/projects/${projectUuid}`,
+      projectData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro ao atualizar projeto:", error);
+    throw error;
+  }
+}
+
 }
 
 export default new ProjectService();
