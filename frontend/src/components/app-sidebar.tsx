@@ -7,7 +7,6 @@ import {
   IconTarget,
   IconFileText,
   IconChevronLeft,
-  IconLogout,
 } from "@tabler/icons-react";
 import { LogOut, ChevronsUpDown, BadgeCheck, Bell } from "lucide-react";
 
@@ -35,7 +34,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/auth/authContext";
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog";
-import logoCinnova from "@/assets/logo-nome-cinnova.png";
 import logo from "@/assets/logo-cinnova.png";
 
 interface NavItem {

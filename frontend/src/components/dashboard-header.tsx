@@ -1,4 +1,4 @@
-import { IconChevronLeft, IconEdit } from "@tabler/icons-react";
+import { IconChevronLeft } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "./ui/separator";
@@ -21,9 +21,9 @@ export const DashboardHeader = ({
 }: DashboardHeaderProps) => {
   return (
     <div>
-      <div className="flex flex-col items-start gap-4 p-6 md:p-8 w-full">
+      <div className="flex flex-col items-start gap-4 p-6 lg:p-8 w-full">
         <div className="flex-1 space-y-6 w-full">
-          <div className="flex flex-col md:flex-row md:items-start gap-4 w-full">
+          <div className="flex flex-col lg:flex-row lg:items-start gap-4 w-full">
             <Button
               variant="ghost"
               size="icon"
@@ -34,31 +34,31 @@ export const DashboardHeader = ({
             </Button>
 
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl md:text-3xl font-bold text-primary-foreground break-words">
+              <h1 className="text-2xl lg:text-3xl font-bold text-primary-foreground break-words">
                 {title}
               </h1>
 
-              <div className="shrink-0 md:ml-auto block md:hidden">
+              <div className="shrink-0 lg:ml-auto block lg:hidden">
                 {onEdit && <EditButton onEdit={onEdit} />}
               </div>
             </div>
 
             <Separator
               orientation="vertical"
-              className="hidden md:flex mx-4 data-[orientation=vertical]:h-7 border-[1px]"
+              className="hidden lg:flex mx-4 data-[orientation=vertical]:h-7 border-[1px]"
             />
-            <p className="flex-1 text-sm md:text-base text-primary-foreground/90 leading-relaxed max-w-4xl break-words whitespace-pre-wrap min-w-0">
+            <p className="flex-1 text-sm lg:text-base text-primary-foreground/90 leading-relaxed max-w-4xl break-words whitespace-pre-wrap min-w-0">
               {description}
             </p>
 
-            <div className="shrink-0 md:ml-auto hidden md:block">
+            <div className="shrink-0 lg:ml-auto hidden lg:block">
               {onEdit && <EditButton onEdit={onEdit} />}
             </div>
           </div>
         </div>
 
         {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 md:pl-[3.5rem] w-full">
+          <div className="flex flex-wrap gap-2 lg:pl-[3.5rem] w-full">
             {tags.map((tag, index) => (
               <Badge
                 key={index}

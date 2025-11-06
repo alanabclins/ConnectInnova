@@ -73,52 +73,44 @@ export default function MyProjects() {
   };
 
   const handleAddProject = () => navigate("project-stories");
-  
+
   const handleProjectClick = (projectId: string, projectData: ProjectDetails) =>
     navigate(`/home/dashboard`, {
       state: { projectId, projectData },
     });
 
-  const projectCardData: (ProjectCardData & { fullData: ProjectDetails })[] = projects.map(p => ({
-    id: p.uuid,
-    name: p.project_title,
-    description: p.project_description,
-    createdAt: p.timestamp,
-    fullData: p,
-  }));
+  const projectCardData: (ProjectCardData & { fullData: ProjectDetails })[] =
+    projects.map((p) => ({
+      id: p.uuid,
+      name: p.project_title,
+      description: p.project_description,
+      createdAt: p.timestamp,
+      fullData: p,
+    }));
 
   if (loading) {
-      return <LoadingSpinner />;
+    return <LoadingSpinner />;
   }
 
   return (
-    <section className="flex flex-1 flex-col gap-8 p-6 md:p-8">
+    <section className="flex flex-1 flex-col gap-8 p-8 md:mr-[6vh] lg:mr-0">
       <header className="space-y-2">
         <h1 className="text-3xl font-bold text-foreground">Meus Projetos</h1>
-        <p className="text-muted-foreground">
-          {projects.length > 0
-            ? `Você tem ${projects.length} ${
-                projects.length === 1 ? "projeto" : "projetos"
-              }`
-            : "Comece criando seu primeiro projeto"}
-        </p>
+        <p className="text-muted-foreground"></p>
       </header>
 
-      <div className="w-full mx-auto md:px-3">
+      <div className="min-w-0">
         {projects.length === 0 ? (
           <div className="flex justify-start">
             <AddProjectCard onClick={handleAddProject} hasProjects={false} />
           </div>
         ) : (
-          <Carousel
-            opts={{ align: "start", loop: false }}
-            className="w-full h-48"
-          >
-            <CarouselContent className="-ml-2 py-4">
+          <Carousel opts={{ align: "start", loop: false }} className="min-w-0">
+            <CarouselContent className="py-4 px-8">
               {projectCardData.map((project) => (
                 <CarouselItem
                   key={project.id}
-                  className="pl-4 md:basis-1/2 lg:basis-1/3"
+                  className="pl-4 basis-full md:basis-1/1 lg:basis-1/3"
                 >
                   <div className="h-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:z-10">
                     <ProjectCard
@@ -126,21 +118,22 @@ export default function MyProjects() {
                       name={project.name}
                       description={project.description}
                       createdAt={project.createdAt}
-                      onClick={() => handleProjectClick(project.id, project.fullData)}
+                      onClick={() =>
+                        handleProjectClick(project.id, project.fullData)
+                      }
                     />
                   </div>
                 </CarouselItem>
               ))}
 
-              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                 <div className="h-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:z-10">
                   <AddProjectCard onClick={handleAddProject} hasProjects />
                 </div>
               </CarouselItem>
             </CarouselContent>
-
-            <CarouselPrevious className="hidden md:flex rounded-full border border-border shadow-md transition-all hover:bg-primary hover:text-primary-foreground hover:scale-105" />
-            <CarouselNext className="hidden md:flex rounded-full border border-border shadow-md transition-all hover:bg-primary hover:text-primary-foreground hover:scale-105" />
+            <CarouselPrevious className="flex hidden md:flex left-[-2vh] rounded-full border border-border shadow-md transition-all hover:bg-primary hover:text-primary-foreground hover:scale-105" />
+            <CarouselNext className="flex right-[-3vh] rounded-full border border-border shadow-md transition-all hover:bg-primary hover:text-primary-foreground hover:scale-105" />
           </Carousel>
         )}
       </div>
