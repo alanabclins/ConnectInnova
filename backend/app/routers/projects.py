@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from .. import models, schemas
 from ..auth.auth import get_current_active_user
@@ -111,3 +111,33 @@ async def get_projects(current_user: models.User = Depends(get_current_active_us
         return projects
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao buscar projetos: {e}")
+
+
+@router.delete("/{project_id}", response_model=Dict[str, str])
+async def delete_project(
+    project_id: str,
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
+    try:
+        project_doc = await models.Project.get(project_id)
+        if not project_doc:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Projeto não encontrado",
+            )
+
+        if project_doc.student_id != current_user.uuid:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Não autorizado a deletar este projeto",
+            )
+
+        await project_doc.delete()
+
+        return {"message": "Projeto deletado com sucesso"}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao deletar projeto: {e}",
+        )
