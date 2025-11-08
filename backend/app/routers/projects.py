@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -113,19 +114,20 @@ async def get_projects(current_user: models.User = Depends(get_current_active_us
         raise HTTPException(status_code=500, detail=f"Erro ao buscar projetos: {e}")
 
 
-@router.delete("/{project_id}", response_model=Dict[str, str])
+@router.delete("/{project_uuid}", response_model=Dict[str, str])
 async def delete_project(
-    project_id: str,
+    project_uuid: UUID,
     current_user: models.User = Depends(get_current_active_user),
 ) -> Any:
     try:
-        project_doc = await models.Project.get(project_id)
+        project_doc = await models.Project.find_one(models.Project.uuid == project_uuid)
+
         if not project_doc:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Projeto não encontrado",
             )
-
+        
         if project_doc.student_id != current_user.uuid:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
