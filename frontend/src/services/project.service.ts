@@ -36,6 +36,22 @@ class ProjectService {
       throw error;
     }
   }
+
+  async deleteProject(projectId: string): Promise<any> {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(`${API_URL}/projects/${projectId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao deletar projeto:", error);
+      throw error;
+    }
+  }
 }
 
 export default new ProjectService();
