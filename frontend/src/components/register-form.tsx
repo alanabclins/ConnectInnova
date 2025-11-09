@@ -31,7 +31,7 @@ export function RegisterForm({
 
   const passwordChecks = useMemo(() => {
     return {
-      length: password.length >= 8 && password.length <=14,
+      length: password.length >= 8 && password.length <= 14,
       uppercase: /[A-Z]/.test(password),
       lowercase: /[a-z]/.test(password),
       number: /[0-9]/.test(password),
@@ -45,8 +45,14 @@ export function RegisterForm({
   }, [password, confirmPassword, passwordChecks]);
 
   const handleEmailBlur = () => {
+    const emailRegex =
+      /^[^\s\[\]\(\)\{\}<>]+@[^\s\[\]\(\)\{\}<>]+\.[^\s\[\]\(\)\{\}<>]+$/;
     if (email && !/^\S+@\S+\.\S+$/.test(email)) {
       setInlineEmailError("Por favor, insira um email válido.");
+    } else if (email && !emailRegex.test(email)) {
+      setInlineEmailError(
+        "Por favor, insira um email válido e sem caracteres especiais como (), {}, [], <>."
+      );
     } else {
       setInlineEmailError("");
     }
