@@ -44,13 +44,23 @@ def validate_name(field_name: str, value: str | None):
 
 def validate_password(value: str):
     if not value:
-        return
+        return "Esse campo não pode ser vazio."
     
     if len(value) < 6 or len(value) > 14:   
         raise HTTPException(
             status_code = 400,
-            detail=f'A senha precisa ter no mínimo 6 carácteres e no máximo 14'
+            detail=f"A senha precisa ter no mínimo 6 carácteres e no máximo 14"
         )
+    
+def validate_email(value: str):
+    if not value:
+        return 'Esse campo não pode ser vazio.'
+    if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"):
+        raise HTTPException(
+            status_code= 400,
+            detail= f"Este email possui caracteres invalidos."
+        )
+    return value
     
 
 @router.post("", response_model=schemas.User)
