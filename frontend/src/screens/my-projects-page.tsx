@@ -12,6 +12,17 @@ import { AddProjectCard } from "@/components/add-project-card";
 import ProjectService from "@/services/project.service";
 import { toast } from "sonner";
 import LoadingSpinner from "@/components/loading-spinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"; // Import para o pop-up
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 export interface ProjectDetails {
   _id: string;
@@ -44,7 +55,7 @@ export interface ProjectDetails {
 }
 
 interface ProjectCardData {
-  id: string;
+  id: string; // Este será o UUID
   name: string;
   description: string;
   createdAt: string;
@@ -54,6 +65,10 @@ export default function MyProjects() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<ProjectDetails[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Estados para controlar o diálogo de deleção
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -79,9 +94,45 @@ export default function MyProjects() {
       state: { projectId, projectData },
     });
 
+  // --- Funções de Deleção ---
+
+  /** Abre o pop-up de confirmação */
+  const handleDeleteClick = (projectId: string) => {
+    setProjectToDelete(projectId);
+  };
+
+  /** Fecha o pop-up (seja por clique no Cancelar ou fora dele) */
+  const handleCancelDelete = () => {
+    if (isDeleting) return; // Impede o fechamento durante o loading
+    setProjectToDelete(null);
+  };
+
+  /** Confirma e executa a exclusão */
+  const handleConfirmDelete = async () => {
+    if (!projectToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await ProjectService.deleteProject(projectToDelete); // Usa o UUID
+      toast.success("Projeto deletado com sucesso!");
+
+      // Atualiza a lista de projetos na tela, removendo o que foi deletado
+      setProjects((prevProjects) =>
+        prevProjects.filter((p) => p.uuid !== projectToDelete)
+      );
+    } catch (error) {
+      console.error("Erro ao deletar projeto:", error);
+      toast.error("Erro ao deletar projeto. Tente novamente.");
+    } finally {
+      setIsDeleting(false);
+      setProjectToDelete(null); // Fecha o pop-up
+    }
+  };
+
+  // Mapeia os dados para os cards
   const projectCardData: (ProjectCardData & { fullData: ProjectDetails })[] =
     projects.map((p) => ({
-      id: p.uuid,
+      id: p.uuid, // Passando o UUID como 'id'
       name: p.project_title,
       description: p.project_description,
       createdAt: p.timestamp,
@@ -121,6 +172,7 @@ export default function MyProjects() {
                       onClick={() =>
                         handleProjectClick(project.id, project.fullData)
                       }
+                      onDelete={() => handleDeleteClick(project.id)}
                     />
                   </div>
                 </CarouselItem>
@@ -137,6 +189,40 @@ export default function MyProjects() {
           </Carousel>
         )}
       </div>
+
+      <AlertDialog
+        open={!!projectToDelete}
+        onOpenChange={(open) => !open && handleCancelDelete()}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente o
+              seu projeto e todos os dados associados a ele.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={handleCancelDelete}
+              disabled={isDeleting}
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeleting ? (
+                <Spinner variant="ellipsis" size="sm" className="text-white" />
+              ) : (
+                "Sim, deletar"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

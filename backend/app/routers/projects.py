@@ -210,3 +210,34 @@ async def update_project(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro ao atualizar projeto: {e}",
         )
+
+
+@router.delete("/{project_uuid}", response_model=Dict[str, str])
+async def delete_project(
+    project_uuid: UUID,
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
+    try:
+        project_doc = await models.Project.find_one(models.Project.uuid == project_uuid)
+
+        if not project_doc:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Projeto não encontrado",
+            )
+
+        if project_doc.student_id != current_user.uuid:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Não autorizado a deletar este projeto",
+            )
+
+        await project_doc.delete()
+
+        return {"message": "Projeto deletado com sucesso"}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao deletar projeto: {e}",
+        )

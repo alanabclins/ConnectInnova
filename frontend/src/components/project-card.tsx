@@ -1,5 +1,11 @@
 import { Card } from "@/components/ui/card";
-import { IconCalendar, IconFileText } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import {
+  IconCalendar,
+  IconFileText,
+  IconTrash,
+} from "@tabler/icons-react";
+import React from "react";
 
 interface ProjectCardProps {
   id: string;
@@ -7,6 +13,7 @@ interface ProjectCardProps {
   description?: string;
   createdAt?: string;
   onClick?: () => void;
+  onDelete: () => void;
 }
 
 export const ProjectCard = ({
@@ -14,7 +21,13 @@ export const ProjectCard = ({
   description,
   createdAt,
   onClick,
+  onDelete, 
 }: ProjectCardProps) => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete();
+  };
+
   return (
     <Card
       onClick={onClick}
@@ -35,12 +48,26 @@ export const ProjectCard = ({
           )}
         </div>
 
-        {createdAt && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
-            <IconCalendar className="w-4 h-4" />
-            <span>{new Date(createdAt).toLocaleDateString("pt-BR")}</span>
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            {createdAt && (
+              <>
+                <IconCalendar className="w-4 h-4" />
+                <span>{new Date(createdAt).toLocaleDateString("pt-BR")}</span>
+              </>
+            )}
           </div>
-        )}
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive hover:bg-destructive/10 h-8 w-8" // Tamanho menor
+            onClick={handleDeleteClick}
+            aria-label="Deletar projeto"
+          >
+            <IconTrash className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
     </Card>
   );
