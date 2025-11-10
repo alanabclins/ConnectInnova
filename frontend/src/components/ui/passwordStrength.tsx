@@ -42,7 +42,7 @@ export const PasswordStrength = ({ passwordChecks }: PasswordStrengthProps) => (
     <AlertDescription>
       <ul className="mt-2 space-y-1">
         <PasswordRequirement
-          label="Pelo menos 8 caracteres"
+          label="Mínimo de 8 caracteres e máximo de 14"
           isValid={passwordChecks.length}
         />
         <PasswordRequirement

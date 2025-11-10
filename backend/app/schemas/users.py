@@ -1,8 +1,8 @@
 from typing import Optional
 from uuid import UUID
-
+import re
 from beanie import PydanticObjectId
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class UserBase(BaseModel):
@@ -15,6 +15,13 @@ class UserBase(BaseModel):
     last_name: Optional[str] = None
     picture: Optional[str] = None
 
+    @field_validator('name', 'first_name', 'last_name')
+    def name_validator(cls, v):
+        if not v:
+            return v
+        if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$", v):
+            raise ValueError("O nome contém caracteres inválidos")
+        return v
 
 class PrivateUserBase(UserBase):
     """
