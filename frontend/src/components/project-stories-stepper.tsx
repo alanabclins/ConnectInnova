@@ -9,7 +9,7 @@ import {
   IconFileText,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
-import { useProjectForm } from "@/hooks/useProjectForm";
+import { clearProjectFormData, useProjectForm } from "@/hooks/useProjectForm";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import React, { type JSX, useMemo } from "react";
@@ -339,6 +339,8 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
           project_description: formData.project_description,
         },
       });
+
+      clearProjectFormData();
     } catch (error: any) {
       console.error("Erro ao criar projeto:", error);
       toast.error(
@@ -373,6 +375,8 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
           project_description: formData.project_description,
         },
       });
+
+      clearProjectFormData();
     } catch (error: any) {
       console.error("Erro ao atualizar projeto:", error);
       toast.error("Não foi possível atualizar o projeto. Tente novamente.");

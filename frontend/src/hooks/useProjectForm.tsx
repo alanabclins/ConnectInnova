@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 
 export interface ProjectFormData {
   project_title: string;
@@ -119,6 +119,8 @@ const VALIDATION_RULES: ValidationRule[] = [
   { key: "market_info", errorMessage: "O currículo é obrigatório.", step: 5 },
 ];
 
+const STORAGE_KEY = "projectFormData";
+
 const getMappedInitialData = (initialData?: any): ProjectFormData => {
   if (!initialData) {
     return INITIAL_PROJECT_STATE;
@@ -141,12 +143,38 @@ const getMappedInitialData = (initialData?: any): ProjectFormData => {
 
 export const useProjectForm = (totalSteps: number, initialData?: any) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<ProjectFormData>(() =>
-    getMappedInitialData(initialData)
-  );
+  const [formData, setFormData] = useState<ProjectFormData>(() => {
+    if (initialData) {
+      return getMappedInitialData(initialData);
+    }
+    try {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        if (typeof parsedData === "object" && parsedData !== null) {
+          return { ...INITIAL_PROJECT_STATE, ...parsedData };
+        }
+      }
+    } catch (error) {
+      console.error("Failed to parse localStorage data:", error);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    return INITIAL_PROJECT_STATE;
+  });
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProjectFormData, string>>
   >({});
+
+  useEffect(() => {
+    if (initialData) {
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    } catch (error) {
+      console.error("Failed to save to localStorage:", error);
+    }
+  }, [formData, initialData]);
 
   const handleInputChange = useCallback(
     (key: keyof ProjectFormData, value: string) => {
@@ -262,4 +290,31 @@ export const useProjectForm = (totalSteps: number, initialData?: any) => {
     FieldError,
     stepTitles,
   };
+};
+
+export const clearProjectFormData = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.error(
+      "Failed to clear project form data from localStorage:",
+      error
+    );
+  }
+};
+
+export const hasSavedProjectFormData = (): boolean => {
+  try {
+    const saved = localStorage.getItem("projectFormData");
+    if (!saved) return false;
+
+    const parsed = JSON.parse(saved);
+    if (!parsed || typeof parsed !== "object") return false;
+
+    return Object.values(parsed).some(
+      (value) => typeof value === "string" && value.trim() !== ""
+    );
+  } catch {
+    return false;
+  }
 };
