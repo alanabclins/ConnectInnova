@@ -131,7 +131,7 @@ const VALIDATION_RULES: ValidationRule[] = [
 
 export const useProjectForm = (totalSteps: number, projectToEdit?: any) => {
   const [currentStep, setCurrentStep] = useState(1);
-  // Se houver projeto para editar, usa ele, senão usa o estado inicial
+
   const [formData, setFormData] = useState<ProjectFormData>(
     projectToEdit
       ? { ...INITIAL_PROJECT_STATE, ...projectToEdit }
@@ -147,21 +147,16 @@ export const useProjectForm = (totalSteps: number, projectToEdit?: any) => {
 
       setErrors((prev) => {
         const newErrors = { ...prev };
-
-        // 🔥 Validação inline corrigida para 120 caracteres
         if (key === "project_title") {
           if (value.length > 120) {
-            // ALTERADO DE 100 PARA 120
             newErrors.project_title =
               "O título pode ter no máximo 120 caracteres.";
           } else {
             delete newErrors.project_title;
           }
         }
-
-        // Remove erro genérico se o campo foi preenchido
         if (value.trim()) {
-          // Só remove se não for um erro de tamanho do título
+
           if (
             key !== "project_title" ||
             (value.length >= 5 && value.length <= 120)
@@ -179,7 +174,6 @@ export const useProjectForm = (totalSteps: number, projectToEdit?: any) => {
   const validateStep = useCallback(() => {
     const currentRules = VALIDATION_RULES.filter((r) => r.step === currentStep);
 
-    // 1. Verifica campos vazios
     const newErrors = currentRules.reduce((acc, { key, errorMessage }) => {
       if (!formData[key]?.trim()) {
         acc[key] = errorMessage;
@@ -187,7 +181,6 @@ export const useProjectForm = (totalSteps: number, projectToEdit?: any) => {
       return acc;
     }, {} as Partial<Record<keyof ProjectFormData, string>>);
 
-    // 2. 🔥 Validação ESPECIAL de Tamanho no clique do botão "Próximo"
     if (currentStep === 1) {
       const title = formData.project_title || "";
       if (title.length > 120) {
