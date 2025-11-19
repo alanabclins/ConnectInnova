@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 
+// Definição de todos os campos do projeto
 export interface ProjectFormData {
   project_title: string;
   project_description: string;
@@ -45,6 +46,7 @@ const INITIAL_PROJECT_STATE: ProjectFormData = {
 };
 
 const VALIDATION_RULES: ValidationRule[] = [
+  // Step 1
   {
     key: "project_title",
     errorMessage: "O título do projeto é obrigatório.",
@@ -60,6 +62,8 @@ const VALIDATION_RULES: ValidationRule[] = [
     errorMessage: "A proposta de solução é obrigatória.",
     step: 1,
   },
+
+  // Step 2
   {
     key: "problem_description",
     errorMessage: "A descrição do problema é obrigatória.",
@@ -75,6 +79,8 @@ const VALIDATION_RULES: ValidationRule[] = [
     errorMessage: "A proposta de valor é obrigatória.",
     step: 2,
   },
+
+  // Step 3
   {
     key: "customer_segment",
     errorMessage: "O segmento de clientes é obrigatório.",
@@ -90,6 +96,8 @@ const VALIDATION_RULES: ValidationRule[] = [
     errorMessage: "A vantagem competitiva é obrigatória.",
     step: 3,
   },
+
+  // Step 4
   {
     key: "innovation",
     errorMessage: "O campo inovação é obrigatório.",
@@ -110,6 +118,8 @@ const VALIDATION_RULES: ValidationRule[] = [
     errorMessage: "A escalabilidade é obrigatória.",
     step: 4,
   },
+
+  // Step 5
   { key: "who_are_you", errorMessage: "Conte um pouco sobre você.", step: 5 },
   {
     key: "academy_info",
@@ -119,30 +129,13 @@ const VALIDATION_RULES: ValidationRule[] = [
   { key: "market_info", errorMessage: "O currículo é obrigatório.", step: 5 },
 ];
 
-const getMappedInitialData = (initialData?: any): ProjectFormData => {
-  if (!initialData) {
-    return INITIAL_PROJECT_STATE;
-  }
-  const mappedData = {
-    ...INITIAL_PROJECT_STATE,
-    ...initialData,
-    problem_description: initialData.problem_description || "",
-    innovation: initialData.innovation || "",
-    social_impact: initialData.social_impact || "",
-    technical_feasibility: initialData.technical_feasibility || "",
-    revenue_model: initialData.revenue_model || "",
-    scalability: initialData.scalability || "",
-    customer_segment: initialData.customer_segment || "",
-    competitive_advantage: initialData.competitive_advantage || "",
-  };
-
-  return mappedData;
-};
-
-export const useProjectForm = (totalSteps: number, initialData?: any) => {
+export const useProjectForm = (totalSteps: number, projectToEdit?: any) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<ProjectFormData>(() =>
-    getMappedInitialData(initialData)
+  // Se houver projeto para editar, usa ele, senão usa o estado inicial
+  const [formData, setFormData] = useState<ProjectFormData>(
+    projectToEdit
+      ? { ...INITIAL_PROJECT_STATE, ...projectToEdit }
+      : INITIAL_PROJECT_STATE
   );
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProjectFormData, string>>
@@ -151,13 +144,33 @@ export const useProjectForm = (totalSteps: number, initialData?: any) => {
   const handleInputChange = useCallback(
     (key: keyof ProjectFormData, value: string) => {
       setFormData((prev) => ({ ...prev, [key]: value }));
+
       setErrors((prev) => {
-        if (value.trim()) {
-          const newErrors = { ...prev };
-          delete newErrors[key];
-          return newErrors;
+        const newErrors = { ...prev };
+
+        // 🔥 Validação inline corrigida para 120 caracteres
+        if (key === "project_title") {
+          if (value.length > 120) {
+            // ALTERADO DE 100 PARA 120
+            newErrors.project_title =
+              "O título pode ter no máximo 120 caracteres.";
+          } else {
+            delete newErrors.project_title;
+          }
         }
-        return prev;
+
+        // Remove erro genérico se o campo foi preenchido
+        if (value.trim()) {
+          // Só remove se não for um erro de tamanho do título
+          if (
+            key !== "project_title" ||
+            (value.length >= 5 && value.length <= 120)
+          ) {
+            delete newErrors[key];
+          }
+        }
+
+        return newErrors;
       });
     },
     []
@@ -165,12 +178,22 @@ export const useProjectForm = (totalSteps: number, initialData?: any) => {
 
   const validateStep = useCallback(() => {
     const currentRules = VALIDATION_RULES.filter((r) => r.step === currentStep);
+
+    // 1. Verifica campos vazios
     const newErrors = currentRules.reduce((acc, { key, errorMessage }) => {
       if (!formData[key]?.trim()) {
         acc[key] = errorMessage;
       }
       return acc;
     }, {} as Partial<Record<keyof ProjectFormData, string>>);
+
+    // 2. 🔥 Validação ESPECIAL de Tamanho no clique do botão "Próximo"
+    if (currentStep === 1) {
+      const title = formData.project_title || "";
+      if (title.length > 120) {
+        newErrors.project_title = "O título excede o limite de 120 caracteres.";
+      }
+    }
 
     setErrors((prev) => ({ ...prev, ...newErrors }));
     return Object.keys(newErrors).length === 0;
@@ -206,12 +229,12 @@ export const useProjectForm = (totalSteps: number, initialData?: any) => {
       key: keyof ProjectFormData,
       placeholder: string,
       isTextArea: boolean = false,
-      className?: string
+      minHeightClass?: string
     ) => ({
       value: formData[key],
       placeholder,
       className: `${errors[key] ? "ring-2 ring-red-500 border-red-500" : ""} ${
-        isTextArea && className ? className : ""
+        isTextArea && minHeightClass ? minHeightClass : ""
       }`,
       onChange: (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

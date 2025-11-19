@@ -63,7 +63,10 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
             label="Título do projeto"
             FieldError={<FieldErrorComponent fieldKey="project_title" />}
           >
-            <Input {...getFieldProps("project_title", "Título do projeto")} />
+            <Input
+              {...getFieldProps("project_title", "Título do projeto")}
+              charLimit={120}
+            />
           </FormField>
 
           <FormField
