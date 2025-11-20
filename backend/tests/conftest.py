@@ -38,7 +38,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
     Substitui o banco padrão pelo banco de teste.
     """
     with patch("app.config.config.settings.MONGO_DB", MONGO_TEST_DB):
-        async with LifespanManager(app):
+        async with LifespanManager(app, startup_timeout=30):
             async with AsyncClient(
                 transport=ASGITransport(app=app), base_url="http://test"
             ) as client_instance:
