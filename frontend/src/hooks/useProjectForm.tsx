@@ -161,6 +161,7 @@ export const useProjectForm = (totalSteps: number, initialData?: any) => {
     }
     return INITIAL_PROJECT_STATE;
   });
+
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProjectFormData, string>>
   >({});
@@ -179,13 +180,27 @@ export const useProjectForm = (totalSteps: number, initialData?: any) => {
   const handleInputChange = useCallback(
     (key: keyof ProjectFormData, value: string) => {
       setFormData((prev) => ({ ...prev, [key]: value }));
+
       setErrors((prev) => {
-        if (value.trim()) {
-          const newErrors = { ...prev };
-          delete newErrors[key];
-          return newErrors;
+        const newErrors = { ...prev };
+        if (key === "project_title") {
+          if (value.length > 120) {
+            newErrors.project_title =
+              "O título pode ter no máximo 120 caracteres.";
+          } else {
+            delete newErrors.project_title;
+          }
         }
-        return prev;
+        if (value.trim()) {
+          if (
+            key !== "project_title" ||
+            (value.length >= 5 && value.length <= 120)
+          ) {
+            delete newErrors[key];
+          }
+        }
+
+        return newErrors;
       });
     },
     []
@@ -193,12 +208,20 @@ export const useProjectForm = (totalSteps: number, initialData?: any) => {
 
   const validateStep = useCallback(() => {
     const currentRules = VALIDATION_RULES.filter((r) => r.step === currentStep);
+
     const newErrors = currentRules.reduce((acc, { key, errorMessage }) => {
       if (!formData[key]?.trim()) {
         acc[key] = errorMessage;
       }
       return acc;
     }, {} as Partial<Record<keyof ProjectFormData, string>>);
+
+    if (currentStep === 1) {
+      const title = formData.project_title || "";
+      if (title.length > 120) {
+        newErrors.project_title = "O título excede o limite de 120 caracteres.";
+      }
+    }
 
     setErrors((prev) => ({ ...prev, ...newErrors }));
     return Object.keys(newErrors).length === 0;
@@ -234,12 +257,12 @@ export const useProjectForm = (totalSteps: number, initialData?: any) => {
       key: keyof ProjectFormData,
       placeholder: string,
       isTextArea: boolean = false,
-      className?: string
+      minHeightClass?: string
     ) => ({
       value: formData[key],
       placeholder,
       className: `${errors[key] ? "ring-2 ring-red-500 border-red-500" : ""} ${
-        isTextArea && className ? className : ""
+        isTextArea && minHeightClass ? minHeightClass : ""
       }`,
       onChange: (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
