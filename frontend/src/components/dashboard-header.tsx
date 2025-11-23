@@ -28,13 +28,13 @@ export const DashboardHeader = ({
               variant="ghost"
               size="icon"
               onClick={onBack}
-              className="shrink-0 text-primary-foreground hover:bg-primary-foreground/10"
+              className="shrink-0"
             >
               <IconChevronLeft className="w-5 h-5" />
             </Button>
 
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl lg:text-3xl font-bold text-primary-foreground break-words">
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground break-words">
                 {title}
               </h1>
 
@@ -47,7 +47,7 @@ export const DashboardHeader = ({
               orientation="vertical"
               className="hidden lg:flex mx-4 data-[orientation=vertical]:h-7 border-[1px]"
             />
-            <p className="flex-1 text-sm lg:text-base text-primary-foreground/90 leading-relaxed max-w-4xl break-words whitespace-pre-wrap min-w-0">
+            <p className="flex-1 text-sm lg:text-base text-muted-foreground leading-relaxed max-w-4xl break-words whitespace-pre-wrap min-w-0">
               {description}
             </p>
 
@@ -63,7 +63,7 @@ export const DashboardHeader = ({
               <Badge
                 key={index}
                 variant="secondary"
-                className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30"
+                className="font-normal bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-700"
               >
                 #{tag}
               </Badge>

@@ -45,7 +45,7 @@ export const CircularStepIndicator: React.FC<CircularStepIndicatorProps> = ({
       </svg>
       {/* Step number */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-foreground font-medium text-lg">
+        <span className="text-white font-medium text-lg">
           {currentStep.toString().padStart(2, "0")}
         </span>
       </div>
