@@ -1,6 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 
-// Definição de todos os campos do projeto
 export interface ProjectFormData {
   project_title: string;
   project_description: string;
@@ -46,7 +45,6 @@ const INITIAL_PROJECT_STATE: ProjectFormData = {
 };
 
 const VALIDATION_RULES: ValidationRule[] = [
-  // Step 1
   {
     key: "project_title",
     errorMessage: "O título do projeto é obrigatório.",
@@ -62,8 +60,6 @@ const VALIDATION_RULES: ValidationRule[] = [
     errorMessage: "A proposta de solução é obrigatória.",
     step: 1,
   },
-
-  // Step 2
   {
     key: "problem_description",
     errorMessage: "A descrição do problema é obrigatória.",
@@ -79,8 +75,6 @@ const VALIDATION_RULES: ValidationRule[] = [
     errorMessage: "A proposta de valor é obrigatória.",
     step: 2,
   },
-
-  // Step 3
   {
     key: "customer_segment",
     errorMessage: "O segmento de clientes é obrigatório.",
@@ -96,8 +90,6 @@ const VALIDATION_RULES: ValidationRule[] = [
     errorMessage: "A vantagem competitiva é obrigatória.",
     step: 3,
   },
-
-  // Step 4
   {
     key: "innovation",
     errorMessage: "O campo inovação é obrigatório.",
@@ -118,8 +110,6 @@ const VALIDATION_RULES: ValidationRule[] = [
     errorMessage: "A escalabilidade é obrigatória.",
     step: 4,
   },
-
-  // Step 5
   { key: "who_are_you", errorMessage: "Conte um pouco sobre você.", step: 5 },
   {
     key: "academy_info",
@@ -129,17 +119,63 @@ const VALIDATION_RULES: ValidationRule[] = [
   { key: "market_info", errorMessage: "O currículo é obrigatório.", step: 5 },
 ];
 
-export const useProjectForm = (totalSteps: number, projectToEdit?: any) => {
-  const [currentStep, setCurrentStep] = useState(1);
+const STORAGE_KEY = "projectFormData";
 
-  const [formData, setFormData] = useState<ProjectFormData>(
-    projectToEdit
-      ? { ...INITIAL_PROJECT_STATE, ...projectToEdit }
-      : INITIAL_PROJECT_STATE
-  );
+const getMappedInitialData = (initialData?: any): ProjectFormData => {
+  if (!initialData) {
+    return INITIAL_PROJECT_STATE;
+  }
+  const mappedData = {
+    ...INITIAL_PROJECT_STATE,
+    ...initialData,
+    problem_description: initialData.problem_description || "",
+    innovation: initialData.innovation || "",
+    social_impact: initialData.social_impact || "",
+    technical_feasibility: initialData.technical_feasibility || "",
+    revenue_model: initialData.revenue_model || "",
+    scalability: initialData.scalability || "",
+    customer_segment: initialData.customer_segment || "",
+    competitive_advantage: initialData.competitive_advantage || "",
+  };
+
+  return mappedData;
+};
+
+export const useProjectForm = (totalSteps: number, initialData?: any) => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<ProjectFormData>(() => {
+    if (initialData) {
+      return getMappedInitialData(initialData);
+    }
+    try {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        if (typeof parsedData === "object" && parsedData !== null) {
+          return { ...INITIAL_PROJECT_STATE, ...parsedData };
+        }
+      }
+    } catch (error) {
+      console.error("Failed to parse localStorage data:", error);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    return INITIAL_PROJECT_STATE;
+  });
+
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProjectFormData, string>>
   >({});
+
+  useEffect(() => {
+    if (initialData) {
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    } catch (error) {
+      console.error("Failed to save to localStorage:", error);
+    }
+  }, [formData, initialData]);
 
   const handleInputChange = useCallback(
     (key: keyof ProjectFormData, value: string) => {
@@ -156,7 +192,6 @@ export const useProjectForm = (totalSteps: number, projectToEdit?: any) => {
           }
         }
         if (value.trim()) {
-
           if (
             key !== "project_title" ||
             (value.length >= 5 && value.length <= 120)
@@ -278,4 +313,31 @@ export const useProjectForm = (totalSteps: number, projectToEdit?: any) => {
     FieldError,
     stepTitles,
   };
+};
+
+export const clearProjectFormData = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.error(
+      "Failed to clear project form data from localStorage:",
+      error
+    );
+  }
+};
+
+export const hasSavedProjectFormData = (): boolean => {
+  try {
+    const saved = localStorage.getItem("projectFormData");
+    if (!saved) return false;
+
+    const parsed = JSON.parse(saved);
+    if (!parsed || typeof parsed !== "object") return false;
+
+    return Object.values(parsed).some(
+      (value) => typeof value === "string" && value.trim() !== ""
+    );
+  } catch {
+    return false;
+  }
 };

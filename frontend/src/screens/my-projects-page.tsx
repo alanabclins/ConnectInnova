@@ -23,6 +23,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"; // Import para o pop-up
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import {
+  clearProjectFormData,
+  hasSavedProjectFormData,
+} from "@/hooks/useProjectForm";
 
 export interface ProjectDetails {
   _id: string;
@@ -69,9 +73,13 @@ export default function MyProjects() {
   // Estados para controlar o diálogo de deleção
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDraftDialog, setShowDraftDialog] = useState(false);
 
   useEffect(() => {
     fetchProjects();
+    if (hasSavedProjectFormData()) {
+      setShowDraftDialog(true);
+    }
   }, []);
 
   const fetchProjects = async () => {
@@ -212,13 +220,43 @@ export default function MyProjects() {
             <AlertDialogAction
               onClick={handleConfirmDelete}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="!bg-red-600 hover:bg-red-700 !text-white"
             >
               {isDeleting ? (
                 <Spinner variant="ellipsis" size="sm" className="text-white" />
               ) : (
                 "Sim, deletar"
               )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showDraftDialog} onOpenChange={setShowDraftDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você parou no meio do caminho</AlertDialogTitle>
+            <AlertDialogDescription>
+              Encontramos um rascunho salvo do seu projeto. Deseja continuar de
+              onde parou ou iniciar um novo?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                clearProjectFormData();
+                setShowDraftDialog(false);
+              }}
+            >
+              Esquecer rascunho
+            </AlertDialogCancel>
+
+            <AlertDialogAction
+              onClick={() => navigate("project-stories")}
+              className="!bg-primary !text-primary-foreground hover:bg-primary/80"
+            >
+              Continuar de onde parei
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
