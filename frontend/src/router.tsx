@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/protectedRouter";
 import RootRedirect from "./components/root-redirect";
 import authService from "@/services/auth.service";
 import DashboardPage from "./screens/dashboard-page";
+import ResetPasswordPage from "./screens/ResetPasswordPage"; 
 
 const redirectIfLoggedIn = () => {
   if (authService.isAuthenticated()) {
@@ -36,6 +37,14 @@ const router = createBrowserRouter([
   {
     path: "register",
     element: <RegisterPage />,
+    errorElement: <NotFound />,
+  },
+  
+  // 2. Adicione a rota de Reset aqui (Pública)
+  {
+    path: "reset-password",
+    element: <ResetPasswordPage />,
+    loader: redirectIfLoggedIn, // Opcional: Se já estiver logado, joga pra home
     errorElement: <NotFound />,
   },
 

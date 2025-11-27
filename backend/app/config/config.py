@@ -35,5 +35,17 @@ class Settings(BaseSettings):
     SSO_CALLBACK_HOSTNAME: str | None = None
     SSO_LOGIN_CALLBACK_URL: str | None = None
 
+    # EMAILS Settings
+    MAIL_USERNAME: str = "user@example.com"
+    MAIL_PASSWORD: str = "password"
+    MAIL_FROM: str = "user@example.com"
+    MAIL_PORT: int = 587
+    MAIL_SERVER: str = "smtp.gmail.com"
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+    USE_CREDENTIALS: bool = True
+    VALIDATE_CERTS: bool = True
+
+    FRONTEND_URL: str = "http://localhost:5173/"
 
 settings = Settings()  # type: ignore

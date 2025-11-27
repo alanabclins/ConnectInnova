@@ -1,7 +1,8 @@
-from datetime import timedelta
+import secrets
+from datetime import timedelta, datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_sso.sso.google import GoogleSSO
 from starlette.requests import Request
@@ -13,8 +14,14 @@ from app.auth.auth import (
     create_access_token,
     get_current_user,
     get_current_user_from_cookie,
+    get_hashed_password
 )
 from app.config.config import settings
+from app.config.email import send_password_reset_email
+
+PASSWORD_RESET_EXPIRE_HOURS = 1
+
+FRONTEND_URL = settings.FRONTEND_URL
 
 router = APIRouter()
 
@@ -126,3 +133,89 @@ async def google_callback(request: Request, google_sso: GoogleSSO = Depends(get_
         expires=120,
     )
     return response
+
+@router.post("/request-password-reset")
+async def request_password_reset(body: schemas.EmailSchema, background_tasks: BackgroundTasks):
+    """
+    Inicia o fluxo de redefinição de senha.
+    """
+    user = await models.User.find_one({"email": body.email})
+
+    # Resposta genérica por segurança, mesmo se o usuário não existir
+    if user:
+        token = secrets.token_urlsafe(32)
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=PASSWORD_RESET_EXPIRE_HOURS)
+
+        # Atualiza o documento do usuário com o token
+        user.reset_token = token
+        user.reset_token_expires = expires_at
+        await user.save()
+
+        # Monta os links
+        reset_link = f"{FRONTEND_URL}/reset-password?token={token}"
+        cancel_link = f"{settings.SSO_CALLBACK_HOSTNAME}{settings.API_V1_STR}/login/cancel-reset?token={token}"
+
+        background_tasks.add_task(
+            send_password_reset_email,
+            email_to=user.email,
+            reset_link=reset_link, 
+            cancel_link=cancel_link
+        )
+
+    return {"message": "Se uma conta com este e-mail existir, um link de redefinição foi enviado."}
+
+
+@router.post("/reset-password")
+async def reset_password(body: schemas.PasswordResetSchema): # Schema com 'token' e 'new_password'
+    """
+    Finaliza a redefinição de senha com o token e a nova senha.
+    """
+    
+    # Encontra o usuário pelo token E verifica a data de expiração
+    user = await models.User.find_one({
+        "reset_token": body.token,
+        "reset_token_expires": {"$gt": datetime.now(timezone.utc)}
+    })
+
+    if not user:
+        raise HTTPException(
+            status_code=400,
+            detail="Token inválido ou expirado"
+        )
+
+    # Atualiza a senha e limpa os campos de token
+    user.hashed_password = get_hashed_password(body.new_password)
+    user.reset_token = None
+    user.reset_token_expires = None
+    await user.save()
+
+    return {"message": "Senha redefinida com sucesso!"}
+
+
+@router.get("/cancel-reset")
+async def cancel_password_reset(token: str):
+    user = await models.User.find_one({"reset_token": token})
+
+    if user:
+        # Apenas limpa os campos do token
+        user.reset_token = None
+        user.reset_token_expires = None
+        await user.save()
+
+    # Retorna uma mensagem (ou redireciona para uma página de sucesso no frontend)
+    return """
+    <html>
+        <head>
+            <title>Solicitação Cancelada</title>
+            <style>
+                body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+                h1 { color: #d9534f; }
+            </style>
+        </head>
+        <body>
+            <h1>Solicitação Cancelada</h1>
+            <p>O link de redefinição de senha foi invalidado com sucesso.</p>
+            <p>Sua conta permanece segura.</p>
+        </body>
+    </html>
+    """

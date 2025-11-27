@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Optional
 from uuid import UUID, uuid4
 
 from beanie import Document, Indexed
@@ -40,3 +40,5 @@ class User(Document):
     is_active: bool = True
     is_superuser: bool = False
     updated_at: datetime | None = None
+    reset_token: Optional[str] = None
+    reset_token_expires: Optional[datetime] = None
