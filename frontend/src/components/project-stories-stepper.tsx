@@ -9,7 +9,7 @@ import {
   IconFileText,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
-import { useProjectForm } from "@/hooks/useProjectForm";
+import { clearProjectFormData, useProjectForm } from "@/hooks/useProjectForm";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import React, { type JSX, useMemo } from "react";
@@ -55,15 +55,24 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
     validateStep,
   } = useProjectForm(TOTAL_STEPS, projectToEdit);
 
+  const textareaSizing =
+    "w-full min-h-[140px] max-h-[300px] lg:max-h-[35vh] overflow-auto resize-none break-all";
+
   const STEP_CONTENT = useMemo(
     () => [
-      <div className="flex flex-col md:flex-row gap-6 w-full flex-1">
+      <div
+        className="flex flex-col md:flex-row gap-6 w-full flex-1"
+        key="step-1"
+      >
         <div className="flex-1 flex flex-col gap-6">
           <FormField
             label="Título do projeto"
             FieldError={<FieldErrorComponent fieldKey="project_title" />}
           >
-            <Input {...getFieldProps("project_title", "Título do projeto")} />
+            <Input
+              {...getFieldProps("project_title", "Título do projeto")}
+              charLimit={120}
+            />
           </FormField>
 
           <FormField
@@ -76,7 +85,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                 "project_description",
                 "Descreva de forma geral seu projeto",
                 true,
-                "flex-1"
+                textareaSizing
               )}
             />
           </FormField>
@@ -92,13 +101,14 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                 "solution_proposal",
                 "Como você pretende resolver o problema?",
                 true,
-                "flex-1"
+                textareaSizing
               )}
             />
           </FormField>
         </div>
       </div>,
-      <div className="flex flex-col gap-6 w-full flex-1">
+
+      <div className="flex flex-col gap-6 w-full flex-1" key="step-2">
         <FormField
           label="Descrição do Problema"
           FieldError={<FieldErrorComponent fieldKey="problem_description" />}
@@ -109,7 +119,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
               "problem_description",
               "Qual problema real você está resolvendo? Apresente dados, pesquisas ou evidências.",
               true,
-              "flex-1"
+              textareaSizing
             )}
           />
         </FormField>
@@ -125,7 +135,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   "target_audience",
                   "Quem são os principais beneficiados? Descreva personas se possível.",
                   true,
-                  "flex-1"
+                  textareaSizing
                 )}
               />
             </FormField>
@@ -141,14 +151,15 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   "value_proposition",
                   "Qual o principal benefício/diferencial que você oferece?",
                   true,
-                  "flex-1"
+                  textareaSizing
                 )}
               />
             </FormField>
           </div>
         </div>
       </div>,
-      <div className="flex flex-col gap-6 w-full flex-1">
+
+      <div className="flex flex-col gap-6 w-full flex-1" key="step-3">
         <FormField
           label="Segmento de Clientes"
           FieldError={<FieldErrorComponent fieldKey="customer_segment" />}
@@ -159,7 +170,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
               "customer_segment",
               "Quem pagará pela solução? Defina perfil, tamanho do mercado.",
               true,
-              "flex-1"
+              textareaSizing
             )}
           />
         </FormField>
@@ -175,7 +186,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   "revenue_model",
                   "Como você vai ganhar dinheiro? Preços, planos, monetização.",
                   true,
-                  "flex-1"
+                  textareaSizing
                 )}
               />
             </FormField>
@@ -193,14 +204,15 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   "competitive_advantage",
                   "O que torna sua solução difícil de copiar? Diferenciais únicos.",
                   true,
-                  "flex-1"
+                  textareaSizing
                 )}
               />
             </FormField>
           </div>
         </div>
       </div>,
-      <div className="flex flex-col gap-6 w-full flex-1">
+
+      <div className="flex flex-col gap-6 w-full flex-1" key="step-4">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <FormField
@@ -213,7 +225,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   "innovation",
                   "O que há de inovador? Tecnologias, métodos, abordagens únicas.",
                   true,
-                  "flex-1"
+                  textareaSizing
                 )}
               />
             </FormField>
@@ -229,7 +241,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   "social_impact",
                   "Quantas pessoas beneficiadas? Que mudança você gera?",
                   true,
-                  "flex-1"
+                  textareaSizing
                 )}
               />
             </FormField>
@@ -249,7 +261,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   "technical_feasibility",
                   "Tecnologias usadas, custos, recursos necessários.",
                   true,
-                  "flex-1"
+                  textareaSizing
                 )}
               />
             </FormField>
@@ -265,14 +277,18 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                   "scalability",
                   "A solução pode crescer? Como replicar em outros contextos?",
                   true,
-                  "flex-1"
+                  textareaSizing
                 )}
               />
             </FormField>
           </div>
         </div>
       </div>,
-      <div className="flex flex-col md:flex-row gap-6 w-full flex-1">
+
+      <div
+        className="flex flex-col md:flex-row gap-6 w-full flex-1"
+        key="step-5"
+      >
         <div className="flex-1 flex flex-col gap-6">
           <FormField
             label="Quem é você?"
@@ -284,7 +300,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                 "who_are_you",
                 "Conte sobre sua trajetória, experiências e motivações.",
                 true,
-                "flex-1"
+                textareaSizing
               )}
             />
           </FormField>
@@ -300,7 +316,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                 "academy_info",
                 "Formação, instituição, curso, período.",
                 true,
-                "flex-1"
+                textareaSizing
               )}
             />
           </FormField>
@@ -314,7 +330,7 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
                 "market_info",
                 "Projetos anteriores, habilidades, experiências relevantes.",
                 true,
-                "flex-1"
+                textareaSizing
               )}
             />
           </FormField>
@@ -339,6 +355,8 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
           project_description: formData.project_description,
         },
       });
+
+      clearProjectFormData();
     } catch (error: any) {
       console.error("Erro ao criar projeto:", error);
       toast.error(
@@ -373,6 +391,8 @@ export const ProjectStepper: React.FC<ProjectStepperProps> = ({
           project_description: formData.project_description,
         },
       });
+
+      clearProjectFormData();
     } catch (error: any) {
       console.error("Erro ao atualizar projeto:", error);
       toast.error("Não foi possível atualizar o projeto. Tente novamente.");
