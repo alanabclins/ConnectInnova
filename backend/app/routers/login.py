@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_sso.sso.google import GoogleSSO
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, HTMLResponse
 
 from app import models, schemas
 from app.auth.auth import (
@@ -152,7 +152,7 @@ async def request_password_reset(body: schemas.EmailSchema, background_tasks: Ba
         await user.save()
 
         # Monta os links
-        reset_link = f"{FRONTEND_URL}/reset-password?token={token}"
+        reset_link = f"{FRONTEND_URL}reset-password?token={token}"
         cancel_link = f"{settings.SSO_CALLBACK_HOSTNAME}{settings.API_V1_STR}/login/cancel-reset?token={token}"
 
         background_tasks.add_task(
@@ -203,7 +203,8 @@ async def cancel_password_reset(token: str):
         await user.save()
 
     # Retorna uma mensagem (ou redireciona para uma página de sucesso no frontend)
-    return """
+    html_content = """
+    <!DOCTYPE html>
     <html>
         <head>
             <title>Solicitação Cancelada</title>
@@ -219,3 +220,6 @@ async def cancel_password_reset(token: str):
         </body>
     </html>
     """
+    
+    # Retorne usando HTMLResponse
+    return HTMLResponse(content=html_content)
