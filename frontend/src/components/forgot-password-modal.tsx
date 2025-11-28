@@ -34,7 +34,7 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
 
       // 2. Chamada à API
       // OBS: Certifique-se que VITE_API_URL está no seu .env
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/request-password-reset`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/login/request-password-reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -44,7 +44,7 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
 
       // 3. Sucesso
       toast.success("Link enviado!", {
-        description: "Se o email existir, você receberá instruções em breve.",
+        description: "Instruções enviadas ao E-mail",
       });
       
       setEmail(""); // Limpa o campo
