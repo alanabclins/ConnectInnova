@@ -186,11 +186,20 @@ async def get_feedback_by_uuid(
         Eq(models.Feedback.project_id, project_uuid)
     )
 
+    # Verificar se o projeto existe
+    project = await models.Project.find_one(
+        models.Project.uuid == project_uuid
+    )
+
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found.")
+    
+    # Verificar a autorização antes de mostrar qualquer coisa
+    if project.student_id != current_user.uuid:
+        raise HTTPException(status_code=403, detail="Not authorized.")
+    
     if feedback_doc is None:
         raise HTTPException(status_code=404, detail="Analysis/Feedback not found.")
-
-    if feedback_doc.student_id != current_user.uuid:
-        raise HTTPException(status_code=403, detail="Not authorized to view this feedback.")
 
     return feedback_doc
 
