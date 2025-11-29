@@ -86,7 +86,7 @@ async def generate_resum(
     # 5️⃣ Valida o formato do JSON
     if not ai_data or "resums" not in ai_data:
         raise HTTPException(
-            status_code=500, detail="❌ Resposta da IA em formato inválido ou incompleto."
+            status_code=500, detail="Resposta da IA em formato inválido ou incompleto."
         )
 
     resums_data = ai_data["resums"]
@@ -118,7 +118,7 @@ async def generate_resum(
 
     # 7️⃣ Retorna para o front
     return {
-        "message": "✅ Resumo gerado com sucesso!",
+        "message": "Resumo gerado com sucesso!",
         "resum_id": str(resum_doc.uuid),
         "resums": resums_data,
     }
