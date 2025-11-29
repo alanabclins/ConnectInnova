@@ -29,7 +29,7 @@ def _aggregate_project_fields(project: schemas.ProjectCreate) -> Dict[str, str]:
     ):
         parts = []
         if project.technical_feasibility:
-            parts.append(f"Viabilidade Técnica: {project.technical_feasibility}")
+            parts.append(f"Viabilidade Técnica: {project.technical_feasibilidade}")
         if project.revenue_model:
             parts.append(f"Modelo de Receita: {project.revenue_model}")
         if project.scalability:
@@ -116,7 +116,15 @@ async def get_projects(current_user: models.User = Depends(get_current_active_us
         )
 
 
-@router.get("/{project_uuid}", response_model=schemas.ProjectReturn)
+@router.get(
+    "/{project_uuid}",
+    response_model=schemas.ProjectReturn,
+    responses={
+        403: {"description": "Usuário não autorizado"},
+        404: {"description": "Projeto não encontrado"},
+        400: {"description": "UUID inválido"},
+    }
+)
 async def get_project_details(
     project_uuid: str,
     current_user: models.User = Depends(get_current_active_user),
@@ -148,7 +156,15 @@ async def get_project_details(
         )
 
 
-@router.patch("/{project_uuid}", response_model=schemas.ProjectResponse)
+@router.patch(
+    "/{project_uuid}",
+    response_model=schemas.ProjectResponse,
+    responses={
+        403: {"description": "Usuário não autorizado"},
+        404: {"description": "Projeto não encontrado"},
+        400: {"description": "UUID inválido"},
+    }
+)
 async def update_project(
     project_uuid: str,
     project_update: schemas.ProjectCreate,
@@ -212,7 +228,14 @@ async def update_project(
         )
 
 
-@router.delete("/{project_uuid}", response_model=Dict[str, str])
+@router.delete(
+    "/{project_uuid}",
+    response_model=Dict[str, str],
+    responses={
+        403: {"description": "Não autorizado a deletar este projeto"},
+        404: {"description": "Projeto não encontrado"},
+    }
+)
 async def delete_project(
     project_uuid: UUID,
     current_user: models.User = Depends(get_current_active_user),
@@ -236,6 +259,8 @@ async def delete_project(
 
         return {"message": "Projeto deletado com sucesso"}
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
