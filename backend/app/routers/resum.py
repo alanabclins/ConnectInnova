@@ -91,6 +91,18 @@ async def generate_resum(
 
     resums_data = ai_data["resums"]
 
+    default_fields = {
+        "clarity_resum": "",
+        "inovation_grade_resum": "",
+        "social_impact_resum": "",
+        "tec_eco_viability_resum": "",
+        "application_potencial_resum": "",
+    }
+
+    for key, default_value in default_fields.items():
+        if resums_data.get(key) is None:
+            resums_data[key] = default_value
+            
     # 6️⃣ Cria o documento AIResum
     resum_doc = AIResum(
         project_id=project.uuid,
