@@ -3,7 +3,9 @@
 Versão alpha 1.0.0 - 01/12/2025
 
 Bem vindo a versão 1.0.0 do Connect Innova!
+
 O Connect Innova é uma plataforma digital que apoia estudantes universitários na preparação e evolução de seus projetos acadêmicos. A solução oferece análise inicial estruturada dos trabalhos, identifica pontos fortes e melhorias e conecta os projetos a editais de fomento, aproximando-os de oportunidades reais.
+
 Esta é a versão traz a adição das principais features da versão alpha da plataforma, como a de cadastrar/editar/excluir projetos, dashboard contendo análises geradas por Inteligência Artificial dos projetos cadastrados. Temos o prazer de compartilhar e destrinchar o resultado inicial de meses de trabalho e dedicação a seguir:
 
 ## Funcionalidades desenvolvidas nesta release:
