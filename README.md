@@ -1,8 +1,34 @@
-# Connect Innova
+# Release Notes - Connect Innova
 
-O Connect Innova é uma plataforma digital que apoia estudantes universitários na preparação e evolução de seus projetos acadêmicos. A solução oferece análise inicial estruturada dos trabalhos, identifica pontos fortes e melhorias e conecta os projetos a editais de fomento, aproximando-os de oportunidades reais.
+Versão alpha 1.0.0 - 01/12/2025
 
----
+Bem vindo a versão 1.0.0 do Connect Innova!
+Esta é a versão traz a adição das principais features da versão alpha da plataforma, como a de cadastrar/editar/excluir projetos, dashboard contendo análises geradas por Inteligência Artificial dos projetos cadastrados. Temos o prazer de compartilhar e destrinchar o resultado inicial de meses de trabalho e dedicação a seguir:
+
+## Funcionalidades desenvolvidas nesta release:
+
+- Fluxo de cadastro e login: Na plataforma você pode se cadastrar para armazenar suas próprias informações e seus projetos com segurança.
+    - Caso sua senha seja perdida/esquecida, já é possível trocá-la através do botão de “esqueci minha senha”.
+		
+
+- Cadastro e Gerenciamento de projetos: Uma das principais funcionalidades da release. A partir dela você trará informações importantes sobre seu projeto que serão utilizadas para as análises feitas pela I.A
+    - O cadastro não se perde ao atualizar a página.
+    - Os campos do formulário possuem descrições com perguntas mais diretas para lhe levar a resposta do que preencher no devido campo.
+    - Além do cadastro, também é possível excluir ou editar seus projetos, conforme você os altere ao alinhá-los às análises da I.A. através da tela de dashboard de análise. 
+
+- Resumo e análise automatizada por I.A.: A principal funcionalidade da ferramenta. Após a submissão do seu projeto, a Inteligência Artificial produz uma análise do projeto submetido, categorizando-o em níveis e oferecendo sugestões de melhoria.
+    - O modelo também produz um resumo do projeto para certificar-se de que entendeu tudo sobre o projeto, servindo como uma revisão para o usuário do que foi escrito.
+
+- Dashboard de Análise: Para facilitar a visibilidade da análise feita pela LLM, disponibilizamos um dashboard com cards tematizados. Cada card possui:
+    - Cor baseada nos níveis de 1 a 3, sendo vermelho para 1 (ruim), amarelo para 2 (médio) e verde para 3 (bom) 2- Médio, 3 - Bom) 
+    - Conteúdo da sintetização feita pela I.A. no quesito específico, levando em conta o contexto do projeto. 
+    - Uma sugestão de melhoria para cada ponto, descrita em azul.
+  Além disso, nesta tela também é possível editar e excluir o projeto do respectivo dashboard
+
+- Layout Responsivo: Pensando nos usuários mobile do sistema, nossa plataforma também se adapta aos diferentes tipos de dispositivos nos quais você possa estar acessando.
+
+- Tela de seleção de projetos: Ao clicar na Home da plataforma, você encontrará a tela dos seus projetos, onde poderá selecionar projetos já inseridos para revisitar o dashboard, além da opção de cadastrar um novo projeto.
+
 
 ## 📝 Pré-requisitos
 
