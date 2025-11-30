@@ -263,6 +263,6 @@ async def delete_project(
         raise
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_403_INTERNAL_SERVER_ERROR,
             detail=f"Erro ao deletar projeto: {e}",
         )
