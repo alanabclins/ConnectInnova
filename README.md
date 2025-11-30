@@ -1,4 +1,4 @@
-# Release Notes - Connect Innova
+# 📝 Release Notes - Connect Innova
 
 Versão alpha 1.0.0 - 01/12/2025
 
@@ -8,7 +8,7 @@ O Connect Innova é uma plataforma digital que apoia estudantes universitários 
 
 Esta é a versão traz a adição das principais features da versão alpha da plataforma, como a de cadastrar/editar/excluir projetos, dashboard contendo análises geradas por Inteligência Artificial dos projetos cadastrados. Temos o prazer de compartilhar e destrinchar o resultado inicial de meses de trabalho e dedicação a seguir:
 
-## Funcionalidades desenvolvidas nesta release:
+## ⚙ Funcionalidades desenvolvidas nesta release:
 
 - Fluxo de cadastro e login: Na plataforma você pode se cadastrar para armazenar suas próprias informações e seus projetos com segurança.
     - Caso sua senha seja perdida/esquecida, já é possível trocá-la através do botão de “esqueci minha senha”.
