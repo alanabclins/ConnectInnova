@@ -1,3 +1,4 @@
+import re
 from typing import Any
 from uuid import UUID
 
@@ -5,7 +6,6 @@ from beanie.exceptions import RevisionIdWasChanged
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic.networks import EmailStr
 from pymongo import errors
-import re
 
 from .. import models, schemas
 from ..auth.auth import (
@@ -16,6 +16,7 @@ from ..auth.auth import (
 
 router = APIRouter()
 
+
 def validate_name(field_name: str, value: str | None):
     if not value:
         return value
@@ -23,45 +24,37 @@ def validate_name(field_name: str, value: str | None):
     if "<" in value or ">" in value:
         raise HTTPException(
             status_code=400,
-            detail=f"O campo 'Nome completo' contém código HTML, o que não é permitido."
+            detail="O campo 'Nome completo' contém código HTML, o que não é permitido.",
         )
 
-    
-    if any(char.isdigit() for char in value):
+    if not re.match(r"^[A-Za-z0-9À-ÖØ-öø-ÿ\s]+$", value):
         raise HTTPException(
-            status_code=400,
-            detail=f"O campo 'Nome completo' contém números, o que não é permitido."
-        )
-
-    
-    if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$", value):
-        raise HTTPException(
-            status_code=400,
-            detail=f"O campo 'Nome completo' contém caracteres inválidos."
+            status_code=400, detail="O campo 'Nome completo' contém caracteres inválidos."
         )
 
     return value
+
 
 def validate_password(value: str):
     if not value:
         return "Esse campo não pode ser vazio."
-    
-    if len(value) < 6 or len(value) > 14:   
+
+    if len(value) < 6 or len(value) > 14:
         raise HTTPException(
-            status_code = 400,
-            detail=f"A senha precisa ter no mínimo 6 carácteres e no máximo 14"
+            status_code=400,
+            detail="A senha precisa ter no mínimo 6 carácteres e no máximo 14",
         )
-    
+
+
 def validate_email(value: str):
     if not value:
-        return 'Esse campo não pode ser vazio.'
-    if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"):
+        return "Esse campo não pode ser vazio."
+    if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"):  # type: ignore
         raise HTTPException(
-            status_code= 400,
-            detail= f"Este email possui caracteres invalidos."
+            status_code=400, detail="Este email possui caracteres invalidos."
         )
     return value
-    
+
 
 @router.post("", response_model=schemas.User)
 async def register_user(
@@ -93,10 +86,7 @@ async def register_user(
         await user.create()
         return user
     except errors.DuplicateKeyError:
-        raise HTTPException(
-            status_code=400,
-            detail="User with that email already exists."
-        )
+        raise HTTPException(status_code=400, detail="User with that email already exists.")
 
 
 @router.get("", response_model=list[schemas.User])
